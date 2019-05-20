@@ -1,4 +1,6 @@
-﻿namespace FastDFSCore.Client
+﻿using System.Net;
+
+namespace FastDFSCore.Client
 {
     /// <summary>查询Storage返回
     /// </summary>
@@ -20,7 +22,6 @@
         /// </summary>
         public byte StorePathIndex { get; set; }
 
-        
-         
+
     }
 }

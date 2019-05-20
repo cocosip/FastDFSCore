@@ -1,4 +1,6 @@
-﻿namespace FastDFSCore.Client
+﻿using System;
+
+namespace FastDFSCore.Client
 {
     public class FDFSHeader
     {
@@ -24,6 +26,16 @@
             Length = length;
             Command = command;
             Status = status;
+        }
+
+        public byte[] ToByte()
+        {
+            byte[] result = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE + 2];
+            byte[] pkglen = BitConverter.GetBytes(Length);
+            Array.Copy(pkglen, 0, result, 0, pkglen.Length);
+            result[Consts.FDFS_PROTO_PKG_LEN_SIZE] = Command;
+            result[Consts.FDFS_PROTO_PKG_LEN_SIZE + 1] = Status;
+            return result;
         }
     }
 }

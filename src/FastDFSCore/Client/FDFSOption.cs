@@ -31,5 +31,7 @@ namespace FastDFSCore.Client
         /// <summary>Storage最大连接数
         /// </summary>
         public int StorageMaxConnection { get; set; } = 50;
+
+        public string LoggerName { get; set; } = "FDFSLogger";
     }
 }

@@ -4,10 +4,10 @@ using System.IO;
 namespace FastDFSCore.Client
 {
     /// <summary>
-    /// 上传文件
+    /// 上传可附加的文件
     /// 
     /// Reqeust 
-    ///     Cmd: STORAGE_PROTO_CMD_UPLOAD_FILE 11
+    ///     Cmd: UPLOAD_APPEND_FILE 23
     ///     Body:
     ///     @ FDFS_PROTO_PKG_LEN_SIZE bytes: filename size
     ///     @ FDFS_PROTO_PKG_LEN_SIZE bytes: file bytes size
@@ -20,7 +20,7 @@ namespace FastDFSCore.Client
     ///     @ FDFS_GROUP_NAME_MAX_LEN bytes: group name
     ///     @ filename bytes: filename   
     /// </summary>
-    public class UploadFileRequest : FDFSRequest<UploadFileResponse>
+    public class UploadAppendFileRequest : FDFSRequest<UploadAppendFileResponse>
     {
         /// <summary>StorePathIndex
         /// </summary>
@@ -31,29 +31,27 @@ namespace FastDFSCore.Client
         public string FileExt { get; set; }
 
 
-
-        public UploadFileRequest()
+        public UploadAppendFileRequest()
         {
 
         }
 
-        public UploadFileRequest(byte storePathIndex, string fileExt, Stream stream)
+        public UploadAppendFileRequest(byte storePathIndex, string fileExt, Stream stream)
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
             Stream = stream;
+
         }
 
-        public UploadFileRequest(byte storePathIndex, string fileExt, byte[] contentBytes)
+
+        public UploadAppendFileRequest(byte storePathIndex, string fileExt, byte[] contentBytes)
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
             Stream = new MemoryStream(contentBytes);
         }
 
-
-        /// <summary>使用流传输
-        /// </summary>
         public override bool StreamTransfer => true;
 
         public override byte[] EncodeBody(FDFSOption option)
@@ -79,11 +77,9 @@ namespace FastDFSCore.Client
             Array.Copy(extBuffer, 0, bodyBuffer, 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE, extBuffer.Length);
 
             //头部
-            Header = new FDFSHeader(headerLength + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
+            Header = new FDFSHeader(headerLength + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_APPENDER_FILE, 0);
 
             return bodyBuffer;
         }
-
-
     }
 }

@@ -27,5 +27,12 @@ namespace FastDFSCore.Client
             EndPoint = endPoint;
             StorePathIndex = storePathIndex;
         }
+
+        public StorageNode(string groupName, string ipAddress, int port, byte storePathIndex)
+        {
+            GroupName = groupName;
+            EndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
+            StorePathIndex = storePathIndex;
+        }
     }
 }

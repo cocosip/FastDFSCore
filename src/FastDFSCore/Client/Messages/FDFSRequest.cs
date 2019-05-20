@@ -1,4 +1,6 @@
-﻿namespace FastDFSCore.Client
+﻿using System.IO;
+
+namespace FastDFSCore.Client
 {
     public abstract class FDFSRequest<T> where T : FDFSResponse
     {
@@ -10,13 +12,18 @@
         /// </summary>
         public virtual bool StreamTransfer { get; set; } = false;
 
+        /// <summary>返回值是否Stream读取
+        /// </summary>
+        public virtual bool ResponseStream { get; set; } = false;
+
         /// <summary>对当前body进行编码
         /// </summary>
         public abstract byte[] EncodeBody(FDFSOption option);
 
-        /// <summary>设置头部
+        /// <summary>数据流
         /// </summary>
-        public abstract void SetHeader(long length, byte command, byte status);
+        public Stream Stream { get; set; }
+
 
     }
 }

@@ -125,10 +125,6 @@ namespace FastDFSCore.Client
         /// </summary>
         public async Task ShutdownAsync()
         {
-            if (_channel == null)
-            {
-                return;
-            }
             try
             {
                 await _channel.CloseAsync();

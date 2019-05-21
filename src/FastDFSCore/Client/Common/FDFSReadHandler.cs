@@ -21,14 +21,8 @@ namespace FastDFSCore.Client
 
         protected virtual object Decode(IChannelHandlerContext context, IByteBuffer input)
         {
-           
 
             return null;
-        }
-
-        public override void UserEventTriggered(IChannelHandlerContext context, object evt)
-        {
-            base.UserEventTriggered(context, evt);
         }
     }
 }

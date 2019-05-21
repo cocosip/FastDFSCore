@@ -186,7 +186,7 @@ namespace FastDFSCore.Client
             var storageNode = new StorageNode(queryUpdateResponse.GroupName, queryUpdateResponse.IPAddress, queryUpdateResponse.Port, 0);
 
             var request = new DeleteFileRequest(groupName, fileId);
-            var response = await _executer.Execute(request);
+            var response = await _executer.Execute(request, storageNode.EndPoint);
             return response.Success;
         }
 
@@ -199,7 +199,7 @@ namespace FastDFSCore.Client
         public async Task<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId)
         {
             var request = new DownloadFileRequest(0L, 0L, storageNode.GroupName, fileId);
-            var response = await _executer.Execute(request);
+            var response = await _executer.Execute(request, storageNode.EndPoint);
             return response.ContentBytes;
         }
 
@@ -215,8 +215,49 @@ namespace FastDFSCore.Client
         public async Task<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId, long offset, long length)
         {
             var request = new DownloadFileRequest(offset, length, storageNode.GroupName, fileId);
-            var response = await _executer.Execute(request);
+            var response = await _executer.Execute(request, storageNode.EndPoint);
             return response.ContentBytes;
+        }
+
+        /// <summary>
+        /// 获取文件信息
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="fileId">文件名</param>
+        /// <returns></returns>
+        public async Task<FDFSFileInfo> GetFileInfo(StorageNode storageNode, string fileId)
+        {
+            var request = new QueryFileInfoRequest(storageNode.GroupName, fileId);
+            var response = await _executer.Execute(request, storageNode.EndPoint);
+            return new FDFSFileInfo(response.FileSize, response.CreateTime, response.Crc32);
+        }
+
+
+        /// <summary>
+        /// 获取文件媒体信息
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="fileId">文件名</param>
+        /// <returns></returns>
+        public async Task<IDictionary<string, string>> GetMetaData(StorageNode storageNode, string fileId)
+        {
+            var request = new GetMetaDataRequest(storageNode.GroupName, fileId);
+            var response = await _executer.Execute(request, storageNode.EndPoint);
+            return response.MetaData;
+        }
+
+        /// <summary>
+        /// 设置文件媒体信息
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="fileId"></param>
+        /// <param name="metaData">MetaData数据</param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public async Task SetMetaData(StorageNode storageNode, string fileId, IDictionary<string, string> metaData, MetaDataOption option = MetaDataOption.Overwrite)
+        {
+            var request = new SetMetaDataRequest(fileId, storageNode.GroupName, metaData, option);
+            var response = await _executer.Execute(request);
         }
     }
 }

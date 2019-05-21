@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
@@ -35,17 +36,9 @@ namespace FastDFSCore.Client
         public override byte[] EncodeBody(FDFSOption option)
         {
             //消息体长度为group name的最大长度,16
-            var bodyBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
-            var groupNameBuffer = option.Charset.GetBytes(GropName);
-            if (groupNameBuffer.Length > Consts.FDFS_GROUP_NAME_MAX_LEN)
-            {
-                throw new ArgumentException("GroupName is too long.");
-            }
 
-            Array.Copy(groupNameBuffer, 0, bodyBuffer, 0, groupNameBuffer.Length);
-
+            byte[] bodyBuffer = Util.CreateGroupNameBuffer(option.Charset, GropName);
             Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_STORE_WITH_GROUP_ONE, 0);
-
             return bodyBuffer;
         }
     }

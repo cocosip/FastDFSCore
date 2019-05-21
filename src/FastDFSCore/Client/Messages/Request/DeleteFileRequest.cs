@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
@@ -38,20 +39,22 @@ namespace FastDFSCore.Client
         /// 2,string fileName
         public override byte[] EncodeBody(FDFSOption option)
         {
-            var groupNameBuffer = option.Charset.GetBytes(GroupName);
+
+            byte[] groupNameBuffer = Util.CreateGroupNameBuffer(option.Charset, GroupName);
             if (groupNameBuffer.Length > Consts.FDFS_GROUP_NAME_MAX_LEN)
             {
                 throw new ArgumentException("GroupName is too long.");
             }
-            var fileIdBuffer = option.Charset.GetBytes(FileId);
+            byte[] fileIdBuffer = Util.StringToByte(option.Charset, FileId);
+
             var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
-            var bodyBuffer = new byte[length];
-            Array.Copy(groupNameBuffer, 0, bodyBuffer, 0, groupNameBuffer.Length);
-            Array.Copy(fileIdBuffer, 0, bodyBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN, fileIdBuffer.Length);
+            List<byte> bodyBuffer = new List<byte>();
+            bodyBuffer.AddRange(groupNameBuffer);
+            bodyBuffer.AddRange(fileIdBuffer);
 
             Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_DELETE_FILE, 0);
 
-            return bodyBuffer;
+            return bodyBuffer.ToArray();
         }
     }
 }

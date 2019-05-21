@@ -117,5 +117,31 @@ namespace FastDFSCore.Client
         /// <param name="length">要读取的字节数</param>
         /// <returns>文件内容</returns>
         Task<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId, long offset, long length);
+
+        /// <summary>
+        /// 获取文件信息
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="fileId">文件名</param>
+        /// <returns></returns>
+        Task<FDFSFileInfo> GetFileInfo(StorageNode storageNode, string fileId);
+
+        /// <summary>
+        /// 获取文件媒体信息
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="fileId">文件名</param>
+        /// <returns></returns>
+        Task<IDictionary<string, string>> GetMetaData(StorageNode storageNode, string fileId);
+
+        /// <summary>
+        /// 设置文件媒体信息
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="fileId"></param>
+        /// <param name="metaData">MetaData数据</param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        Task SetMetaData(StorageNode storageNode, string fileId, IDictionary<string, string> metaData, MetaDataOption option = MetaDataOption.Overwrite);
     }
 }

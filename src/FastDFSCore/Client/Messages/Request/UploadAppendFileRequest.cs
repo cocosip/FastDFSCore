@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace FastDFSCore.Client
@@ -56,30 +56,21 @@ namespace FastDFSCore.Client
 
         public override byte[] EncodeBody(FDFSOption option)
         {
-            //扩展名数组
-            if (FileExt.Length > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
-                throw new ArgumentException("文件扩展名过长");
-            byte[] extBuffer = new byte[Consts.FDFS_FILE_EXT_NAME_MAX_LEN];
-            byte[] bse = option.Charset.GetBytes(FileExt);
-            int ext_name_len = bse.Length;
-            if (ext_name_len > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
-            {
-                ext_name_len = Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
-            }
-            Array.Copy(bse, 0, extBuffer, 0, ext_name_len);
 
-            long headerLength = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
-            byte[] bodyBuffer = new byte[headerLength];
-            bodyBuffer[0] = StorePathIndex;
+            byte[] fileSizeBuffer = Util.LongToBuffer(Stream.Length);
+            byte[] extBuffer = Util.CreateFileExtBuffer(option.Charset, FileExt);
 
-            byte[] fileSizeBuffer = BitConverter.GetBytes(Stream.Length);
-            Array.Copy(fileSizeBuffer, 0, bodyBuffer, 1, fileSizeBuffer.Length);
-            Array.Copy(extBuffer, 0, bodyBuffer, 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE, extBuffer.Length);
+            long lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
+
+            List<byte> bodyBuffer = new List<byte>();
+            bodyBuffer.Add(StorePathIndex);
+            bodyBuffer.AddRange(fileSizeBuffer);
+            bodyBuffer.AddRange(extBuffer);
 
             //头部
-            Header = new FDFSHeader(headerLength + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_APPENDER_FILE, 0);
+            Header = new FDFSHeader(lenth + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_APPENDER_FILE, 0);
 
-            return bodyBuffer;
+            return bodyBuffer.ToArray();
         }
     }
 }

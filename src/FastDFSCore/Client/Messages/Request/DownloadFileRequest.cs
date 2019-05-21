@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
@@ -44,35 +42,26 @@ namespace FastDFSCore.Client
             FileId = fileId;
         }
 
-        public override bool ResponseStream => true;
-
         public override byte[] EncodeBody(FDFSOption option)
         {
-            var groupNameBuffer = option.Charset.GetBytes(GroupName);
-            if (groupNameBuffer.Length > Consts.FDFS_GROUP_NAME_MAX_LEN)
-            {
-                throw new ArgumentException("GroupName is too long.");
-            }
+            byte[] groupNameBuffer = Util.CreateGroupNameBuffer(option.Charset, GroupName);
+            //文件偏移量
+            byte[] offsetBuffer = Util.LongToBuffer(Offset);
+            //下载文件的大小,全部下载用0
+            byte[] byteSizeBuffer = Util.LongToBuffer(ByteSize);
+            //文件FileId数组
+            byte[] fileIdBuffer = Util.StringToByte(option.Charset, FileId);
 
             long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_GROUP_NAME_MAX_LEN + FileId.Length;
 
-            //文件偏移量
-            byte[] offsetBuffer = BitConverter.GetBytes(Offset);
-            //下载文件的大小,全部下载用0
-            byte[] byteSizeBuffer = BitConverter.GetBytes(ByteSize);
-            //文件FileId数组
-            byte[] fileIdBuffer = option.Charset.GetBytes(FileId);
-
-            var bodyBuffer = new byte[length];
-            Array.Copy(offsetBuffer, 0, bodyBuffer, 0, offsetBuffer.Length);
-            Array.Copy(byteSizeBuffer, 0, bodyBuffer, Consts.FDFS_PROTO_PKG_LEN_SIZE, byteSizeBuffer.Length);
-            Array.Copy(groupNameBuffer, 0, bodyBuffer, Consts.FDFS_PROTO_PKG_LEN_SIZE +
-             Consts.FDFS_PROTO_PKG_LEN_SIZE, groupNameBuffer.Length);
-            Array.Copy(fileIdBuffer, 0, bodyBuffer, Consts.FDFS_PROTO_PKG_LEN_SIZE +
-              Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_GROUP_NAME_MAX_LEN, fileIdBuffer.Length);
+            List<byte> bodyBuffer = new List<byte>();
+            bodyBuffer.AddRange(offsetBuffer);
+            bodyBuffer.AddRange(byteSizeBuffer);
+            bodyBuffer.AddRange(groupNameBuffer);
+            bodyBuffer.AddRange(fileIdBuffer);
 
             Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_DOWNLOAD_FILE, 0);
-            return bodyBuffer;
+            return bodyBuffer.ToArray();
         }
 
 

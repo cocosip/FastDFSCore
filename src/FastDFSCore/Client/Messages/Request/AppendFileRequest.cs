@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace FastDFSCore.Client
@@ -45,22 +45,21 @@ namespace FastDFSCore.Client
 
         public override byte[] EncodeBody(FDFSOption option)
         {
+
+            byte[] fileIdLenBuffer = Util.LongToBuffer(FileId.Length);
+            byte[] fileSizeBuffer = Util.LongToBuffer(Stream.Length);
+            byte[] fileIdBuffer = Util.StringToByte(option.Charset, FileId);
+
             long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + FileId.Length + Stream.Length;
-            byte[] bodyBuffer = new byte[length];
 
-            byte[] fileIdLenBuffer = BitConverter.GetBytes(FileId.Length);
-            Array.Copy(fileIdLenBuffer, 0, bodyBuffer, 0, fileIdLenBuffer.Length);
-
-            byte[] fileSizeBuffer = BitConverter.GetBytes(Stream.Length);
-            Array.Copy(fileSizeBuffer, 0, bodyBuffer, Consts.FDFS_PROTO_PKG_LEN_SIZE, fileSizeBuffer.Length);
-
-            byte[] fileIdBuffer = option.Charset.GetBytes(FileId);
-            Array.Copy(fileIdBuffer, 0, bodyBuffer, Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE, fileIdBuffer.Length);
-
+            List<byte> bodyBuffer = new List<byte>();
+            bodyBuffer.AddRange(fileIdLenBuffer);
+            bodyBuffer.AddRange(fileSizeBuffer);
+            bodyBuffer.AddRange(fileIdBuffer);
 
             Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_APPEND_FILE, 0);
 
-            return bodyBuffer;
+            return bodyBuffer.ToArray();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace FastDFSCore.Client
@@ -58,30 +59,25 @@ namespace FastDFSCore.Client
 
         public override byte[] EncodeBody(FDFSOption option)
         {
-            //扩展名数组
+            //1.StorePathIndex
+
+            //2.文件长度
+            byte[] fileSizeBuffer = BitConverter.GetBytes(Stream.Length);
+            //3.扩展名
             if (FileExt.Length > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
                 throw new ArgumentException("文件扩展名过长");
-            byte[] extBuffer = new byte[Consts.FDFS_FILE_EXT_NAME_MAX_LEN];
-            byte[] bse = option.Charset.GetBytes(FileExt);
-            int ext_name_len = bse.Length;
-            if (ext_name_len > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
-            {
-                ext_name_len = Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
-            }
-            Array.Copy(bse, 0, extBuffer, 0, ext_name_len);
+            byte[] extBuffer = Util.CreateFileExtBuffer(option.Charset, FileExt);
+            //4.文件数据,这里不写入
+            int lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
 
-            long headerLength = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
-            byte[] bodyBuffer = new byte[headerLength];
-            bodyBuffer[0] = StorePathIndex;
-
-            byte[] fileSizeBuffer = BitConverter.GetBytes(Stream.Length);
-            Array.Copy(fileSizeBuffer, 0, bodyBuffer, 1, fileSizeBuffer.Length);
-            Array.Copy(extBuffer, 0, bodyBuffer, 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE, extBuffer.Length);
+            List<byte> bodyBuffer = new List<byte>(lenth);
+            bodyBuffer.Add(StorePathIndex);
+            bodyBuffer.AddRange(fileSizeBuffer);
+            bodyBuffer.AddRange(extBuffer);
 
             //头部
-            Header = new FDFSHeader(headerLength + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
-
-            return bodyBuffer;
+            Header = new FDFSHeader(lenth + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
+            return bodyBuffer.ToArray();
         }
 
 

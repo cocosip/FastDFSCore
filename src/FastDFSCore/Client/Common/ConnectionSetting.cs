@@ -3,11 +3,11 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace FastDFSCore.Client
 {
-    public class ClientSetting
+    public class ConnectionSetting
     {
         /// <summary>Enable ssl
         /// </summary>
-        public bool IsSsl { get; set; }
+        public bool IsSsl { get; set; } = false;
 
         /// <summary>X509 cert
         /// </summary>
@@ -15,7 +15,7 @@ namespace FastDFSCore.Client
 
         /// <summary>Enable libuv
         /// </summary>
-        public bool UseLibuv { get; set; }
+        public bool UseLibuv { get; set; } = false;
 
         /// <summary>Round robin request expired interval (ms)
         /// </summary>
@@ -32,6 +32,10 @@ namespace FastDFSCore.Client
         /// <summary>Timeout when close the channel (s)
         /// </summary>
         public int CloseTimeoutSeconds { get; set; } = 1;
+
+        /// <summary>关闭连接的有效时间(如果在此时间内,没有任何消息发送,就会关闭)
+        /// </summary>
+        public int ConnectionLifeTime { get; set; } = 3600;
 
         /// <summary>Write buffer high water 2M
         /// </summary>

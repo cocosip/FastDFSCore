@@ -28,7 +28,7 @@ namespace FastDFSCore.Client
             Status = status;
         }
 
-        public byte[] ToByte()
+        public byte[] ToBytes()
         {
             byte[] result = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE + 2];
             byte[] pkglen = BitConverter.GetBytes(Length);

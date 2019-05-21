@@ -5,6 +5,7 @@ namespace FastDFSCore.Client
 {
     public static class ServiceCollectionExtensions
     {
+
         /// <summary>添加FastDFS
         /// </summary>
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, Action<FDFSOption> configure = null)
@@ -12,7 +13,12 @@ namespace FastDFSCore.Client
             var option = new FDFSOption();
             configure?.Invoke(option);
 
-            services.AddSingleton<FDFSOption>(option);
+            services
+                .AddSingleton<IScheduleService, ScheduleService>()
+                .AddSingleton<FDFSOption>(option)
+                .AddSingleton<IConnectionManager, ConnectionManager>()
+                .AddTransient<IExecuter, DefaultExecuter>()
+                .AddTransient<IFDFSClient, FDFSClient>();
 
             return services;
         }

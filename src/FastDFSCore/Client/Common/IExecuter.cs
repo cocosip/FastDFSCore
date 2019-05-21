@@ -5,6 +5,6 @@ namespace FastDFSCore.Client
 {
     public interface IExecuter
     {
-        Task<T> Execute<T>(FDFSRequest<T> request, IPEndPoint iPEndPoint = null) where T : FDFSResponse;
+        Task<T> Execute<T>(FDFSRequest<T> request, IPEndPoint endPoint = null) where T : FDFSResponse, new();
     }
 }

@@ -24,7 +24,7 @@ namespace FastDFSCore.Client
             }
             finally
             {
-                if (release)
+                if (release && !(message is ChunkedStream))
                 {
                     ReferenceCountUtil.Release(message);
                 }

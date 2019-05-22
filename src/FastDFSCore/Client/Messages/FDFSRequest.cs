@@ -2,19 +2,29 @@
 
 namespace FastDFSCore.Client
 {
-    public abstract class FDFSRequest<T> where T : FDFSResponse
+
+    public abstract class FDFSRequest
     {
         /// <summary>头部
         /// </summary>
         public FDFSHeader Header { get; set; }
 
-        /// <summary>是否Stream传输
+        /// <summary>是否是上传文件
         /// </summary>
-        public virtual bool StreamTransfer { get; set; } = false;
+        public virtual bool IsFileUpload { get; set; } = false;
 
-        /// <summary>返回值是否Stream读取
+        /// <summary>是否下载文件
         /// </summary>
-        public virtual bool ResponseStream { get; set; } = false;
+        public virtual bool IsFileDownload { get; set; } = false;
+
+
+        /// <summary>是否下载到路径
+        /// </summary>
+        public bool IsDownloadToPath { get; set; } = false;
+
+        /// <summary>下载文件
+        /// </summary>
+        public virtual string FileDownloadPath { get; set; }
 
         /// <summary>对当前body进行编码
         /// </summary>
@@ -23,6 +33,10 @@ namespace FastDFSCore.Client
         /// <summary>数据流
         /// </summary>
         public Stream Stream { get; set; }
+    }
+
+    public abstract class FDFSRequest<T> : FDFSRequest where T : FDFSResponse
+    {
 
 
     }

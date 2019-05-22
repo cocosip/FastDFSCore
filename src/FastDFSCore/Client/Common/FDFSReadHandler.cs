@@ -1,28 +1,20 @@
-﻿using DotNetty.Buffers;
-using DotNetty.Codecs;
-using DotNetty.Transport.Channels;
+﻿using DotNetty.Transport.Channels;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FastDFSCore.Client
 {
-    public class FDFSReadHandler : ByteToMessageDecoder
+    public class FDFSReadHandler : SimpleChannelInboundHandler<ConnectionContext>
     {
-        
-        protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
+
+        private Action _setResultAction;
+        public FDFSReadHandler(Action setResultAction)
         {
-            object decoded = this.Decode(context, input);
-            if (decoded != null)
-            {
-                output.Add(decoded);
-            }
+            _setResultAction = setResultAction;
         }
 
-        protected virtual object Decode(IChannelHandlerContext context, IByteBuffer input)
+        protected override void ChannelRead0(IChannelHandlerContext ctx, ConnectionContext msg)
         {
-
-            return null;
+            _setResultAction();
         }
     }
 }

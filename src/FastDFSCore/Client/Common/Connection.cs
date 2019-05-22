@@ -1,4 +1,5 @@
 ﻿using DotNetty.Buffers;
+using DotNetty.Common.Internal.Logging;
 using DotNetty.Handlers.Logging;
 using DotNetty.Handlers.Streams;
 using DotNetty.Handlers.Tls;
@@ -38,12 +39,13 @@ namespace FastDFSCore.Client
         public DateTime CreationTime { get { return _creationTime; } }
         public DateTime LastUseTime { get { return _lastUseTime; } }
 
-        private TaskCompletionSource<FDFSResponse> _taskCompletionSource;
-        private RequestInfo _requestInfo;
-        public Connection(IServiceProvider provider, ILoggerFactory loggerFactory, FDFSOption option, ConnectionSetting setting, Action<Connection> closeAction)
+        private ConnectionContext _connectionContext;
+        private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
+        private FileStream _fs = null;
+        public Connection(IServiceProvider provider, FDFSOption option, ConnectionSetting setting, Action<Connection> closeAction)
         {
             _provider = provider;
-            _logger = loggerFactory.CreateLogger(option.LoggerName);
+            _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
             _option = option;
             _setting = setting;
             _closeAction = closeAction;
@@ -51,10 +53,11 @@ namespace FastDFSCore.Client
             _name = "Client_" + Guid.NewGuid().ToString();
 
             _creationTime = DateTime.Now;
+            _lastUseTime = DateTime.Now;
             _isRuning = false;
         }
 
-        /// <summary>Run
+        /// <summary>运行
         /// </summary>
         public async Task RunAsync()
         {
@@ -105,7 +108,13 @@ namespace FastDFSCore.Client
                         }
                         pipeline.AddLast(new LoggingHandler(_option.LoggerName));
                         pipeline.AddLast("fdfs-write", _provider.CreateInstance<FDFSWriteHandler>());
-                        pipeline.AddLast("fdfs-read", _provider.CreateInstance<FDFSReadHandler>());
+
+                        Func<ConnectionContext> getContextAction = GetContext;
+                        pipeline.AddLast("fdfs-decoder", _provider.CreateInstance<FDFSDecoder>(getContextAction));
+
+                        Action setResultAction = SetResponse;
+
+                        pipeline.AddLast("fdfs-read", _provider.CreateInstance<FDFSReadHandler>(setResultAction));
 
                     }));
 
@@ -140,14 +149,21 @@ namespace FastDFSCore.Client
         public Task<T> SendRequestAsync<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
         {
             _taskCompletionSource = new TaskCompletionSource<FDFSResponse>();
-            var headerBuffer = request.Header.ToBytes();
-            //请求信息
-            _requestInfo = new RequestInfo(request.StreamTransfer, request.ResponseStream);
-
-            //使用Stream传输
-            if (request.StreamTransfer)
+            _connectionContext = new ConnectionContext()
             {
-                var bodyBuffer = request.EncodeBody(_option);
+                Response = new T(),
+                IsFileUpload = request.IsFileUpload,
+                IsFileDownload = request.IsFileDownload,
+                FileDownloadPath = request.FileDownloadPath
+            };
+
+            var bodyBuffer = request.EncodeBody(_option);
+            var headerBuffer = request.Header.ToBytes();
+            //文件上传
+            if (request.IsFileUpload)
+            {
+
+                //var bodyBuffer = request.EncodeBody(_option);
                 var newBuffer = new byte[headerBuffer.Length + bodyBuffer.Length];
                 Array.Copy(headerBuffer, 0, newBuffer, 0, headerBuffer.Length);
                 Array.Copy(bodyBuffer, 0, newBuffer, headerBuffer.Length, bodyBuffer.Length);
@@ -161,11 +177,13 @@ namespace FastDFSCore.Client
                 var buffer = Unpooled.Buffer();
                 buffer.WriteBytes(headerBuffer);
                 buffer.WriteBytes(request.EncodeBody(_option));
-                //while (!_channel.IsWritable)
-                //{
-                //    Thread.Sleep(20);
-                //}
                 _channel.WriteAndFlushAsync(buffer).Wait();
+            }
+
+            //_fs初始化
+            if (_connectionContext.IsFileDownload && _connectionContext.IsDownloadToPath)
+            {
+                _fs = new FileStream(_connectionContext.FileDownloadPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             }
 
             return _taskCompletionSource.Task as Task<T>;
@@ -189,40 +207,64 @@ namespace FastDFSCore.Client
         }
 
         //Buffer数组返回
-        private void SetBufferResponse(IByteBuffer input)
+        private void SetResponse()
         {
             try
             {
-
-
-                if (_taskCompletionSource != null)
+                if (_connectionContext.IsFileDownload)
                 {
-                    _taskCompletionSource.SetResult(default(FDFSResponse));
+                    //还未下载,正在读取头
+                    if (!_connectionContext.IsChunkDownload)
+                    {
+                        _connectionContext.IsChunkDownload = true;
+                    }
+                    else
+                    {
+                        //写入流
+                        _fs.Write(_connectionContext.Body, 0, _connectionContext.Body.Length);
+                        if (_connectionContext.IsComplete)
+                        {
+                            var response = _connectionContext.Response;
+                            response.SetHeader(_connectionContext.Header);
+                            _taskCompletionSource.SetResult(response);
+                            //完成
+                            SendReceiveComplete();
+                        }
+                    }
                 }
+                else
+                {
+                    var response = _connectionContext.Response;
+                    response.SetHeader(_connectionContext.Header);
+                    response.LoadContent(_option, _connectionContext.Body);
+                    _taskCompletionSource.SetResult(response);
+                    //完成
+                    SendReceiveComplete();
+                }
+
             }
             catch (Exception ex)
             {
                 _logger.LogError("接收返回信息出错! {0}", ex);
             }
         }
-    }
 
-
-    class RequestInfo
-    {
-
-        /// <summary>是否Stream传输
-        /// </summary>
-        public bool StreamTransfer { get; set; }
-
-        /// <summary>返回值是否Stream读取
-        /// </summary>
-        public bool ResponseStream { get; set; }
-
-        public RequestInfo(bool streamTransfer, bool responseStream)
+        private ConnectionContext GetContext()
         {
-            StreamTransfer = streamTransfer;
-            ResponseStream = responseStream;
+            return _connectionContext;
         }
+
+        /// <summary>一次的发送与接收完成
+        /// </summary>
+        private void SendReceiveComplete()
+        {
+            _connectionContext = null;
+            _taskCompletionSource = null;
+            if (_fs != null)
+            {
+                _fs.Dispose();
+            }
+        }
+
     }
 }

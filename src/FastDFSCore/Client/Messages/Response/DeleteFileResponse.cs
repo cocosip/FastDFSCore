@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FastDFSCore.Client
+﻿namespace FastDFSCore.Client
 {
     public class DeleteFileResponse : FDFSResponse
     {
-        public bool Success { get; set; }
+        public bool Success { get { return Header.Status == 0; } }
 
         public DeleteFileResponse()
         {
 
-        }
-        public DeleteFileResponse(bool success)
-        {
-            Success = success;
         }
     }
 }

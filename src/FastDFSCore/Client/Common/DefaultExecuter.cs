@@ -14,7 +14,12 @@ namespace FastDFSCore.Client
         public async Task<T> Execute<T>(FDFSRequest<T> request, IPEndPoint endPoint = null) where T : FDFSResponse, new()
         {
             var connection = endPoint == null ? await _connectionManager.GetTrackerConnection() : await _connectionManager.GetStorageConnection(endPoint);
-            return await connection.SendRequestAsync<T>(request);
+            connection.Open();
+
+            var response = await connection.SendRequestAsync<T>(request);
+
+            connection.Close();
+            return response;
         }
     }
 }

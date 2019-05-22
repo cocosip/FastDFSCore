@@ -49,9 +49,30 @@ namespace FastDFSCore.Client
             return encoding.GetBytes(input);
         }
 
+        public static string ByteToString(Encoding encoding, byte[] input)
+        {
+            char[] chars = encoding.GetChars(input);
+            string result = new string(chars, 0, chars.Length);
+            return result;
+        }
+
+        public static string ByteToString(Encoding encoding, byte[] input, int startIndex, int count)
+        {
+            char[] chars = encoding.GetChars(input, startIndex, count);
+            string result = new string(chars, 0, chars.Length);
+            return result;
+        }
+
+
         public static byte[] LongToBuffer(long l)
         {
             return BitConverter.GetBytes(l);
         }
+
+        public static long BufferToLong(byte[] buffer, int startIndex = 0)
+        {
+            return BitConverter.ToInt64(buffer, startIndex);
+        }
+
     }
 }

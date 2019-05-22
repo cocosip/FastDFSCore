@@ -58,7 +58,7 @@ namespace FastDFSCore.Client
             Stream = new MemoryStream(contentBytes);
         }
 
-        public override bool StreamTransfer => true;
+        public override bool IsFileUpload => true;
 
         public override byte[] EncodeBody(FDFSOption option)
         {

@@ -10,9 +10,9 @@
 
         }
 
-        public DownloadFileResponse(byte[] contentBytes)
+        public override void LoadContent(FDFSOption option, byte[] data)
         {
-            ContentBytes = contentBytes;
+            ContentBytes = data;
         }
     }
 }

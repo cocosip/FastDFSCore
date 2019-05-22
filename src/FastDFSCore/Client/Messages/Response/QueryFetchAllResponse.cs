@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
@@ -20,6 +21,36 @@ namespace FastDFSCore.Client
         public QueryFetchAllResponse()
         {
 
+        }
+
+
+        public override void LoadContent(FDFSOption option, byte[] data)
+        {
+
+            int bytesRead = 0;
+
+            byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
+            Array.Copy(data, bytesRead, groupNameBuffer, 0, Consts.FDFS_GROUP_NAME_MAX_LEN);
+            GroupName = Util.ByteToString(option.Charset, groupNameBuffer).TrimEnd('\0');
+            bytesRead += Consts.FDFS_GROUP_NAME_MAX_LEN;
+
+            byte[] ipAddressBuffer = new byte[Consts.IP_ADDRESS_SIZE - 1];
+            Array.Copy(data, bytesRead, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
+            IPAddresses.Add(new string(option.Charset.GetChars(ipAddressBuffer)).TrimEnd('\0'));
+            bytesRead += Consts.IP_ADDRESS_SIZE - 1;
+
+            byte[] portBuffer = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE];
+            Array.Copy(data, bytesRead, portBuffer, 0, Consts.FDFS_PROTO_PKG_LEN_SIZE);
+            Port = (int)Util.BufferToLong(portBuffer, 0);
+            bytesRead += Consts.FDFS_PROTO_PKG_LEN_SIZE;
+
+            while (data.Length - bytesRead >= Consts.IP_ADDRESS_SIZE - 1)
+            {
+                ipAddressBuffer = new byte[Consts.IP_ADDRESS_SIZE - 1];
+                Array.Copy(data, bytesRead, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
+                IPAddresses.Add(new string(option.Charset.GetChars(ipAddressBuffer)).TrimEnd('\0'));
+                bytesRead += Consts.IP_ADDRESS_SIZE - 1;
+            }
         }
     }
 }

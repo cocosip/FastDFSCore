@@ -11,5 +11,17 @@
         {
             Header = new FDFSHeader(length, command, status);
         }
+
+        public void SetHeader(FDFSHeader header)
+        {
+            Header = new FDFSHeader(header.Length, header.Command, header.Status);
+        }
+
+        public virtual void LoadContent(FDFSOption option, byte[] data)
+        {
+
+        }
+
+
     }
 }

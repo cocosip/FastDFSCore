@@ -9,26 +9,37 @@ namespace FastDFSCore.Client
     {
         public override Task WriteAsync(IChannelHandlerContext context, object message)
         {
-            bool release = true;
-            try
+
+            if (message is ChunkedStream)
             {
-                if (message is ChunkedStream)
-                {
-                    return base.WriteAsync(context, message);
-                }
-                else
-                {
-                    release = false;
-                    return context.WriteAsync(message);
-                }
+                return base.WriteAsync(context, message);
             }
-            finally
+            else
             {
-                if (release && !(message is ChunkedStream))
-                {
-                    ReferenceCountUtil.Release(message);
-                }
+                //release = false;
+                return context.WriteAsync(message);
             }
+
+            //bool release = true;
+            //try
+            //{
+            //    if (message is ChunkedStream)
+            //    {
+            //        return base.WriteAsync(context, message);
+            //    }
+            //    else
+            //    {
+            //        release = false;
+            //        return context.WriteAsync(message);
+            //    }
+            //}
+            //finally
+            //{
+            //    if (release && !(message is ChunkedStream))
+            //    {
+            //        ReferenceCountUtil.Release(message);
+            //    }
+            //}
         }
 
     }

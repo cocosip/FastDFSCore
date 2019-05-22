@@ -37,6 +37,8 @@ namespace FastDFSCore.Client
                 {
                     //还可以创建新的连接
                     connection = CreateNewConnection();
+                    //新建的放入堆栈中
+                    _connections.Push(connection);
                 }
             }
             //无连接可用了
@@ -48,8 +50,9 @@ namespace FastDFSCore.Client
             if (IsConnectionExpired(connection.LastUseTime))
             {
                 await RemoveConnection(connection);
+                return await GetConnection();
             }
-            return await GetConnection();
+            return connection;
         }
 
 

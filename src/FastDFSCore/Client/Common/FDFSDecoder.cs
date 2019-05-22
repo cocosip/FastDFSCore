@@ -46,7 +46,8 @@ namespace FastDFSCore.Client
                     }
                     //设置读取位置
                     input.MarkReaderIndex();
-                    connectionContext.ReadHeader(input);
+                    var length = input.ReadLong();
+                    connectionContext.ReadHeader(length, input);
                 }
             }
             else
@@ -59,6 +60,7 @@ namespace FastDFSCore.Client
                 //设置读取位置
                 input.MarkReaderIndex();
                 //读取的body长度
+
                 var length = input.ReadLong();
                 var totalLength = length + 2;
 
@@ -68,7 +70,7 @@ namespace FastDFSCore.Client
                     input.ResetReaderIndex();
                     return null;
                 }
-                connectionContext.ReadHeader(input);
+                connectionContext.ReadHeader(length, input);
                 connectionContext.ReadBody(input);
             }
             return connectionContext;

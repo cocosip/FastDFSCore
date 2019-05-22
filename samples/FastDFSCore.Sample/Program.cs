@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DotNetty.Common.Internal.Logging;
 using Microsoft.Extensions.Logging.Console;
+using System.IO;
 
 namespace FastDFSCore.Sample
 {
@@ -22,7 +23,7 @@ namespace FastDFSCore.Sample
                 c.StorageMaxConnection = 20;
                 c.Trackers = new List<IPEndPoint>()
                 {
-                    new IPEndPoint(IPAddress.Parse("192.168.0.129"),22122)
+                    new IPEndPoint(IPAddress.Parse("192.168.1.112"),22122)
                 };
             });
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -43,8 +44,15 @@ namespace FastDFSCore.Sample
         public static async Task UploadFileSample()
         {
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var filename = @"D:\Pictures\1.jpg";
+            var filename = @"F:\img\1.jpg";
+
+            if (!File.Exists(filename))
+            {
+                Console.WriteLine("文件不存在");
+            }
+
             var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filename);
+            //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(filename), "jpg");
             Console.WriteLine("上传文件位置:{0},路径:{1}", filename, fileId);
         }
 

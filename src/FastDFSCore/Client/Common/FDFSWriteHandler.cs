@@ -1,15 +1,16 @@
-﻿using DotNetty.Common.Utilities;
+﻿using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 using DotNetty.Handlers.Streams;
 using DotNetty.Transport.Channels;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
-    public class FDFSWriteHandler : ChunkedWriteHandler<ChunkedStream>
+    public class FDFSWriteHandler : ChunkedWriteHandler<IByteBuffer>
     {
         public override Task WriteAsync(IChannelHandlerContext context, object message)
         {
-
             if (message is ChunkedStream)
             {
                 return base.WriteAsync(context, message);
@@ -17,7 +18,7 @@ namespace FastDFSCore.Client
             else
             {
                 //release = false;
-                return context.WriteAsync(message);
+                return context.WriteAndFlushAsync(message);
             }
 
             //bool release = true;

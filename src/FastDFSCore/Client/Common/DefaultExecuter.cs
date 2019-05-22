@@ -19,7 +19,7 @@ namespace FastDFSCore.Client
             var response = await connection.SendRequestAsync<T>(request);
 
             connection.Close();
-            return response;
+            return response as T;
         }
     }
 }

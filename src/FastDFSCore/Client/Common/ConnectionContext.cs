@@ -50,9 +50,8 @@ namespace FastDFSCore.Client
             Body = null;
         }
 
-        public void ReadHeader(IByteBuffer byteBuffer)
+        public void ReadHeader(long length, IByteBuffer byteBuffer)
         {
-            var length = byteBuffer.ReadLong();
             var command = byteBuffer.ReadByte();
             var status = byteBuffer.ReadByte();
             Header = new FDFSHeader(length, command, status);

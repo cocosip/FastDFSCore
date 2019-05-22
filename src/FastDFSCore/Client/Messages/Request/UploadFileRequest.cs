@@ -62,7 +62,7 @@ namespace FastDFSCore.Client
             //1.StorePathIndex
 
             //2.文件长度
-            byte[] fileSizeBuffer = BitConverter.GetBytes(Stream.Length);
+            byte[] fileSizeBuffer = Util.LongToBuffer(Stream.Length);
             //3.扩展名
             if (FileExt.Length > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
                 throw new ArgumentException("文件扩展名过长");

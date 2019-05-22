@@ -78,9 +78,9 @@ namespace FastDFSCore.Client
         /// <returns></returns>
         public async Task<string> UploadFileAsync(StorageNode storageNode, string filename)
         {
-            string extension = Path.GetExtension(filename).Substring(1);
-            var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var request = new UploadFileRequest(storageNode.StorePathIndex, extension, fs);
+            string fileExt = Path.GetExtension(filename).Substring(1);
+            var fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            var request = new UploadFileRequest(storageNode.StorePathIndex, fileExt, fs);
             var response = await _executer.Execute(request, storageNode.EndPoint);
             return response.FileId;
         }

@@ -1,5 +1,6 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Common.Internal.Logging;
+using DotNetty.Common.Utilities;
 using DotNetty.Handlers.Logging;
 using DotNetty.Handlers.Streams;
 using DotNetty.Handlers.Tls;
@@ -9,6 +10,7 @@ using DotNetty.Transport.Channels.Sockets;
 using DotNetty.Transport.Libuv;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -22,7 +24,6 @@ namespace FastDFSCore.Client
         private readonly IServiceProvider _provider;
         private readonly ILogger _logger;
         private readonly FDFSOption _option;
-        private readonly string _name;
         private readonly Action<Connection> _closeAction;
 
         private readonly ConnectionSetting _setting;
@@ -34,7 +35,6 @@ namespace FastDFSCore.Client
         private DateTime _creationTime;
         private DateTime _lastUseTime;
 
-        public string Name { get { return _name; } }
         public bool IsUsing { get { return _isUsing; } }
         public DateTime CreationTime { get { return _creationTime; } }
         public DateTime LastUseTime { get { return _lastUseTime; } }
@@ -49,8 +49,6 @@ namespace FastDFSCore.Client
             _option = option;
             _setting = setting;
             _closeAction = closeAction;
-
-            _name = "Client_" + Guid.NewGuid().ToString();
 
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
@@ -107,7 +105,7 @@ namespace FastDFSCore.Client
                             pipeline.AddLast("tls", new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true), new ClientTlsSettings(targetHost)));
                         }
                         pipeline.AddLast(new LoggingHandler(_option.LoggerName));
-                        pipeline.AddLast("fdfs-write", _provider.CreateInstance<FDFSWriteHandler>());
+                        pipeline.AddLast("fdfs-write", new FDFSWriteHandler());
 
                         Func<ConnectionContext> getContextAction = GetContext;
                         pipeline.AddLast("fdfs-decoder", _provider.CreateInstance<FDFSDecoder>(getContextAction));
@@ -120,7 +118,7 @@ namespace FastDFSCore.Client
 
                 _channel = _setting.LocalEndPoint == null ? await bootstrap.ConnectAsync(_setting.ServerEndPoint) : await bootstrap.ConnectAsync(_setting.ServerEndPoint, _setting.LocalEndPoint);
 
-                _logger.LogInformation($"Client Run! name:{Name},serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
+                _logger.LogInformation($"Client Run! serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
             }
             catch (Exception ex)
             {
@@ -146,7 +144,7 @@ namespace FastDFSCore.Client
 
         /// <summary>发送信息
         /// </summary>
-        public Task<T> SendRequestAsync<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
+        public Task<FDFSResponse> SendRequestAsync<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
         {
             _taskCompletionSource = new TaskCompletionSource<FDFSResponse>();
             _connectionContext = new ConnectionContext()
@@ -163,21 +161,27 @@ namespace FastDFSCore.Client
             if (request.IsFileUpload)
             {
 
-                //var bodyBuffer = request.EncodeBody(_option);
-                var newBuffer = new byte[headerBuffer.Length + bodyBuffer.Length];
-                Array.Copy(headerBuffer, 0, newBuffer, 0, headerBuffer.Length);
-                Array.Copy(bodyBuffer, 0, newBuffer, headerBuffer.Length, bodyBuffer.Length);
-                var newStream = new ChunkedStream(new MemoryStream(bodyBuffer));
-                var stream = new ChunkedStream(request.Stream);
-                _channel.WriteAsync(newStream);
-                _channel.WriteAndFlushAsync(stream);
+                List<byte> newBuffer = new List<byte>();
+                newBuffer.AddRange(headerBuffer);
+                newBuffer.AddRange(bodyBuffer);
+
+                //_channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray())).Wait();
+
+                _channel.WriteAndFlushAsync(new ChunkedStream(new MemoryStream(newBuffer.ToArray()), 1024 * 1024 * 10)).Wait();
+
+                var stream = new ChunkedStream(request.Stream, 1024 * 1024 * 10);
+                _channel.WriteAndFlushAsync(stream).Wait();
+
+                //ReferenceCountUtil.Release(newBuffer);
             }
             else
             {
                 var buffer = Unpooled.Buffer();
                 buffer.WriteBytes(headerBuffer);
-                buffer.WriteBytes(request.EncodeBody(_option));
+                buffer.WriteBytes(bodyBuffer);
                 _channel.WriteAndFlushAsync(buffer).Wait();
+
+                //ReferenceCountUtil.Release(buffer);
             }
 
             //_fs初始化
@@ -186,7 +190,7 @@ namespace FastDFSCore.Client
                 _fs = new FileStream(_connectionContext.FileDownloadPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             }
 
-            return _taskCompletionSource.Task as Task<T>;
+            return _taskCompletionSource.Task;
         }
 
 

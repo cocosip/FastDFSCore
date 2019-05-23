@@ -2,7 +2,6 @@
 {
     public class ConnectionContext
     {
-
         /// <summary>头部
         /// </summary>
         public FDFSHeader Header { get; set; }
@@ -29,7 +28,35 @@
 
         /// <summary>数据已经读取的位置
         /// </summary>
-        public long Position { get; set; }
+        public long ReadPosition { get; set; }
+
+        /// <summary>数据已写的位置
+        /// </summary>
+        public long WritePosition { get; set; }
+
+        public bool IsReadCompleted
+        {
+            get
+            {
+                if (Header != null)
+                {
+                    return Header.Length == ReadPosition;
+                }
+                return false;
+            }
+        }
+
+        public bool IsWriteCompleted
+        {
+            get { return Header.Length == WritePosition; }
+        }
+
+        public long GetUnreadLength()
+        {
+            return Header.Length - ReadPosition;
+        }
+
+
 
     }
 }

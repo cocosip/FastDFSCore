@@ -8,7 +8,6 @@ namespace FastDFSCore.Client
 {
     public class Pool
     {
-
         private readonly IServiceProvider _provider;
         private int _connectionLifeTime;
         private int _currentConnectionCount;
@@ -54,9 +53,6 @@ namespace FastDFSCore.Client
             }
             return connection;
         }
-
-
-
         /// <summary>创建新的连接
         /// </summary>
         private Connection CreateNewConnection()
@@ -67,6 +63,7 @@ namespace FastDFSCore.Client
             };
 
             var connection = _provider.CreateConnection(setting, ConnectionClose);
+            Interlocked.Increment(ref _currentConnectionCount);
             return connection;
         }
 

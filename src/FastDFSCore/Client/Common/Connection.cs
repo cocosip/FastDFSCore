@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -106,12 +105,8 @@ namespace FastDFSCore.Client
                         }
                         pipeline.AddLast(new LoggingHandler(_option.LoggerName));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-
-                        Func<ConnectionContext> getContextAction = GetContext;
-                        pipeline.AddLast("fdfs-decoder", _provider.CreateInstance<FDFSDecoder>(getContextAction));
-
-                        Action<ConnectionReceiveItem> setResponseAction = SetResponse;
-                        pipeline.AddLast("fdfs-read", _provider.CreateInstance<FDFSReadHandler>(setResponseAction));
+                        pipeline.AddLast("fdfs-decoder", new FDFSLengthDecoder(GetContext));
+                        pipeline.AddLast("fdfs-read", new FDFSReadHandler(SetResponse));
 
                     }));
 
@@ -148,6 +143,11 @@ namespace FastDFSCore.Client
             _taskCompletionSource = new TaskCompletionSource<FDFSResponse>();
             //上下文,当前的信息
             _connectionContext = CreateContext<T>(request);
+            //初始化保存流
+            if (_connectionContext.StreamResponse && _connectionContext.StreamSavePath != "")
+            {
+                InitWriteStream();
+            }
 
             var bodyBuffer = request.EncodeBody(_option);
             var headerBuffer = request.Header.ToBytes();
@@ -167,9 +167,6 @@ namespace FastDFSCore.Client
             }
             return _taskCompletionSource.Task;
         }
-
-
-
 
         public void Open()
         {
@@ -199,19 +196,12 @@ namespace FastDFSCore.Client
                 //返回为Strem,需要逐步进行解析
                 if (_connectionContext.StreamResponse)
                 {
-                    if (!receiveItem.IsChunkWriting)
+                    if (receiveItem.IsChunkWriting)
                     {
-                        //还未进入Chunk写入,需要设置头部
-                        _connectionContext.IsChunkWriting = true;
-                        _connectionContext.Header = receiveItem.Header;
-                    }
-                    else
-                    {
-                        //初始化流
-                        InitWriteStream();
                         //写入流
                         _fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
-                        if (receiveItem.IsCompleted)
+                        _connectionContext.WritePosition += receiveItem.Body.Length;
+                        if (_connectionContext.IsWriteCompleted)
                         {
                             var response = _connectionContext.Response;
                             response.SetHeader(_connectionContext.Header);
@@ -219,6 +209,10 @@ namespace FastDFSCore.Client
                             //完成
                             SendReceiveComplete();
                         }
+                    }
+                    else
+                    {
+                        //头部在内部已经设置了,这里不做任何操作
                     }
                 }
                 else
@@ -231,10 +225,14 @@ namespace FastDFSCore.Client
                     SendReceiveComplete();
                 }
 
+                //释放
+                ReferenceCountUtil.SafeRelease(receiveItem);
+
             }
             catch (Exception ex)
             {
                 _logger.LogError("接收返回信息出错! {0}", ex);
+                throw;
             }
         }
         private ConnectionContext CreateContext<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
@@ -246,7 +244,8 @@ namespace FastDFSCore.Client
                 StreamResponse = request.StreamResponse,
                 StreamSavePath = request.StreamSavePath,
                 IsChunkWriting = false,
-                Position = 0
+                ReadPosition = 0,
+                WritePosition = 0
             };
             return context;
         }
@@ -257,24 +256,31 @@ namespace FastDFSCore.Client
 
         private void InitWriteStream()
         {
-            if (_fs == null)
-            {
-                _fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            }
+            _fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
         }
 
         /// <summary>一次的发送与接收完成
         /// </summary>
         private void SendReceiveComplete()
         {
-            //_connectionContext = null;
-            _taskCompletionSource = null;
+            _connectionContext = null;
+            //_taskCompletionSource = null;
             if (_fs != null)
             {
+                _fs.Flush();
                 _fs.Dispose();
             }
         }
+
+
         #endregion
+
+        public async Task DisposeAsync()
+        {
+            await this.ShutdownAsync().ConfigureAwait(false);
+            _connectionContext = null;
+            _fs = null;
+        }
 
     }
 }

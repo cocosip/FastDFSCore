@@ -17,14 +17,15 @@ namespace FastDFSCore.Sample
         static IFDFSClient _fdfsClinet;
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             IServiceCollection services = new ServiceCollection();
             services.AddFastDFSCore(c =>
             {
-                c.TrackerMaxConnection = 10;
-                c.StorageMaxConnection = 20;
+                c.TrackerMaxConnection = 5;
+                c.StorageMaxConnection = 5;
                 c.Trackers = new List<IPEndPoint>()
                 {
-                    new IPEndPoint(IPAddress.Parse("192.168.0.129"),22122)
+                    new IPEndPoint(IPAddress.Parse("192.168.1.112"),22122)
                 };
             });
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -35,74 +36,125 @@ namespace FastDFSCore.Sample
 
             _fdfsClinet = _provider.GetService<IFDFSClient>();
 
-            BatchUpload().Wait();
+            RunAsync().Wait();
 
             Console.ReadLine();
+        }
+
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine(e.ExceptionObject.ToString());
+        }
+
+        public static async Task RunAsync()
+        {
+            //await UploadFileSample().ConfigureAwait(false);
+            await BatchUploadTest().ConfigureAwait(false);
+            //await BatchDownloadTest();
         }
 
         /// <summary>上传单个文件
         /// </summary>
         public static async Task UploadFileSample()
         {
-            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var filename = @"D:\Pictures\1.jpg";
+            try
+            {
+                var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+                var filename = @"F:\img\1.jpg";
+                //@"D:\Pictures\1.jpg";
 
-            var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filename).ConfigureAwait(false);
-            //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(filename), "jpg");
-            Console.WriteLine("上传文件位置:{0},路径:{1}", filename, fileId);
+                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filename).ConfigureAwait(false);
+                //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(filename), "jpg");
+                Console.WriteLine("上传文件位置:{0},路径:{1}", filename, fileId);
+            }
+            catch (Exception ex)
+            {
+                var a = ex.Message;
+            }
+        }
+
+        static List<string> UploadFileIds = new List<string>();
+
+        /// <summary>批量上传测试
+        /// </summary>
+        public static async Task BatchUploadTest()
+        {
+
+            Stopwatch watch = new Stopwatch();
+            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
+            var fileInfos = dir.GetFiles();
+            long totalSize = 0;
+            watch.Start();
+            foreach (var fileInfo in fileInfos)
+            {
+                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, fileInfo.FullName).ConfigureAwait(false);
+                Console.WriteLine("FileId:{0}", fileId);
+                UploadFileIds.Add(fileId);
+                totalSize += fileInfo.Length;
+            }
+            watch.Stop();
+            Console.WriteLine("共上传:{0}个文件,总共:{1}Mb,花费:{2}", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed);
+
+        }
+
+        /// <summary>批量下载测试
+        /// </summary>
+        public static async Task BatchDownloadTest()
+        {
+            Stopwatch watch = new Stopwatch();
+            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var saveDir = @"G:\DownloadTest";
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            watch.Start();
+            foreach (var fileId in UploadFileIds)
+            {
+                var ext = GetPathExtension(fileId);
+                var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
+                await _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath);
+                Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
+            }
+            watch.Stop();
+            //获取下载的文件总大小
+            var dir = new DirectoryInfo(saveDir);
+            var fileInfos = dir.GetFiles();
+            long totalSize = 0;
+            foreach (var fileInfo in fileInfos)
+            {
+                totalSize += fileInfo.Length;
+            }
+            Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2}", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed);
+
         }
 
 
 
-        public static async Task BatchUpload()
+        /// <summary>下载单个文件
+        /// </summary>
+        public static async Task DownloadToPath()
         {
-            List<string> uploadFiles = new List<string>();
-            Stopwatch watch = new Stopwatch();
+            Console.WriteLine("测试下载文件");
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            //var dir = //@"G:\Kayisoft\TMEasy PACS\测试Dicom";
-            //@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test2";
-
-            //var files = Directory.GetFiles(dir);
-            //watch.Start();
-            //foreach (var filePath in files)
-            //{
-            //    var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filePath).ConfigureAwait(false);
-            //    Console.WriteLine("FileId:{0}", fileId);
-            //    uploadFiles.Add(fileId);
-            //}
-            //watch.Stop();
-
-            ////计算文件大小
-            //long length = 0;
-            //foreach (var filePath in files)
-            //{
-            //    var file = new FileInfo(filePath);
-            //    length += file.Length;
-            //}
-            //var size = (length / 1024.00) / 1024.00;
-            //Console.WriteLine("共:{0}个文件,总共:{1}mb,花费:{2}", files.Length, size, watch.Elapsed);
-
-            //Console.WriteLine("开始下载文件下载文件");
-            //watch.Reset();
-            //watch.Start();
-            //foreach (var uploadFile in uploadFiles)
-            //{
-            //    var bytes = await _fdfsClinet.DownloadFileAsync(storageNode, uploadFile);
-            //    Console.WriteLine("下载文件:{0}", uploadFile);
-            //}
-            //watch.Stop();
-            //Console.WriteLine("共:{0}个文件,总共:{1}mb,花费:{2}", files.Length, size, watch.Elapsed);
-
-            var downloadFileId = "M00/00/0D/wKgAgVzmwcSAGzatAAguSOLvVco450.dcm";
-
-            var result = await _fdfsClinet.DownloadFileAsync(storageNode, downloadFileId);
-
+            var downloadFileId = "M00/00/09/wKgBcFzm-XKAGti4AAYn98u2gV8562.jpg";
+            var result = await _fdfsClinet.DownloadFileEx(storageNode, downloadFileId, @"D:\2.jpg");
             Console.WriteLine("下载文件名:{0},大小:{1}", downloadFileId, result.Length);
 
         }
 
 
-
+        /// <summary>获取某个路径中文件的扩展名
+        /// </summary>
+        public static string GetPathExtension(string path)
+        {
+            if (path != "" && path.IndexOf('.') >= 0)
+            {
+                return path.Substring(path.LastIndexOf('.'));
+            }
+            return "";
+        }
 
     }
 }

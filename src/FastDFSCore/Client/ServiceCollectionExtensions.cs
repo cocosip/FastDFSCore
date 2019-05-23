@@ -14,7 +14,6 @@ namespace FastDFSCore.Client
             configure?.Invoke(option);
 
             services
-                .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<FDFSOption>(option)
                 .AddSingleton<IConnectionManager, ConnectionManager>()
                 .AddTransient<IExecuter, DefaultExecuter>()

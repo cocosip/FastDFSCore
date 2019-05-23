@@ -80,8 +80,7 @@ namespace FastDFSCore.Client
 
         public static long BufferToLong(byte[] buffer, int offset = 0)
         {
-            //return (long)BitConverter.ToUInt64(buffer, offset);
-
+#pragma warning disable CS0675 
             return (((long)(buffer[offset] >= 0 ? buffer[offset] : 256 + buffer[offset])) << 56) |
                   (((long)(buffer[offset + 1] >= 0 ? buffer[offset + 1] : 256 + buffer[offset + 1])) << 48) |
                   (((long)(buffer[offset + 2] >= 0 ? buffer[offset + 2] : 256 + buffer[offset + 2])) << 40) |
@@ -90,6 +89,8 @@ namespace FastDFSCore.Client
                   (((long)(buffer[offset + 5] >= 0 ? buffer[offset + 5] : 256 + buffer[offset + 5])) << 16) |
                   (((long)(buffer[offset + 6] >= 0 ? buffer[offset + 6] : 256 + buffer[offset + 6])) << 8) |
                   ((buffer[offset + 7] >= 0 ? buffer[offset + 7] : 256 + buffer[offset + 7]));
+#pragma warning restore CS0675 
+
         }
 
     }

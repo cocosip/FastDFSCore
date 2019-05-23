@@ -9,22 +9,17 @@ namespace FastDFSCore.Client
         /// </summary>
         public FDFSHeader Header { get; set; }
 
-        /// <summary>是否是上传文件
+        /// <summary>是否流请求
         /// </summary>
-        public virtual bool IsFileUpload { get; set; } = false;
+        public virtual bool StreamRequest { get; set; } = false;
 
-        /// <summary>是否下载文件
+        /// <summary>是否流返回
         /// </summary>
-        public virtual bool IsFileDownload { get; set; } = false;
-
-
-        /// <summary>是否下载到路径
-        /// </summary>
-        public bool IsDownloadToPath { get; set; } = false;
+        public virtual bool StreamResponse { get; set; } = false;
 
         /// <summary>下载文件
         /// </summary>
-        public virtual string FileDownloadPath { get; set; }
+        public virtual string StreamSavePath { get; set; }
 
         /// <summary>对当前body进行编码
         /// </summary>

@@ -6,7 +6,6 @@
         /// </summary>
         public FDFSHeader Header { get; set; }
 
-
         public void SetHeader(long length, byte command, byte status)
         {
             Header = new FDFSHeader(length, command, status);

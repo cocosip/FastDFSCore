@@ -15,9 +15,7 @@ namespace FastDFSCore.Client
         {
             var connection = endPoint == null ? await _connectionManager.GetTrackerConnection() : await _connectionManager.GetStorageConnection(endPoint);
             connection.Open();
-
             var response = await connection.SendRequestAsync<T>(request);
-
             connection.Close();
             return response as T;
         }

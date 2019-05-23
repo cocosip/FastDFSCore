@@ -55,7 +55,7 @@ namespace FastDFSCore.Client
 
         /// <summary>使用流传输
         /// </summary>
-        public override bool IsFileUpload => true;
+        public override bool StreamRequest => true;
 
         public override byte[] EncodeBody(FDFSOption option)
         {

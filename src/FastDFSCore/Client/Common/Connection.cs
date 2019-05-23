@@ -105,14 +105,13 @@ namespace FastDFSCore.Client
                             pipeline.AddLast("tls", new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true), new ClientTlsSettings(targetHost)));
                         }
                         pipeline.AddLast(new LoggingHandler(_option.LoggerName));
-                        pipeline.AddLast("fdfs-write", new FDFSWriteHandler());
+                        pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
 
                         Func<ConnectionContext> getContextAction = GetContext;
                         pipeline.AddLast("fdfs-decoder", _provider.CreateInstance<FDFSDecoder>(getContextAction));
 
-                        Action setResultAction = SetResponse;
-
-                        pipeline.AddLast("fdfs-read", _provider.CreateInstance<FDFSReadHandler>(setResultAction));
+                        Action<ConnectionReceiveItem> setResponseAction = SetResponse;
+                        pipeline.AddLast("fdfs-read", _provider.CreateInstance<FDFSReadHandler>(setResponseAction));
 
                     }));
 
@@ -147,51 +146,29 @@ namespace FastDFSCore.Client
         public Task<FDFSResponse> SendRequestAsync<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
         {
             _taskCompletionSource = new TaskCompletionSource<FDFSResponse>();
-            _connectionContext = new ConnectionContext()
-            {
-                Response = new T(),
-                IsFileUpload = request.IsFileUpload,
-                IsFileDownload = request.IsFileDownload,
-                FileDownloadPath = request.FileDownloadPath
-            };
+            //上下文,当前的信息
+            _connectionContext = CreateContext<T>(request);
 
             var bodyBuffer = request.EncodeBody(_option);
             var headerBuffer = request.Header.ToBytes();
-            //文件上传
-            if (request.IsFileUpload)
+            List<byte> newBuffer = new List<byte>();
+            newBuffer.AddRange(headerBuffer);
+            newBuffer.AddRange(bodyBuffer);
+            //流文件发送
+            if (request.StreamRequest)
             {
-
-                List<byte> newBuffer = new List<byte>();
-                newBuffer.AddRange(headerBuffer);
-                newBuffer.AddRange(bodyBuffer);
-
-                //_channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray())).Wait();
-
-                _channel.WriteAndFlushAsync(new ChunkedStream(new MemoryStream(newBuffer.ToArray()), 1024 * 1024 * 10)).Wait();
-
-                var stream = new ChunkedStream(request.Stream, 1024 * 1024 * 10);
+                _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
+                var stream = new FixChunkedStream(request.Stream, 1024 * 1024 * 10);
                 _channel.WriteAndFlushAsync(stream).Wait();
-
-                //ReferenceCountUtil.Release(newBuffer);
             }
             else
             {
-                var buffer = Unpooled.Buffer();
-                buffer.WriteBytes(headerBuffer);
-                buffer.WriteBytes(bodyBuffer);
-                _channel.WriteAndFlushAsync(buffer).Wait();
-
-                //ReferenceCountUtil.Release(buffer);
+                _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer.ToArray())).Wait();
             }
-
-            //_fs初始化
-            if (_connectionContext.IsFileDownload && _connectionContext.IsDownloadToPath)
-            {
-                _fs = new FileStream(_connectionContext.FileDownloadPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-            }
-
             return _taskCompletionSource.Task;
         }
+
+
 
 
         public void Open()
@@ -210,23 +187,31 @@ namespace FastDFSCore.Client
             _closeAction(this);
         }
 
-        //Buffer数组返回
-        private void SetResponse()
+
+        #region Private method
+
+        /// <summary>设置返回值
+        /// </summary>
+        private void SetResponse(ConnectionReceiveItem receiveItem)
         {
             try
             {
-                if (_connectionContext.IsFileDownload)
+                //返回为Strem,需要逐步进行解析
+                if (_connectionContext.StreamResponse)
                 {
-                    //还未下载,正在读取头
-                    if (!_connectionContext.IsChunkDownload)
+                    if (!receiveItem.IsChunkWriting)
                     {
-                        _connectionContext.IsChunkDownload = true;
+                        //还未进入Chunk写入,需要设置头部
+                        _connectionContext.IsChunkWriting = true;
+                        _connectionContext.Header = receiveItem.Header;
                     }
                     else
                     {
+                        //初始化流
+                        InitWriteStream();
                         //写入流
-                        _fs.Write(_connectionContext.Body, 0, _connectionContext.Body.Length);
-                        if (_connectionContext.IsComplete)
+                        _fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
+                        if (receiveItem.IsCompleted)
                         {
                             var response = _connectionContext.Response;
                             response.SetHeader(_connectionContext.Header);
@@ -239,8 +224,8 @@ namespace FastDFSCore.Client
                 else
                 {
                     var response = _connectionContext.Response;
-                    response.SetHeader(_connectionContext.Header);
-                    response.LoadContent(_option, _connectionContext.Body);
+                    response.SetHeader(receiveItem.Header);
+                    response.LoadContent(_option, receiveItem.Body);
                     _taskCompletionSource.SetResult(response);
                     //完成
                     SendReceiveComplete();
@@ -252,23 +237,44 @@ namespace FastDFSCore.Client
                 _logger.LogError("接收返回信息出错! {0}", ex);
             }
         }
-
+        private ConnectionContext CreateContext<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
+        {
+            var context = new ConnectionContext()
+            {
+                Response = new T(),
+                StreamRequest = request.StreamRequest,
+                StreamResponse = request.StreamResponse,
+                StreamSavePath = request.StreamSavePath,
+                IsChunkWriting = false,
+                Position = 0
+            };
+            return context;
+        }
         private ConnectionContext GetContext()
         {
             return _connectionContext;
+        }
+
+        private void InitWriteStream()
+        {
+            if (_fs == null)
+            {
+                _fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            }
         }
 
         /// <summary>一次的发送与接收完成
         /// </summary>
         private void SendReceiveComplete()
         {
-            _connectionContext = null;
+            //_connectionContext = null;
             _taskCompletionSource = null;
             if (_fs != null)
             {
                 _fs.Dispose();
             }
         }
+        #endregion
 
     }
 }

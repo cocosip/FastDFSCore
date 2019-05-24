@@ -25,7 +25,7 @@ namespace FastDFSCore.Sample
                 c.StorageMaxConnection = 5;
                 c.Trackers = new List<IPEndPoint>()
                 {
-                    new IPEndPoint(IPAddress.Parse("192.168.1.112"),22122)
+                    new IPEndPoint(IPAddress.Parse("192.168.0.129"),22122)
                 };
             });
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -82,7 +82,8 @@ namespace FastDFSCore.Sample
 
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
+            var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test2");
+                //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             var fileInfos = dir.GetFiles();
             long totalSize = 0;
             watch.Start();

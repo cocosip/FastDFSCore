@@ -1,0 +1,14 @@
+<Project>
+  <Import Project="version.props" />
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Authors>virtual</Authors>
+    <Product>FastDFSCore</Product>
+    <PackageIconUrl>https://github.com/cocosip/FastDFSCore</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/cocosip/FastDFSCore</PackageProjectUrl>
+    <PackageLicense>https://github.com/cocosip/FastDFSCore/blob/master/LICENSE</PackageLicense>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/cocosip/FastDFSCore</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>

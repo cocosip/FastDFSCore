@@ -75,6 +75,21 @@ namespace FastDFSCore.Client
         /// 上传文件
         /// </summary>
         /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="stream">文件流</param>
+        /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
+        /// <returns>文件名</returns>
+        public async Task<string> UploadFileAsync(StorageNode storageNode, Stream stream, string fileExt)
+        {
+            fileExt = Util.ParseExtWithOut(fileExt);
+            var request = new UploadFileRequest(storageNode.StorePathIndex, fileExt, stream);
+            var response = await _executer.Execute(request, storageNode.EndPoint);
+            return response.FileId;
+        }
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
         /// <param name="filename">上传文件文件名</param>
         /// <returns></returns>
         public async Task<string> UploadFileAsync(StorageNode storageNode, string filename)

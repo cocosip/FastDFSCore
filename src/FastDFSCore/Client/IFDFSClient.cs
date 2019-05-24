@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -37,6 +38,16 @@ namespace FastDFSCore.Client
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <returns>文件名</returns>
         Task<string> UploadFileAsync(StorageNode storageNode, byte[] contentByte, string fileExt);
+
+
+        /// <summary>
+        /// 上传文件
+        /// </summary>
+        /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
+        /// <param name="stream">文件流</param>
+        /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
+        /// <returns>文件名</returns>
+        Task<string> UploadFileAsync(StorageNode storageNode, Stream stream, string fileExt);
 
         /// <summary>
         /// 上传文件

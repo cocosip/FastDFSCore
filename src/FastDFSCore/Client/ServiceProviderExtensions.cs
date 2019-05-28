@@ -29,10 +29,16 @@ namespace FastDFSCore.Client
         }
 
 
-        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FDFSOption> configure)
+        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, string file = "")
         {
-            var option = provider.GetService<FDFSOption>();
-            configure(option);
+            if (file != "")
+            {
+                var translator = provider.GetService<IFDFSOptionTranslator>();
+                var option = provider.GetService<FDFSOption>();
+                var readOption = translator.TranslateToOption(file);
+                option.SelfCopy(readOption);
+
+            }
             return provider;
         }
     }

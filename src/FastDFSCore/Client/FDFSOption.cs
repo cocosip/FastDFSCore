@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -33,5 +34,29 @@ namespace FastDFSCore.Client
         public int StorageMaxConnection { get; set; } = 50;
 
         public string LoggerName { get; set; } = "FDFSLogger";
+
+
+        public FDFSOption()
+        {
+
+        }
+
+        public void SelfCopy(FDFSOption option)
+        {
+            if (Trackers.Any())
+            {
+                Trackers.Clear();
+            }
+            foreach (var tracker in option.Trackers)
+            {
+                Trackers.Add(tracker);
+            }
+            Charset = option.Charset;
+            ConnectionTimeout = option.ConnectionTimeout;
+            ConnectionLifeTime = option.ConnectionLifeTime;
+            TrackerMaxConnection = option.TrackerMaxConnection;
+            StorageMaxConnection = option.StorageMaxConnection;
+            LoggerName = option.LoggerName;
+        }
     }
 }

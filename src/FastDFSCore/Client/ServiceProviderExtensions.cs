@@ -28,5 +28,12 @@ namespace FastDFSCore.Client
             return provider.CreateInstance<Pool>(endPoint, maxConnection, connectionLifeTime);
         }
 
+
+        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FDFSOption> configure)
+        {
+            var option = provider.GetService<FDFSOption>();
+            configure(option);
+            return provider;
+        }
     }
 }

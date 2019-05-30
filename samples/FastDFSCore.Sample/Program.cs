@@ -21,11 +21,11 @@ namespace FastDFSCore.Sample
             IServiceCollection services = new ServiceCollection();
             services.AddFastDFSCore(c =>
             {
-                c.TrackerMaxConnection = 5;
-                c.StorageMaxConnection = 5;
+                c.TrackerMaxConnection = 10;
+                c.StorageMaxConnection = 50;
                 c.Trackers = new List<IPEndPoint>()
                 {
-                    new IPEndPoint(IPAddress.Parse("192.168.0.129"),22122)
+                    new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
                 };
             });
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -48,9 +48,9 @@ namespace FastDFSCore.Sample
 
         public static async Task RunAsync()
         {
-            //await UploadFileSample().ConfigureAwait(false);
             await BatchUploadTest().ConfigureAwait(false);
-            //await BatchDownloadTest();
+            //await BatchUploadTest().ConfigureAwait(false);
+            await BatchDownloadTest().ConfigureAwait(false);
         }
 
         /// <summary>上传单个文件
@@ -79,11 +79,11 @@ namespace FastDFSCore.Sample
         /// </summary>
         public static async Task BatchUploadTest()
         {
-
+            Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test2");
-                //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
+            //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             var fileInfos = dir.GetFiles();
             long totalSize = 0;
             watch.Start();
@@ -95,7 +95,7 @@ namespace FastDFSCore.Sample
                 totalSize += fileInfo.Length;
             }
             watch.Stop();
-            Console.WriteLine("共上传:{0}个文件,总共:{1}Mb,花费:{2}", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed);
+            Console.WriteLine("共上传:{0}个文件,总共:{1}Mb,花费:{2},速度:{3} Mb/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)).ToString("F2"), watch.Elapsed, ((totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0))).ToString("F2"));
 
         }
 
@@ -103,6 +103,7 @@ namespace FastDFSCore.Sample
         /// </summary>
         public static async Task BatchDownloadTest()
         {
+            Console.WriteLine("-------------批量下载测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var saveDir = @"G:\DownloadTest";
@@ -127,7 +128,7 @@ namespace FastDFSCore.Sample
             {
                 totalSize += fileInfo.Length;
             }
-            Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2}", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed);
+            Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2},速度:{3} Mb/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed, (totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0)).ToString("F2"));
 
         }
 

@@ -39,7 +39,7 @@ public class BuildParameters
     {
         get
         {
-            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || (IsRunningOnAppVeyor && IsMasterBranch));
+            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || (IsRunningOnAppVeyor && IsMasterBranch))&&IsRunningOnWindows;
         }
     }
 
@@ -47,7 +47,7 @@ public class BuildParameters
     {
         get
         {
-            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || (IsRunningOnAppVeyor && IsMasterBranch));
+            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || (IsRunningOnAppVeyor && IsMasterBranch))&&IsRunningOnWindows;
         }
     }
 
@@ -81,10 +81,11 @@ public class BuildParameters
             }
         }
         suffix = string.IsNullOrWhiteSpace(suffix) ? null : suffix;
-        Version = new BuildVersion(int.Parse(versionMajor), int.Parse(versionMinor), int.Parse(versionPatch), versionQuality);
+
+        Version =
+            new BuildVersion(int.Parse(versionMajor), int.Parse(versionMinor), int.Parse(versionPatch), versionQuality);
         Version.Suffix = suffix;
 
-        context.Information($"Suffix:{Version.Suffix},VersionWithSuffix:{Version.VersionWithSuffix()},Version:{Version.Version()}");
         Paths = BuildPaths.GetPaths(context, Configuration, Version.VersionWithSuffix());
 
         Packages = BuildPackages.GetPackages(
@@ -112,12 +113,12 @@ public class BuildParameters
             IsRunningOnUnix = context.IsRunningOnUnix(),
             IsRunningOnWindows = context.IsRunningOnWindows(),
             IsRunningOnTravisCI = buildSystem.TravisCI.IsRunningOnTravisCI,
-            IsRunningOnAppVeyor = buildSystem.AppVeyor.IsRunningOnAppVeyor,
+            IsRunningOnAppVeyor =  buildSystem.AppVeyor.IsRunningOnAppVeyor,
             IsPullRequest = IsThePullRequest(buildSystem),
             IsMasterBranch = IsTheMasterBranch(buildSystem),
             IsDevelopBranch = IsTheDevelopBranch(buildSystem),
             IsTagged = IsBuildTagged(buildSystem),
-            GitHub = null, //BuildCredentials.GetGitHubCredentials(context),
+            GitHub = null, // BuildCredentials.GetGitHubCredentials(context),
             Coveralls = null, //CoverallsCredentials.GetCoverallsCredentials(context),
             ReleaseNotes = null, //context.ParseReleaseNotes("./README.md"),
             IsPublishBuild = IsPublishing(target),
@@ -134,6 +135,7 @@ public class BuildParameters
         context.Information($"Cake BuildParameters:-------------begin--------------");
         context.Information($"IsLocalBuild:{parameters.IsLocalBuild}");
         context.Information($"IsRunningOnUnix:{parameters.IsRunningOnUnix}");
+        context.Information($"IsRunningOnWindows:{parameters.IsRunningOnWindows}");
         context.Information($"IsRunningOnTravisCI:{parameters.IsRunningOnTravisCI}");
         context.Information($"IsRunningOnAppVeyor:{parameters.IsRunningOnAppVeyor}");
         context.Information($"IsPullRequest:{parameters.IsPullRequest}");

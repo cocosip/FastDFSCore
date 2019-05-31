@@ -1,5 +1,6 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Codecs;
+using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
 using System;
 using System.Collections.Generic;
@@ -105,6 +106,7 @@ namespace FastDFSCore.Client
                 input.SetReaderIndex(readerIndex + actualFrameLength);
                 receiveItem.ReadFromBuffer(frame);
             }
+            ReferenceCountUtil.Release(input);
             return receiveItem;
         }
 

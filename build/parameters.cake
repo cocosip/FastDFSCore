@@ -39,7 +39,7 @@ public class BuildParameters
     {
         get
         {
-            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || (IsRunningOnAppVeyor && IsMasterBranch))&&IsRunningOnWindows;
+            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || IsRunningOnAppVeyor)&&IsRunningOnWindows;
         }
     }
 
@@ -47,7 +47,7 @@ public class BuildParameters
     {
         get
         {
-            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || (IsRunningOnAppVeyor && IsMasterBranch))&&IsRunningOnWindows;
+            return !IsLocalBuild && !IsPullRequest && IsTagged && (IsRunningOnTravisCI || IsRunningOnAppVeyor)&&IsRunningOnWindows;
         }
     }
 
@@ -164,7 +164,8 @@ public class BuildParameters
 
     private static bool IsBuildTagged(BuildSystem buildSystem)
     {
-        return !string.IsNullOrWhiteSpace(buildSystem.TravisCI.Environment.Build.Tag);
+        return (buildSystem.IsRunningOnAppVeyor && buildSystem.AppVeyor.Environment.Repository.Tag.IsTag) ||
+				(buildSystem.IsRunningOnTravisCI && !string.IsNullOrWhiteSpace(buildSystem.TravisCI.Environment.Build.Tag));
     }
 
     private static bool IsReleasing(string target)

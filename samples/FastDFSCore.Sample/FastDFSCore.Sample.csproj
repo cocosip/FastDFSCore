@@ -14,4 +14,10 @@
     <ProjectReference Include="..\..\src\FastDFSCore\FastDFSCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="FastDFS.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -19,22 +19,26 @@ namespace FastDFSCore.Sample
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             IServiceCollection services = new ServiceCollection();
-            services.AddFastDFSCore(c =>
-            {
-                c.TrackerMaxConnection = 10;
-                c.StorageMaxConnection = 50;
-                c.Trackers = new List<IPEndPoint>()
-                {
-                    new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
-                };
-            });
+            //services.AddFastDFSCore(c =>
+            //{
+            //    c.TrackerMaxConnection = 10;
+            //    c.StorageMaxConnection = 50;
+            //    c.Trackers = new List<IPEndPoint>()
+            //    {
+            //        new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
+            //    };
+            //});
+            services.AddFastDFSCore();
+
 #pragma warning disable CS0618 // 类型或成员已过时
             //InternalLoggerFactory.DefaultFactory.AddProvider(new ConsoleLoggerProvider((s, level) => true, false));
 #pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
+            _provider.ConfigureFastDFSCore("FastDFS.xml");
 
-            _fdfsClinet = _provider.GetService<IFDFSClient>();
+
+            //_fdfsClinet = _provider.GetService<IFDFSClient>();
 
             RunAsync().Wait();
 
@@ -79,10 +83,13 @@ namespace FastDFSCore.Sample
         /// </summary>
         public static async Task BatchUploadTest()
         {
+            _fdfsClinet = _provider.GetService<IFDFSClient>();
+
+
             Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test2");
+            var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             var fileInfos = dir.GetFiles();
             long totalSize = 0;

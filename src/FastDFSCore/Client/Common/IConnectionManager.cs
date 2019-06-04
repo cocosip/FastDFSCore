@@ -12,5 +12,13 @@ namespace FastDFSCore.Client
         /// <summary>获取Storage连接
         /// </summary>
         Task<Connection> GetStorageConnection(IPEndPoint endPoint);
+
+        /// <summary>运行
+        /// </summary>
+        void Start();
+
+        /// <summary>关闭
+        /// </summary>
+        void Shutdown();
     }
 }

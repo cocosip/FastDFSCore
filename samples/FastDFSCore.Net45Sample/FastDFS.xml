@@ -1,0 +1,21 @@
+﻿<FDFSClient>
+  <![CDATA[Trackers信息]]>
+  <Trackers>
+    <Tracker>
+      <IPAddress>192.168.0.6</IPAddress>
+      <Port>22122</Port>
+    </Tracker>
+  </Trackers>
+  <![CDATA[编码]]>
+  <Charset>utf-8</Charset>
+  <![CDATA[连接超时时间,5s]]>
+  <ConnectionTimeout>5</ConnectionTimeout>
+  <![CDATA[连接的有效时间,3600s]]>
+  <ConnectionLifeTime>3600</ConnectionLifeTime>
+  <![CDATA[Tracker最大的连接数]]>
+  <TrackerMaxConnection>50</TrackerMaxConnection>
+  <![CDATA[Storage最大连接数]]>
+  <StorageMaxConnection>100</StorageMaxConnection>
+  <![CDATA[日志名称]]>
+  <LoggerName>FDFSLogger</LoggerName>
+</FDFSClient>

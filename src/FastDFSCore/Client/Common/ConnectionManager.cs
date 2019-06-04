@@ -20,11 +20,12 @@ namespace FastDFSCore.Client
             _option = option;
             _trackerEndPoints = _option.Trackers;
 
-            foreach (var trackerEndPoint in option.Trackers)
-            {
-                var pool = _provider.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime);
-                _trackerPools.TryAdd(trackerEndPoint, pool);
-            }
+            //foreach (var trackerEndPoint in _option.Trackers)
+            //{
+            //    var pool = _provider.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime);
+            //    _trackerPools.TryAdd(trackerEndPoint, pool);
+            //}
+
         }
 
         /// <summary>获取Tracker的连接
@@ -48,6 +49,32 @@ namespace FastDFSCore.Client
                 _storagePools.TryAdd(endPoint, storagePool);
             }
             return await storagePool.GetConnection();
+        }
+
+        /// <summary>运行
+        /// </summary>
+        public void Start()
+        {
+            foreach (var trackerEndPoint in _option.Trackers)
+            {
+                var pool = _provider.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime);
+                _trackerPools.TryAdd(trackerEndPoint, pool);
+            }
+        }
+
+        /// <summary>关闭
+        /// </summary>
+        public void Shutdown()
+        {
+
+            foreach (var item in _trackerPools)
+            {
+                item.Value.Shutdown();
+            }
+            foreach (var item in _storagePools)
+            {
+                item.Value.Shutdown();
+            }
         }
     }
 }

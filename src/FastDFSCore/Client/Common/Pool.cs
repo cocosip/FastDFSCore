@@ -89,6 +89,14 @@ namespace FastDFSCore.Client
         }
 
 
+        public void Shutdown()
+        {
+            foreach (var connection in _connections)
+            {
+                connection.DisposeAsync().Wait();
+            }
+        }
+
 
     }
 }

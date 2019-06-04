@@ -19,20 +19,14 @@ namespace FastDFSCore.Net45Sample
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             IServiceCollection services = new ServiceCollection();
-            services.AddFastDFSCore(c =>
-            {
-                c.TrackerMaxConnection = 5;
-                c.StorageMaxConnection = 5;
-                c.Trackers = new List<IPEndPoint>()
-                {
-                    new IPEndPoint(IPAddress.Parse("192.168.1.112"),22122)
-                };
-            });
+            services.AddFastDFSCore();
 #pragma warning disable CS0618 // 类型或成员已过时
             //InternalLoggerFactory.DefaultFactory.AddProvider(new ConsoleLoggerProvider((s, level) => true, false));
 #pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
+            _provider.ConfigureFastDFSCore();
+
 
             _fdfsClinet = _provider.GetService<IFDFSClient>();
 

@@ -14,7 +14,7 @@ namespace FastDFSCore.Net45Sample
     class Program
     {
         static IServiceProvider _provider;
-        static IFDFSClient _fdfsClinet;
+        static IFDFSClient _fdfsClient;
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
@@ -25,10 +25,10 @@ namespace FastDFSCore.Net45Sample
 #pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
-            _provider.ConfigureFastDFSCore();
+            _provider.ConfigureFastDFSCore("FastDFS.xml");
 
 
-            _fdfsClinet = _provider.GetService<IFDFSClient>();
+            _fdfsClient = _provider.GetService<IFDFSClient>();
 
             RunAsync().Wait();
 
@@ -53,11 +53,11 @@ namespace FastDFSCore.Net45Sample
         {
             try
             {
-                var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+                var storageNode = await _fdfsClient.GetStorageNodeAsync("group1");
                 var filename = @"F:\img\1.jpg";
                 //@"D:\Pictures\1.jpg";
 
-                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filename).ConfigureAwait(false);
+                var fileId = await _fdfsClient.UploadFileAsync(storageNode, filename).ConfigureAwait(false);
                 //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(filename), "jpg");
                 Console.WriteLine("上传文件位置:{0},路径:{1}", filename, fileId);
             }
@@ -75,7 +75,7 @@ namespace FastDFSCore.Net45Sample
         {
 
             Stopwatch watch = new Stopwatch();
-            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var storageNode = await _fdfsClient.GetStorageNodeAsync("group1");
             var dir = new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test2");
             var fileInfos = dir.GetFiles();
@@ -83,7 +83,7 @@ namespace FastDFSCore.Net45Sample
             watch.Start();
             foreach (var fileInfo in fileInfos)
             {
-                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, fileInfo.FullName).ConfigureAwait(false);
+                var fileId = await _fdfsClient.UploadFileAsync(storageNode, fileInfo.FullName).ConfigureAwait(false);
                 Console.WriteLine("FileId:{0}", fileId);
                 UploadFileIds.Add(fileId);
                 totalSize += fileInfo.Length;
@@ -98,7 +98,7 @@ namespace FastDFSCore.Net45Sample
         public static async Task BatchDownloadTest()
         {
             Stopwatch watch = new Stopwatch();
-            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var storageNode = await _fdfsClient.GetStorageNodeAsync("group1");
             var saveDir = @"G:\DownloadTest";
             if (!Directory.Exists(saveDir))
             {
@@ -109,7 +109,7 @@ namespace FastDFSCore.Net45Sample
             {
                 var ext = GetPathExtension(fileId);
                 var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
-                await _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath);
+                await _fdfsClient.DownloadFileEx(storageNode, fileId, savePath);
                 Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
             }
             watch.Stop();
@@ -132,9 +132,9 @@ namespace FastDFSCore.Net45Sample
         public static async Task DownloadToPath()
         {
             Console.WriteLine("测试下载文件");
-            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var storageNode = await _fdfsClient.GetStorageNodeAsync("group1");
             var downloadFileId = "M00/00/09/wKgBcFzm-XKAGti4AAYn98u2gV8562.jpg";
-            var result = await _fdfsClinet.DownloadFileEx(storageNode, downloadFileId, @"D:\2.jpg");
+            var result = await _fdfsClient.DownloadFileEx(storageNode, downloadFileId, @"D:\2.jpg");
             Console.WriteLine("下载文件名:{0},大小:{1}", downloadFileId, result.Length);
 
         }

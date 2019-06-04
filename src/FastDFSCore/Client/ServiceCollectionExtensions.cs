@@ -15,8 +15,8 @@ namespace FastDFSCore.Client
 
             services
                 .AddSingleton<FDFSOption>(option)
-                .AddTransient<IFDFSOptionTranslator, FDFSOptionTranslator>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
+                .AddTransient<IFDFSOptionTranslator, FDFSOptionTranslator>()
                 .AddTransient<IExecuter, DefaultExecuter>()
                 .AddTransient<IFDFSClient, FDFSClient>();
 

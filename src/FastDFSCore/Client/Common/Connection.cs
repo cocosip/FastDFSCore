@@ -168,20 +168,21 @@ namespace FastDFSCore.Client
             return _taskCompletionSource.Task;
         }
 
-        public void Open()
+        public async Task OpenAsync()
         {
             if (!_isRuning)
             {
-                RunAsync().Wait();
+                await RunAsync();
             }
             _lastUseTime = DateTime.Now;
         }
 
-        public void Close()
+        public async Task CloseAsync()
         {
             _isUsing = false;
             _lastUseTime = DateTime.Now;
             _closeAction(this);
+            await Task.FromResult(0);
         }
 
 

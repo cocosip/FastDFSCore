@@ -40,7 +40,7 @@ namespace FastDFSCore.Client
 
         private ConnectionContext _connectionContext;
         private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
-        private FileStream _fs = null;
+        private DownloadFileWriter _fileWriter = null;
         public Connection(IServiceProvider provider, FDFSOption option, ConnectionSetting setting, Action<Connection> closeAction)
         {
             _provider = provider;
@@ -112,6 +112,8 @@ namespace FastDFSCore.Client
 
                 _channel = _setting.LocalEndPoint == null ? await bootstrap.ConnectAsync(_setting.ServerEndPoint) : await bootstrap.ConnectAsync(_setting.ServerEndPoint, _setting.LocalEndPoint);
 
+                _isRuning = true;
+
                 _logger.LogInformation($"Client Run! serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
             }
             catch (Exception ex)
@@ -146,7 +148,7 @@ namespace FastDFSCore.Client
             //初始化保存流
             if (_connectionContext.StreamResponse && _connectionContext.StreamSavePath != "")
             {
-                InitWriteStream();
+                InitFileWriter();
             }
 
             var bodyBuffer = request.EncodeBody(_option);
@@ -174,6 +176,7 @@ namespace FastDFSCore.Client
             {
                 await RunAsync();
             }
+            _isUsing = true;
             _lastUseTime = DateTime.Now;
         }
 
@@ -200,7 +203,10 @@ namespace FastDFSCore.Client
                     if (receiveItem.IsChunkWriting)
                     {
                         //写入流
-                        _fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
+
+                        //_fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
+                        //写入Body
+                        _fileWriter.WriteBuffers(receiveItem.Body);
                         _connectionContext.WritePosition += receiveItem.Body.Length;
                         if (_connectionContext.IsWriteCompleted)
                         {
@@ -213,6 +219,7 @@ namespace FastDFSCore.Client
                     }
                     else
                     {
+                        _fileWriter?.Run();
                         //头部在内部已经设置了,这里不做任何操作
                     }
                 }
@@ -255,9 +262,11 @@ namespace FastDFSCore.Client
             return _connectionContext;
         }
 
-        private void InitWriteStream()
+        private void InitFileWriter()
         {
-            _fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            _fileWriter = new DownloadFileWriter(_option, _connectionContext.StreamSavePath);
+            //_fileWriter.Run();
+            //_fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
         }
 
         /// <summary>一次的发送与接收完成
@@ -265,12 +274,7 @@ namespace FastDFSCore.Client
         private void SendReceiveComplete()
         {
             _connectionContext = null;
-            //_taskCompletionSource = null;
-            if (_fs != null)
-            {
-                _fs.Flush();
-                _fs.Dispose();
-            }
+            _fileWriter?.Release();
         }
 
 
@@ -280,7 +284,7 @@ namespace FastDFSCore.Client
         {
             await this.ShutdownAsync().ConfigureAwait(false);
             _connectionContext = null;
-            _fs = null;
+            _fileWriter?.Release();
         }
 
     }

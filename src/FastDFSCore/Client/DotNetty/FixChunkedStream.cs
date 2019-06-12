@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
+ 
 namespace FastDFSCore.Client
 {
     using System;
@@ -9,7 +9,6 @@ namespace FastDFSCore.Client
     using System.Threading;
     using DotNetty.Buffers;
     using DotNetty.Handlers.Streams;
-    using FastDFSCore.Client;
 
     public class FixChunkedStream : IChunkedInput<IByteBuffer>
     {

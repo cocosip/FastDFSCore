@@ -274,7 +274,7 @@ namespace FastDFSCore.Client
         private void SendReceiveComplete()
         {
             _connectionContext = null;
-            _fileWriter?.Release();
+            _fileWriter?.WriteComplete();
         }
 
 

@@ -92,8 +92,9 @@ namespace FastDFSCore.Sample
             Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var dir = //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
-            new DirectoryInfo(@"G:\安装文件\SystemISO");
+            var dir = //new DirectoryInfo(@"D:\Pictures");
+            new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
+            //new DirectoryInfo(@"G:\安装文件\SystemISO");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\测试Dicom");
             //G:\安装文件\SystemISO
             var fileInfos = dir.GetFiles();

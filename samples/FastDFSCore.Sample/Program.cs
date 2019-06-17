@@ -28,14 +28,14 @@ namespace FastDFSCore.Sample
             //        new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
             //    };
             //});
-            services.AddFastDFSCore();
+            services.AddFastDFSCore("FastDFS.xml");
 
 #pragma warning disable CS0618 // 类型或成员已过时
             //InternalLoggerFactory.DefaultFactory.AddProvider(new ConsoleLoggerProvider((s, level) => true, false));
 #pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
-            _provider.ConfigureFastDFSCore("FastDFS.xml");
+            _provider.ConfigureFastDFSCore();
 
 
             //_fdfsClinet = _provider.GetService<IFDFSClient>();

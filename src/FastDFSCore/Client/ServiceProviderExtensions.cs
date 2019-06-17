@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
-using System.Net;
 
 namespace FastDFSCore.Client
 {
@@ -18,27 +16,8 @@ namespace FastDFSCore.Client
         }
 
 
-        public static Connection CreateConnection(this IServiceProvider provider, ConnectionSetting setting, Action<Connection> closeAction)
+        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider)
         {
-            return provider.CreateInstance<Connection>(setting, closeAction);
-        }
-
-
-        public static Pool CreatePool(this IServiceProvider provider, IPEndPoint endPoint, int maxConnection, int connectionLifeTime)
-        {
-            return provider.CreateInstance<Pool>(endPoint, maxConnection, connectionLifeTime);
-        }
-
-
-        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, string file = "")
-        {
-            if (File.Exists(file))
-            {
-                var translator = provider.GetService<IFDFSOptionTranslator>();
-                var option = provider.GetService<FDFSOption>();
-                var readOption = translator.TranslateToOption(file);
-                option.SelfCopy(readOption);
-            }
             //连接管理器
             var connectionManager = provider.GetService<IConnectionManager>();
             connectionManager.Start();

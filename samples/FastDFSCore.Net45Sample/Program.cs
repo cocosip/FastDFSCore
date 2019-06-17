@@ -19,14 +19,12 @@ namespace FastDFSCore.Net45Sample
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             IServiceCollection services = new ServiceCollection();
-            services.AddFastDFSCore();
+            services.AddFastDFSCore("FastDFS.xml");
 #pragma warning disable CS0618 // 类型或成员已过时
             //InternalLoggerFactory.DefaultFactory.AddProvider(new ConsoleLoggerProvider((s, level) => true, false));
 #pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
-            _provider.ConfigureFastDFSCore("FastDFS.xml");
-
 
             _fdfsClient = _provider.GetService<IFDFSClient>();
 

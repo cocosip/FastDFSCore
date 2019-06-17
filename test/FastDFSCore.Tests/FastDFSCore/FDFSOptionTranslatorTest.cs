@@ -16,10 +16,10 @@ namespace FastDFSCore.Tests.FastDFSCore
         static FDFSOptionTranslatorTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddFastDFSCore();
+            services.AddFastDFSCore("FDFSOption.xml");
 
             _provider = services.BuildServiceProvider();
-            _provider.ConfigureFastDFSCore("FDFSOption.xml");
+            _provider.ConfigureFastDFSCore();
         }
 
         [Fact]
@@ -58,11 +58,10 @@ namespace FastDFSCore.Tests.FastDFSCore
                     new IPEndPoint(IPAddress.Parse("127.0.0.1"),1333)
                 }
             };
-            var translator = FDFSOptionTranslatorTest._provider.GetService<IFDFSOptionTranslator>();
-            var xml = translator.TranslateToXml(option);
+            var xml = FDFSOptionTranslator.TranslateToXml(option);
             File.WriteAllText("test.xml", xml);
 
-            var readOption = translator.TranslateToOption("test.xml");
+            var readOption = FDFSOptionTranslator.TranslateToOption("test.xml");
 
             Assert.Equal(option.Charset, readOption.Charset);
 

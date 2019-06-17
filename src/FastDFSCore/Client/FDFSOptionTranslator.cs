@@ -6,11 +6,11 @@ using System.Xml;
 
 namespace FastDFSCore.Client
 {
-    public class FDFSOptionTranslator : IFDFSOptionTranslator
+    public static class FDFSOptionTranslator
     {
         /// <summary>从文件中读取配置信息
         /// </summary>
-        public FDFSOption TranslateToOption(string file)
+        public static FDFSOption TranslateToOption(string file)
         {
             if (!File.Exists(file))
             {
@@ -21,7 +21,7 @@ namespace FastDFSCore.Client
 
         /// <summary>将配置文件转换成xml字符串
         /// </summary>
-        public string TranslateToXml(FDFSOption option)
+        public static string TranslateToXml(FDFSOption option)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace FastDFSCore.Client
         }
 
 
-        private FDFSOption LoadFromXml(string file)
+        private static FDFSOption LoadFromXml(string file)
         {
             try
             {

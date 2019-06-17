@@ -8,16 +8,17 @@ namespace FastDFSCore.Client
 {
     public class Pool
     {
-        private readonly IServiceProvider _provider;
         private int _connectionLifeTime;
         private int _currentConnectionCount;
         public IPEndPoint EndPoint { get; }
         public int MaxConnection { get; }
         private ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
 
-        public Pool(IServiceProvider provider, IPEndPoint endPoint, int maxConnection, int connectionLifeTime)
+        private readonly IConnectionPoolFactory _connectionPoolFactory;
+
+        public Pool(IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime)
         {
-            _provider = provider;
+            _connectionPoolFactory = connectionPoolFactory;
             EndPoint = endPoint;
             MaxConnection = maxConnection;
             _currentConnectionCount = 0;
@@ -62,7 +63,7 @@ namespace FastDFSCore.Client
                 ServerEndPoint = EndPoint
             };
 
-            var connection = _provider.CreateConnection(setting, ConnectionClose);
+            var connection = _connectionPoolFactory.CreateConnection(setting, ConnectionClose);
             Interlocked.Increment(ref _currentConnectionCount);
             return connection;
         }

@@ -5,18 +5,6 @@ namespace FastDFSCore.Client
 {
     public class ConnectionSetting
     {
-        /// <summary>Enable ssl
-        /// </summary>
-        public bool IsSsl { get; set; } = false;
-
-        /// <summary>X509 cert
-        /// </summary>
-        public X509Certificate2 TlsCertificate { get; set; }
-
-        /// <summary>Enable libuv
-        /// </summary>
-        public bool UseLibuv { get; set; } = false;
-
         /// <summary>Round robin request expired interval (ms)
         /// </summary>
         public int ScanTimeoutRequestInterval { get; set; } = 1000;

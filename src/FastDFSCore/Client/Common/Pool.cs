@@ -8,19 +8,18 @@ namespace FastDFSCore.Client
 {
     public class Pool
     {
-        private int _connectionLifeTime;
+        private IPEndPoint _endPoint;
+        private int _maxConnection;
         private int _currentConnectionCount;
-        public IPEndPoint EndPoint { get; }
-        public int MaxConnection { get; }
-        private ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
-
+        private int _connectionLifeTime;
         private readonly IConnectionPoolFactory _connectionPoolFactory;
+        private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
 
         public Pool(IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime)
         {
             _connectionPoolFactory = connectionPoolFactory;
-            EndPoint = endPoint;
-            MaxConnection = maxConnection;
+            _endPoint = endPoint;
+            _maxConnection = maxConnection;
             _currentConnectionCount = 0;
             _connectionLifeTime = connectionLifeTime;
         }
@@ -33,7 +32,7 @@ namespace FastDFSCore.Client
             if (!_connections.TryPop(out connection))
             {
                 //取不到连接,判断是否还可以创建新的连接,有可能这些连接正在被占用
-                if (_currentConnectionCount < MaxConnection)
+                if (_currentConnectionCount < _maxConnection)
                 {
                     //还可以创建新的连接
                     connection = CreateNewConnection();
@@ -44,7 +43,7 @@ namespace FastDFSCore.Client
             //无连接可用了
             if (connection == null)
             {
-                throw new ArgumentOutOfRangeException($"无可用的连接,连接地址:{EndPoint.Address}:{EndPoint.Port}");
+                throw new ArgumentOutOfRangeException($"无可用的连接,连接地址:{_endPoint.Address}:{_endPoint.Port}");
             }
             //判断连接是否过期
             if (IsConnectionExpired(connection.LastUseTime))
@@ -60,7 +59,7 @@ namespace FastDFSCore.Client
         {
             var setting = new ConnectionSetting()
             {
-                ServerEndPoint = EndPoint
+                ServerEndPoint = _endPoint
             };
 
             var connection = _connectionPoolFactory.CreateConnection(setting, ConnectionClose);

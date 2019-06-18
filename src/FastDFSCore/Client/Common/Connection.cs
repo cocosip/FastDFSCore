@@ -3,17 +3,12 @@ using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
 using DotNetty.Handlers.Logging;
 using DotNetty.Handlers.Streams;
-using DotNetty.Handlers.Tls;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
-using DotNetty.Transport.Libuv;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -63,29 +58,14 @@ namespace FastDFSCore.Client
                 _logger.LogInformation($"Client is running! Don't run again! ChannelId:{_channel.Id.AsLongText()}");
                 return;
             }
-            if (_setting.UseLibuv)
-            {
-                _group = new EventLoopGroup();
-            }
-            else
-            {
-                _group = new MultithreadEventLoopGroup();
-            }
 
             try
             {
+                _group = new MultithreadEventLoopGroup();
                 var bootstrap = new Bootstrap();
-                bootstrap.Group(_group);
-                if (_setting.UseLibuv)
-                {
-                    bootstrap.Channel<TcpChannel>();
-                }
-                else
-                {
-                    bootstrap.Channel<TcpSocketChannel>();
-                }
-
                 bootstrap
+                    .Group(_group)
+                    .Channel<TcpSocketChannel>()
                     .Option(ChannelOption.TcpNodelay, _setting.TcpNodelay)
                     .Option(ChannelOption.WriteBufferHighWaterMark, _setting.WriteBufferHighWaterMark)
                     .Option(ChannelOption.WriteBufferLowWaterMark, _setting.WriteBufferHighWaterMark)
@@ -96,13 +76,6 @@ namespace FastDFSCore.Client
                     .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
-
-                        if (_setting.IsSsl && _setting.TlsCertificate != null)
-                        {
-                            var targetHost = _setting.TlsCertificate.GetNameInfo(X509NameType.DnsName, false);
-
-                            pipeline.AddLast("tls", new TlsHandler(stream => new SslStream(stream, true, (sender, certificate, chain, errors) => true), new ClientTlsSettings(targetHost)));
-                        }
                         pipeline.AddLast(new LoggingHandler(_option.LoggerName));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
                         pipeline.AddLast("fdfs-decoder", new FDFSLengthDecoder(GetContext));

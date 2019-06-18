@@ -25,8 +25,10 @@ namespace FastDFSCore.Net45Sample
 #pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
+            _provider.ConfigureFastDFSCore();
 
             _fdfsClient = _provider.GetService<IFDFSClient>();
+
 
             RunAsync().Wait();
 

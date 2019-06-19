@@ -6,6 +6,9 @@ namespace FastDFSCore
     /// </summary>
     public class StorageInfo
     {
+        /// <summary>状态
+        /// </summary>
+        public byte Status { get; set; }
         /// <summary>StorageId
         /// </summary>
         public string StorageId { get; set; }
@@ -13,6 +16,10 @@ namespace FastDFSCore
         /// <summary>IP地址
         /// </summary>
         public string IPAddress { get; set; }
+
+        /// <summary>源头IP地址
+        /// </summary>
+        public string SrcIPAddress { get; set; }
 
         /// <summary>域名
         /// </summary>
@@ -42,14 +49,6 @@ namespace FastDFSCore
         /// </summary>
         public int UploadPriority { get; set; }
 
-        /// <summary>Storage端口号
-        /// </summary>
-        public int StoragePort { get; set; }
-
-        /// <summary>StorageHttp端口号
-        /// </summary>
-        public int StorageHttpPort { get; set; }
-
         /// <summary>存储路径数量
         /// </summary>
         public int StorePathCount { get; set; }
@@ -62,17 +61,25 @@ namespace FastDFSCore
         /// </summary>
         public int CurrentWritePath { get; set; }
 
+        /// <summary>Storage端口号
+        /// </summary>
+        public int StoragePort { get; set; }
+
+        /// <summary>StorageHttp端口号
+        /// </summary>
+        public int StorageHttpPort { get; set; }
+
         /// <summary>alloc_count
         /// </summary>
-        public long AllocCount { get; set; }
+        public int AllocCount { get; set; }
 
         /// <summary>当前数量
         /// </summary>
-        public long CurrentCount { get; set; }
+        public int CurrentCount { get; set; }
 
         /// <summary>最大数量
         /// </summary>
-        public long MaxCount { get; set; }
+        public int MaxCount { get; set; }
 
         /// <summary>上传总数
         /// </summary>
@@ -138,18 +145,6 @@ namespace FastDFSCore
         /// </summary>
         public long SuccessGetMetaCount { get; set; }
 
-        /// <summary>最后更新时间
-        /// </summary>
-        public DateTime LastSourceUpdate { get; set; }
-
-        /// <summary>最后开始同步时间
-        /// </summary>
-        public DateTime LastSyncUpdate { get; set; }
-
-        /// <summary>最后已同步的时间戳
-        /// </summary>
-        public DateTime LastSyncedTimestamp { get; set; }
-
         /// <summary>创建连接的总数
         /// </summary>
         public long TotalCreateLinkCount { get; set; }
@@ -157,6 +152,11 @@ namespace FastDFSCore
         /// <summary>成功创建连接的数量
         /// </summary>
         public long SuccessCreateLinkCount { get; set; }
+
+
+  
+
+ 
 
         /// <summary>删除连接的总数
         /// </summary>
@@ -238,9 +238,25 @@ namespace FastDFSCore
         /// </summary>
         public long SuccessFileWriteCount { get; set; }
 
+        /// <summary>最后更新时间
+        /// </summary>
+        public DateTime LastSourceUpdate { get; set; }
+
+        /// <summary>最后开始同步时间
+        /// </summary>
+        public DateTime LastSyncUpdate { get; set; }
+
+        /// <summary>最后已同步的时间戳
+        /// </summary>
+        public DateTime LastSyncedTimestamp { get; set; }
+
         /// <summary>最后心跳时间
         /// </summary>
         public DateTime LastHeartbeatTime { get; set; }
+
+        /// <summary>是否为Trunk服务器
+        /// </summary>
+        public bool IsTrunkServer { get; set; }
 
         public StorageInfo()
         {

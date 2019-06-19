@@ -12,9 +12,11 @@ namespace FastDFSCore.Client
 
         public const byte FDFS_PROTO_PKG_LEN_SIZE = 8; //协议固定长度
 
+        public const byte FDFS_PROTO_PKG_INT_LEN_SIZE = 4; //Int长度
+
         public const byte FDFS_GROUP_INFO_SIZE = 105;//GroupInfo长度
 
-        public const int FDFS_STORAGE_INFO_SIZE = 606;//StorageInfo长度
+        public const int FDFS_STORAGE_INFO_SIZE = 612;//StorageInfo长度
 
         public const byte IP_ADDRESS_SIZE = 16; //IP地址长度
 

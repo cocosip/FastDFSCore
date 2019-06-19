@@ -18,6 +18,7 @@ namespace FastDFSCore.Client
     /*   @ 1 byte: status
        @ FDFS_STORAGE_ID_MAX_SIZE bytes:StorageId 
        @ FDFS_IPADDR_SIZE bytes: ip address
+       @ FDFS_IPADDR_SIZE bytes: ip address 
        @ FDFS_DOMAIN_NAME_MAX_SIZE  bytes : domain name of the web server
        @ IP_ADDRESS_SIZE bytes: source storage server ip address
        @ FDFS_VERSION_SIZE bytes: storage server version

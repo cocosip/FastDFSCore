@@ -14,6 +14,22 @@ namespace FastDFSCore.Client
         /// <returns>存储节点实体类</returns>
         Task<StorageNode> GetStorageNodeAsync(string groupName);
 
+        /// <summary>查询某个组的组信息
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <returns></returns>
+        Task<GroupInfo> ListOneGroupInfoAsync(string groupName);
+
+        /// <summary>查询全部的组
+        /// </summary>
+        Task<List<GroupInfo>> ListAllGroupInfosAsync();
+
+        /// <summary>按组名查询全部的Storage信息
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <returns></returns>
+        Task<List<StorageInfo>> ListStorageInfosAsync(string groupName);
+
         /// <summary>
         /// 查询文件存储的节点
         /// </summary>
@@ -163,5 +179,6 @@ namespace FastDFSCore.Client
         /// <param name="option"></param>
         /// <returns></returns>
         Task SetMetaData(StorageNode storageNode, string fileId, IDictionary<string, string> metaData, MetaDataOption option = MetaDataOption.Overwrite);
+    
     }
 }

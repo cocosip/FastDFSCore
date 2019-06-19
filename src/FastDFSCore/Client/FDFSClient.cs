@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -27,6 +26,38 @@ namespace FastDFSCore.Client
             var storageNode = new StorageNode(response.GroupName, response.IPAddress, response.Port, response.StorePathIndex);
             return storageNode;
         }
+
+        /// <summary>查询某个组的组信息
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <returns></returns>
+        public async Task<GroupInfo> ListOneGroupInfoAsync(string groupName)
+        {
+            var request = new ListOneGroupRequest(groupName);
+            var response = await _executer.Execute(request);
+            return response.GroupInfo;
+        }
+
+        /// <summary>查询全部的组
+        /// </summary>
+        public async Task<List<GroupInfo>> ListAllGroupInfosAsync()
+        {
+            var request = new ListAllGroupRequest();
+            var response = await _executer.Execute(request);
+            return response.GroupInfos;
+        }
+
+        /// <summary>按组名查询全部的Storage信息
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <returns></returns>
+        public async Task<List<StorageInfo>> ListStorageInfosAsync(string groupName)
+        {
+            var request = new ListStorageRequest(groupName);
+            var response = await _executer.Execute(request);
+            return response.StorageInfos;
+        }
+
 
         /// <summary>
         /// 查询文件存储的节点
@@ -112,6 +143,7 @@ namespace FastDFSCore.Client
         /// <returns>文件名</returns>
         public async Task<string> UploadSlaveFileAsync(string groupName, string masterFileId, string prefixName, byte[] contentBytes, string fileExt)
         {
+            fileExt = Util.ParseExtWithOut(fileExt);
             var queryUpdateRequest = new QueryUpdateRequest(groupName, masterFileId);
             var queryUpdateResponse = await _executer.Execute(queryUpdateRequest);
             var storageNode = new StorageNode(queryUpdateResponse.GroupName, queryUpdateResponse.IPAddress, queryUpdateResponse.Port, 0);
@@ -151,6 +183,7 @@ namespace FastDFSCore.Client
         /// <returns>文件名</returns>
         public async Task<string> UploadAppenderFileAsync(StorageNode storageNode, byte[] contentBytes, string fileExt)
         {
+            fileExt = Util.ParseExtWithOut(fileExt);
             var request = new UploadAppendFileRequest(storageNode.StorePathIndex, fileExt, contentBytes);
             var response = await _executer.Execute(request, storageNode.EndPoint);
             return response.FileId;

@@ -12,8 +12,16 @@ namespace FastDFSCore.Client
 
         public const byte FDFS_PROTO_PKG_LEN_SIZE = 8; //协议固定长度
 
+        public const byte FDFS_GROUP_INFO_SIZE = 105;//GroupInfo长度
+
+        public const int FDFS_STORAGE_INFO_SIZE = 606;//StorageInfo长度
+
         public const byte IP_ADDRESS_SIZE = 16; //IP地址长度
+
+        public const byte FDFS_STORAGE_ID_MAX_SIZE = 16; //Storage Id的最大长度
+
         public const byte FDFS_FILE_PREFIX_MAX_LEN = 16; //文件前缀最大的长度    // tracker/tracker_types.h
+
         public const byte FDFS_GROUP_NAME_MAX_LEN = 16; //组名最大长度
 
         public const Int16 FDFS_DOMAIN_NAME_MAX_SIZE = 128; //域名最大长度
@@ -57,7 +65,7 @@ namespace FastDFSCore.Client
         Merge
     }
 
- 
+
     public enum TargetServer
     {
         Tracker,

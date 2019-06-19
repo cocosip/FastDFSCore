@@ -36,11 +36,13 @@ namespace FastDFSCore.Sample
 
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore();
+             _fdfsClinet = _provider.GetService<IFDFSClient>();
+
+            //RunAsync().Wait();
+            //GroupInfoAsync().Wait();
+            StorageInfoAsync().Wait();
 
 
-            //_fdfsClinet = _provider.GetService<IFDFSClient>();
-
-            RunAsync().Wait();
 
             Console.ReadLine();
         }
@@ -48,6 +50,34 @@ namespace FastDFSCore.Sample
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Console.WriteLine(e.ExceptionObject.ToString());
+        }
+
+        /// <summary>查询组信息
+        /// </summary>
+        public static async Task GroupInfoAsync()
+        {
+            //var groupInfo =await _fdfsClinet.QueryOneGroupInfoAsync("group1");
+            //Console.WriteLine("获取单个GroupInfo:{0}", groupInfo);
+
+            var groupInfos = await _fdfsClinet.ListAllGroupInfosAsync();
+            foreach (var g in groupInfos)
+            {
+                Console.WriteLine("查询全部GroupInfo:{0}", g);
+            }
+
+        }
+
+        /// <summary>查询Storage信息
+        /// </summary>
+        public static async Task StorageInfoAsync()
+        {
+
+            var storageInfos = await _fdfsClinet.ListStorageInfosAsync("group1");
+            foreach (var s in storageInfos)
+            {
+                Console.WriteLine("查询全部StorageInfo:{0}", s);
+            }
+
         }
 
         public static async Task RunAsync()

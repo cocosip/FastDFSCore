@@ -192,8 +192,8 @@ namespace FastDFSCore.Client
                     }
                     else
                     {
+                        //文件流读取,刚读取头部
                         _fileWriter?.Run();
-                        //头部在内部已经设置了,这里不做任何操作
                     }
                 }
                 else
@@ -238,7 +238,6 @@ namespace FastDFSCore.Client
         private void InitFileWriter()
         {
             _fileWriter = new DownloadFileWriter(_option, _connectionContext.StreamSavePath);
-            //_fileWriter.Run();
             //_fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
         }
 
@@ -255,7 +254,7 @@ namespace FastDFSCore.Client
 
         public async Task DisposeAsync()
         {
-            await this.ShutdownAsync().ConfigureAwait(false);
+            await ShutdownAsync().ConfigureAwait(false);
             _connectionContext = null;
             _fileWriter?.Release();
         }

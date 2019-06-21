@@ -40,8 +40,8 @@ namespace FastDFSCore.Sample
 
             //RunAsync().Wait();
             //GroupInfoAsync().Wait();
-            StorageInfoAsync().Wait();
-
+            //StorageInfoAsync().Wait();
+            DownloadToPath().Wait();
 
 
             Console.ReadLine();
@@ -183,8 +183,8 @@ namespace FastDFSCore.Sample
         {
             Console.WriteLine("测试下载文件");
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var downloadFileId = "M00/00/09/wKgBcFzm-XKAGti4AAYn98u2gV8562.jpg";
-            var result = await _fdfsClinet.DownloadFileEx(storageNode, downloadFileId, @"D:\2.jpg");
+            var downloadFileId = "M00/03/C5/wKgABl0LMOGAW3fEAAIMphIw1AQ895.dcm";
+            var result = await _fdfsClinet.DownloadFileEx(storageNode, downloadFileId, @"D:\2.dcm");
             Console.WriteLine("下载文件名:{0},大小:{1}", downloadFileId, result.Length);
 
         }

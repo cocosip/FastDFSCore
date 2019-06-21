@@ -73,13 +73,13 @@ namespace FastDFSCore.Client
                 else
                 {
                     //流传输,头部也还未读
-                    if (input.ReadableBytes < this.lengthFieldEndOffset)
+                    if (input.ReadableBytes < lengthFieldEndOffset)
                     {
                         return null;
                     }
-                    IByteBuffer frame = this.ExtractFrame(context, input, input.ReaderIndex, this.lengthFieldEndOffset);
+                    IByteBuffer frame = ExtractFrame(context, input, input.ReaderIndex, lengthFieldEndOffset);
                     //设置读的标记,读到头为止
-                    input.SetReaderIndex(input.ReaderIndex + this.lengthFieldEndOffset);
+                    input.SetReaderIndex(input.ReaderIndex + lengthFieldEndOffset);
                     receiveItem.ReadHeader(frame);
                     //头部读完
                     connectionContext.IsChunkWriting = true;
@@ -88,12 +88,12 @@ namespace FastDFSCore.Client
             }
             else
             {
-                if (input.ReadableBytes < this.lengthFieldEndOffset)
+                if (input.ReadableBytes < lengthFieldEndOffset)
                 {
                     return null;
                 }
                 //整个数据包的长度,应该是包长度+2+body
-                long frameLength = input.GetLong(input.ReaderIndex) + this.lengthFieldEndOffset;
+                long frameLength = input.GetLong(input.ReaderIndex) + lengthFieldEndOffset;
                 int frameLengthInt = (int)frameLength;
                 if (input.ReadableBytes < frameLengthInt)
                 {
@@ -102,7 +102,7 @@ namespace FastDFSCore.Client
                 // extract frame
                 int readerIndex = input.ReaderIndex;
                 int actualFrameLength = frameLengthInt;
-                IByteBuffer frame = this.ExtractFrame(context, input, readerIndex, actualFrameLength);
+                IByteBuffer frame = ExtractFrame(context, input, readerIndex, actualFrameLength);
                 input.SetReaderIndex(readerIndex + actualFrameLength);
                 receiveItem.ReadFromBuffer(frame);
             }

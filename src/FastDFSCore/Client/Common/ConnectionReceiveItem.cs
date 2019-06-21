@@ -1,4 +1,5 @@
 ﻿using DotNetty.Buffers;
+using System;
 
 namespace FastDFSCore.Client
 {
@@ -39,6 +40,11 @@ namespace FastDFSCore.Client
         public void ReadFromBuffer(IByteBuffer buffer)
         {
             Header = new FDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());
+            if (Header.Status != 0)
+            {
+                throw new Exception($"返回Status不正确:{Header.Status}");
+            }
+
             Body = new byte[Header.Length];
             buffer.ReadBytes(Body, 0, (int)Header.Length);
         }

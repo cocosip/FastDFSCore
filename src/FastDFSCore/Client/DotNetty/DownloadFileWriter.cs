@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
@@ -24,7 +25,54 @@ namespace FastDFSCore.Client
 
         public void Run()
         {
-            ThreadPool.QueueUserWorkItem(s =>
+            //ThreadPool.QueueUserWorkItem(s =>
+            //{
+            //    while (_isComplete == 0)
+            //    {
+            //        try
+            //        {
+            //            byte[] buffers;
+            //            if (_pendingWriteQueue.TryDequeue(out buffers))
+            //            {
+            //                _fs.Write(buffers, 0, buffers.Length);
+            //            }
+            //            else
+            //            {
+            //                Thread.Sleep(3);
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            _logger.LogError("写入文件发生错误,{0}", ex.Message);
+            //            Interlocked.Exchange(ref _isComplete, 1);
+            //        }
+            //    }
+            //}, null);
+            //Task.Run(() =>
+            //{
+            //    while (_isComplete == 0)
+            //    {
+            //        try
+            //        {
+            //            byte[] buffers;
+            //            if (_pendingWriteQueue.TryDequeue(out buffers))
+            //            {
+            //                _fs.Write(buffers, 0, buffers.Length);
+            //            }
+            //            else
+            //            {
+            //                Thread.Sleep(3);
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            _logger.LogError("写入文件发生错误,{0}", ex.Message);
+            //            Interlocked.Exchange(ref _isComplete, 1);
+            //        }
+            //    }
+            //});
+
+            Task.Factory.StartNew(() =>
             {
                 while (_isComplete == 0)
                 {
@@ -46,7 +94,9 @@ namespace FastDFSCore.Client
                         Interlocked.Exchange(ref _isComplete, 1);
                     }
                 }
-            }, null);
+                //释放
+                Release();
+            }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
 
@@ -63,13 +113,10 @@ namespace FastDFSCore.Client
         {
             while (!_pendingWriteQueue.IsEmpty)
             {
-                Thread.Sleep(1);
+                Thread.Sleep(5);
             }
             Interlocked.Exchange(ref _isComplete, 1);
-            if (_fs != null)
-            {
-                _fs.Flush();
-            }
+
         }
 
         public void Release()
@@ -77,6 +124,9 @@ namespace FastDFSCore.Client
             Interlocked.Exchange(ref _isComplete, 1);
             if (_fs != null)
             {
+                //释放之前先刷盘
+                _fs.Flush();
+
                 _fs.Close();
                 _fs.Dispose();
             }

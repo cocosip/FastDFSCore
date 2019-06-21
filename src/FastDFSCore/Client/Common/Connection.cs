@@ -133,7 +133,7 @@ namespace FastDFSCore.Client
             if (request.StreamRequest)
             {
                 _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
-                var stream = new FixChunkedStream(request.Stream, 1024 * 1024 * 10);
+                var stream = new FixChunkedStream(request.Stream, 1024 * 16);
                 _channel.WriteAndFlushAsync(stream).Wait();
             }
             else

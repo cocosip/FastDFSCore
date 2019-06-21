@@ -38,10 +38,10 @@ namespace FastDFSCore.Sample
             _provider.ConfigureFastDFSCore();
              _fdfsClinet = _provider.GetService<IFDFSClient>();
 
-            //RunAsync().Wait();
+            RunAsync().Wait();
             //GroupInfoAsync().Wait();
             //StorageInfoAsync().Wait();
-            DownloadToPath().Wait();
+            //DownloadToPath().Wait();
 
 
             Console.ReadLine();

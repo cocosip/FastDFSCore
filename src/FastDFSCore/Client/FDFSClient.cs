@@ -8,9 +8,11 @@ namespace FastDFSCore.Client
     public class FDFSClient : IFDFSClient
     {
         private readonly IExecuter _executer;
-        public FDFSClient(IExecuter executer)
+        private readonly FDFSOption _option;
+        public FDFSClient(IExecuter executer, FDFSOption option)
         {
             _executer = executer;
+            _option = option;
         }
 
 
@@ -277,9 +279,29 @@ namespace FastDFSCore.Client
         /// <returns></returns>
         public async Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath)
         {
-            var request = new DownloadStreamFileRequest(storageNode.GroupName, fileId, filePath);
+            var request = new DownloadStreamFileRequest(storageNode.GroupName, fileId)
+            {
+                Downloader = new FileDownloader(_option, filePath)
+            };
             var response = await _executer.Execute(request, storageNode.EndPoint);
             return filePath;
+        }
+
+        /// <summary>
+        /// 自定义下载文件
+        /// </summary>
+        /// <param name="storageNode"></param>
+        /// <param name="fileId"></param>
+        /// <param name="filePath">文件保存路径</param>
+        /// <returns></returns>
+        public async Task<string> DownloadFileEx(StorageNode storageNode, string fileId, IDownloader downloader)
+        {
+            var request = new DownloadStreamFileRequest(storageNode.GroupName, fileId)
+            {
+                Downloader = downloader
+            };
+            var response = await _executer.Execute(request, storageNode.EndPoint);
+            return downloader.SavePath;
         }
 
 

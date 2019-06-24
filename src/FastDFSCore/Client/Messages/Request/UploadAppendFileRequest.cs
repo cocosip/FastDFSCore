@@ -40,7 +40,7 @@ namespace FastDFSCore.Client
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
-            Stream = stream;
+            RequestStream = stream;
 
         }
 
@@ -49,7 +49,7 @@ namespace FastDFSCore.Client
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
-            Stream = new MemoryStream(contentBytes);
+            RequestStream = new MemoryStream(contentBytes);
         }
 
         public override bool StreamRequest => true;
@@ -57,7 +57,7 @@ namespace FastDFSCore.Client
         public override byte[] EncodeBody(FDFSOption option)
         {
 
-            byte[] fileSizeBuffer = Util.LongToBuffer(Stream.Length);
+            byte[] fileSizeBuffer = Util.LongToBuffer(RequestStream.Length);
             byte[] extBuffer = Util.CreateFileExtBuffer(option.Charset, FileExt);
 
             long lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
@@ -68,7 +68,7 @@ namespace FastDFSCore.Client
             bodyBuffer.AddRange(extBuffer);
 
             //头部
-            Header = new FDFSHeader(lenth + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_APPENDER_FILE, 0);
+            Header = new FDFSHeader(lenth + RequestStream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_APPENDER_FILE, 0);
 
             return bodyBuffer.ToArray();
         }

@@ -18,10 +18,6 @@
         /// </summary>
         public bool StreamResponse { get; set; } = false;
 
-        /// <summary>下载文件
-        /// </summary>
-        public string StreamSavePath { get; set; }
-
         /// <summary>是否正在分块写入
         /// </summary>
         public bool IsChunkWriting { get; set; }

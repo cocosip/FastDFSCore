@@ -34,13 +34,12 @@ namespace FastDFSCore.Client
 
         }
 
-        public DownloadStreamFileRequest(string groupName, string fileId, string filePath)
+        public DownloadStreamFileRequest(string groupName, string fileId)
         {
             Offset = 0;
             ByteSize = 0;
             GroupName = groupName;
             FileId = fileId;
-            StreamSavePath = filePath;
         }
 
         public override byte[] EncodeBody(FDFSOption option)

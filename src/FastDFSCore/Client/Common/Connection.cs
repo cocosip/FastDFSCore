@@ -35,7 +35,7 @@ namespace FastDFSCore.Client
 
         private ConnectionContext _connectionContext;
         private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
-        private DownloadFileWriter _fileWriter = null;
+        private IDownloader _downloader = null;
         public Connection(IServiceProvider provider, FDFSOption option, ConnectionSetting setting, Action<Connection> closeAction)
         {
             _provider = provider;
@@ -119,9 +119,10 @@ namespace FastDFSCore.Client
             //上下文,当前的信息
             _connectionContext = CreateContext<T>(request);
             //初始化保存流
-            if (_connectionContext.StreamResponse && _connectionContext.StreamSavePath != "")
+            if (_connectionContext.StreamResponse && request.Downloader != null)
             {
-                InitFileWriter();
+                _downloader = request.Downloader;
+                _downloader.Run();
             }
 
             var bodyBuffer = request.EncodeBody(_option);
@@ -133,7 +134,7 @@ namespace FastDFSCore.Client
             if (request.StreamRequest)
             {
                 _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
-                var stream = new FixChunkedStream(request.Stream, 1024 * 16);
+                var stream = new FixChunkedStream(request.RequestStream, 1024 * 16);
                 _channel.WriteAndFlushAsync(stream).Wait();
             }
             else
@@ -179,7 +180,7 @@ namespace FastDFSCore.Client
 
                         //_fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
                         //写入Body
-                        _fileWriter.WriteBuffers(receiveItem.Body);
+                        _downloader.WriteBuffers(receiveItem.Body);
                         _connectionContext.WritePosition += receiveItem.Body.Length;
                         if (_connectionContext.IsWriteCompleted)
                         {
@@ -193,7 +194,7 @@ namespace FastDFSCore.Client
                     else
                     {
                         //文件流读取,刚读取头部
-                        _fileWriter?.Run();
+                        _downloader?.Run();
                     }
                 }
                 else
@@ -223,7 +224,6 @@ namespace FastDFSCore.Client
                 Response = new T(),
                 StreamRequest = request.StreamRequest,
                 StreamResponse = request.StreamResponse,
-                StreamSavePath = request.StreamSavePath,
                 IsChunkWriting = false,
                 ReadPosition = 0,
                 WritePosition = 0
@@ -235,18 +235,12 @@ namespace FastDFSCore.Client
             return _connectionContext;
         }
 
-        private void InitFileWriter()
-        {
-            _fileWriter = new DownloadFileWriter(_option, _connectionContext.StreamSavePath);
-            //_fs = new FileStream(_connectionContext.StreamSavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-        }
-
         /// <summary>一次的发送与接收完成
         /// </summary>
         private void SendReceiveComplete()
         {
             _connectionContext = null;
-            _fileWriter?.WriteComplete();
+            _downloader?.WriteComplete();
         }
 
 
@@ -256,7 +250,7 @@ namespace FastDFSCore.Client
         {
             await ShutdownAsync().ConfigureAwait(false);
             _connectionContext = null;
-            _fileWriter?.Release();
+            _downloader?.Release();
         }
 
     }

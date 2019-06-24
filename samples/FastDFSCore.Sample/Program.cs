@@ -15,6 +15,7 @@ namespace FastDFSCore.Sample
     {
         static IServiceProvider _provider;
         static IFDFSClient _fdfsClinet;
+        static FDFSOption _option;
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
@@ -36,7 +37,8 @@ namespace FastDFSCore.Sample
 
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore();
-             _fdfsClinet = _provider.GetService<IFDFSClient>();
+            _fdfsClinet = _provider.GetService<IFDFSClient>();
+            _option = _provider.GetService<FDFSOption>();
 
             RunAsync().Wait();
             //GroupInfoAsync().Wait();
@@ -84,7 +86,7 @@ namespace FastDFSCore.Sample
         {
             await BatchUploadTest().ConfigureAwait(false);
             //await BatchUploadTest().ConfigureAwait(false);
-            await BatchDownloadTest().ConfigureAwait(false);
+            await BatchCustomDownloadTest().ConfigureAwait(false);
         }
 
         /// <summary>上传单个文件
@@ -122,8 +124,8 @@ namespace FastDFSCore.Sample
             Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var dir = //new DirectoryInfo(@"D:\Pictures");
-            new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
+            var dir = new DirectoryInfo(@"D:\Pictures");
+            //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             //new DirectoryInfo(@"G:\安装文件\SystemISO");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\测试Dicom");
             //G:\安装文件\SystemISO
@@ -160,6 +162,39 @@ namespace FastDFSCore.Sample
                 var ext = GetPathExtension(fileId);
                 var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
                 await _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath);
+                Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
+            }
+            watch.Stop();
+            //获取下载的文件总大小
+            var dir = new DirectoryInfo(saveDir);
+            var fileInfos = dir.GetFiles();
+            long totalSize = 0;
+            foreach (var fileInfo in fileInfos)
+            {
+                totalSize += fileInfo.Length;
+            }
+            Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2},速度:{3} Mb/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed, (totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0)).ToString("F2"));
+
+        }
+
+        /// <summary>批量自定义下载
+        /// </summary>
+        public static async Task BatchCustomDownloadTest()
+        {
+            Console.WriteLine("-------------批量下载测试---------");
+            Stopwatch watch = new Stopwatch();
+            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var saveDir = @"G:\DownloadTest";
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            watch.Start();
+            foreach (var fileId in UploadFileIds)
+            {
+                var ext = GetPathExtension(fileId);
+                var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
+                await _fdfsClinet.DownloadFileEx(storageNode, fileId, new CustomDownloader(_option, savePath));
                 Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
             }
             watch.Stop();

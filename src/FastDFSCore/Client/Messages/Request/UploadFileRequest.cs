@@ -42,14 +42,14 @@ namespace FastDFSCore.Client
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
-            Stream = stream;
+            RequestStream = stream;
         }
 
         public UploadFileRequest(byte storePathIndex, string fileExt, byte[] contentBytes)
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
-            Stream = new MemoryStream(contentBytes);
+            RequestStream = new MemoryStream(contentBytes);
         }
 
 
@@ -62,7 +62,7 @@ namespace FastDFSCore.Client
             //1.StorePathIndex
 
             //2.文件长度
-            byte[] fileSizeBuffer = Util.LongToBuffer(Stream.Length);
+            byte[] fileSizeBuffer = Util.LongToBuffer(RequestStream.Length);
             //3.扩展名
             if (FileExt.Length > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
                 throw new ArgumentException("文件扩展名过长");
@@ -76,7 +76,7 @@ namespace FastDFSCore.Client
             bodyBuffer.AddRange(extBuffer);
 
             //头部
-            Header = new FDFSHeader(lenth + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
+            Header = new FDFSHeader(lenth + RequestStream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
             return bodyBuffer.ToArray();
         }
 

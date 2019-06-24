@@ -155,6 +155,15 @@ namespace FastDFSCore.Client
         Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath);
 
         /// <summary>
+        /// 自定义下载文件
+        /// </summary>
+        /// <param name="storageNode"></param>
+        /// <param name="fileId"></param>
+        /// <param name="filePath">文件保存路径</param>
+        /// <returns></returns>
+        Task<string> DownloadFileEx(StorageNode storageNode, string fileId, IDownloader downloader);
+
+        /// <summary>
         /// 获取文件信息
         /// </summary>
         /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
@@ -179,6 +188,6 @@ namespace FastDFSCore.Client
         /// <param name="option"></param>
         /// <returns></returns>
         Task SetMetaData(StorageNode storageNode, string fileId, IDictionary<string, string> metaData, MetaDataOption option = MetaDataOption.Overwrite);
-    
+
     }
 }

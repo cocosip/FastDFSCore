@@ -46,7 +46,7 @@ namespace FastDFSCore.Client
             MasterFileId = masterFileId;
             Prefix = prefix;
             FileExt = fileExt;
-            Stream = stream;
+            RequestStream = stream;
         }
 
         public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, byte[] contentBytes)
@@ -55,7 +55,7 @@ namespace FastDFSCore.Client
 
             Prefix = prefix;
             FileExt = fileExt;
-            Stream = new MemoryStream(contentBytes);
+            RequestStream = new MemoryStream(contentBytes);
         }
 
         public override bool StreamRequest => true;
@@ -65,7 +65,7 @@ namespace FastDFSCore.Client
             //文件名长度数组
             byte[] masterFileIdLenBuffer = Util.LongToBuffer((long)MasterFileId.Length);
             //文件长度数组
-            byte[] fileSizeBuffer = Util.LongToBuffer(Stream.Length);
+            byte[] fileSizeBuffer = Util.LongToBuffer(RequestStream.Length);
             //从文件前缀名数据
             byte[] prefixBuffer = Util.CreatePrefixBuffer(option.Charset, Prefix);
             byte[] extBuffer = Util.CreateFileExtBuffer(option.Charset, FileExt);
@@ -76,7 +76,7 @@ namespace FastDFSCore.Client
 
 
             //2个长度,主文件FileId数组长度,文件长度
-            long length = 2 * Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_PREFIX_MAX_LEN + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + masterFileIdBuffer.Length + Stream.Length;
+            long length = 2 * Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_PREFIX_MAX_LEN + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + masterFileIdBuffer.Length + RequestStream.Length;
 
             List<byte> bodyBuffer = new List<byte>();
             bodyBuffer.AddRange(masterFileIdLenBuffer);
@@ -89,7 +89,7 @@ namespace FastDFSCore.Client
             //Array.Copy(ContentBytes, 0, bodyBuffer, offset, ContentBytes.Length);
 
             //头部
-            Header = new FDFSHeader(length + Stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_SLAVE_FILE, 0);
+            Header = new FDFSHeader(length + RequestStream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_SLAVE_FILE, 0);
 
             return bodyBuffer.ToArray();
         }

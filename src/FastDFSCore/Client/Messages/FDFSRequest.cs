@@ -13,21 +13,21 @@ namespace FastDFSCore.Client
         /// </summary>
         public virtual bool StreamRequest { get; set; } = false;
 
+        /// <summary>请求数据流
+        /// </summary>
+        public Stream RequestStream { get; set; }
+
         /// <summary>是否流返回
         /// </summary>
         public virtual bool StreamResponse { get; set; } = false;
 
-        /// <summary>下载文件
+        /// <summary>下载器,返回类型为流的时候,才会使用下载器
         /// </summary>
-        public virtual string StreamSavePath { get; set; }
+        public virtual IDownloader Downloader { get; set; }
 
         /// <summary>对当前body进行编码
         /// </summary>
         public abstract byte[] EncodeBody(FDFSOption option);
-
-        /// <summary>数据流
-        /// </summary>
-        public Stream Stream { get; set; }
     }
 
     public abstract class FDFSRequest<T> : FDFSRequest where T : FDFSResponse

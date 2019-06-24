@@ -15,7 +15,7 @@ namespace FastDFSCore.Sample
     {
         static IServiceProvider _provider;
         static IFDFSClient _fdfsClinet;
-        static FDFSOption _option;
+        static IDownloaderFactory _downloaderFactory;
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
@@ -38,7 +38,7 @@ namespace FastDFSCore.Sample
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore();
             _fdfsClinet = _provider.GetService<IFDFSClient>();
-            _option = _provider.GetService<FDFSOption>();
+            _downloaderFactory = _provider.GetService<IDownloaderFactory>();
 
             RunAsync().Wait();
             //GroupInfoAsync().Wait();
@@ -194,7 +194,7 @@ namespace FastDFSCore.Sample
             {
                 var ext = GetPathExtension(fileId);
                 var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
-                await _fdfsClinet.DownloadFileEx(storageNode, fileId, new CustomDownloader(_option, savePath));
+                await _fdfsClinet.DownloadFileEx(storageNode, fileId, _downloaderFactory.CreateDownloader<CustomDownloader>(savePath));
                 Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
             }
             watch.Stop();

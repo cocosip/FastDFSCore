@@ -23,7 +23,7 @@ namespace FastDFSCore.Client
         }
 
 
-        public string SavePath { get; protected set; }
+        public string SavePath { get; protected set; } = "";
 
         /// <summary>Run
         /// </summary>

@@ -122,7 +122,7 @@ namespace FastDFSCore.Client
             if (_connectionContext.StreamResponse && request.Downloader != null)
             {
                 _downloader = request.Downloader;
-                _downloader.Run();
+                _downloader?.Run();
             }
 
             var bodyBuffer = request.EncodeBody(_option);

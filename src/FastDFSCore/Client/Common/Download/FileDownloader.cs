@@ -28,7 +28,6 @@ namespace FastDFSCore.Client
             {
                 //释放之前先刷盘
                 _fs.Flush();
-
                 _fs.Close();
                 _fs.Dispose();
             }

@@ -8,11 +8,11 @@ namespace FastDFSCore.Client
     public class FDFSClient : IFDFSClient
     {
         private readonly IExecuter _executer;
-        private readonly FDFSOption _option;
-        public FDFSClient(IExecuter executer, FDFSOption option)
+        private readonly IDownloaderFactory _downloaderFactory;
+        public FDFSClient(IExecuter executer, IDownloaderFactory downloaderFactory)
         {
             _executer = executer;
-            _option = option;
+            _downloaderFactory = downloaderFactory;
         }
 
 
@@ -281,7 +281,7 @@ namespace FastDFSCore.Client
         {
             var request = new DownloadStreamFileRequest(storageNode.GroupName, fileId)
             {
-                Downloader = new FileDownloader(_option, filePath)
+                Downloader = _downloaderFactory.CreateFileDownloader(filePath)
             };
             var response = await _executer.Execute(request, storageNode.EndPoint);
             return filePath;

@@ -31,6 +31,7 @@ namespace FastDFSCore.Client
                 .AddSingleton<FDFSOption>(option)
                 .AddSingleton<IConnectionPoolFactory, ConnectionPoolFactory>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
+                .AddSingleton<IDownloaderFactory, DefaultDownloaderFactory>()
                 .AddTransient<IExecuter, DefaultExecuter>()
                 .AddTransient<IFDFSClient, FDFSClient>();
             return services;

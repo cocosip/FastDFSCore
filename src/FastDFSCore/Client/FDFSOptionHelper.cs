@@ -6,22 +6,54 @@ using System.Xml;
 
 namespace FastDFSCore.Client
 {
-    public static class FDFSOptionTranslator
+    public static class FDFSOptionHelper
     {
         /// <summary>从文件中读取配置信息
         /// </summary>
-        public static FDFSOption TranslateToOption(string file)
+        public static FDFSOption GetFDFSOption(string file)
         {
             if (!File.Exists(file))
             {
                 throw new ArgumentException("配置文件不存在");
             }
-            return LoadFromXml(file);
+            var option = new FDFSOption();
+            var doc = new XmlDocument();
+            XmlReaderSettings settings = new XmlReaderSettings
+            {
+                IgnoreComments = true //忽略文档里面的注释
+            };
+            XmlReader reader = XmlReader.Create(file, settings);
+            doc.Load(reader);
+            XmlNode root = doc.SelectSingleNode("FDFSClient");
+
+            var allTrackers = root.SelectSingleNode("Trackers");
+            //全部的Tracker节点
+            var trackerNodes = allTrackers.SelectNodes("Tracker");
+            foreach (XmlNode trackerNode in trackerNodes)
+            {
+                var ipAddress = IPAddress.Parse(trackerNode.SelectSingleNode("IPAddress").InnerText);
+                var port = int.Parse(trackerNode.SelectSingleNode("Port").InnerText);
+                option.Trackers.Add(new IPEndPoint(ipAddress, port));
+            }
+            //charset
+            option.Charset = Encoding.GetEncoding(root.SelectSingleNode("Charset").InnerText);
+            //ConnectionTimeout
+            option.ConnectionTimeout = int.Parse(root.SelectSingleNode("ConnectionTimeout").InnerText);
+            //ConnectionLifeTime
+            option.ConnectionLifeTime = int.Parse(root.SelectSingleNode("ConnectionLifeTime").InnerText);
+            //TrackerMaxConnection
+            option.TrackerMaxConnection = int.Parse(root.SelectSingleNode("TrackerMaxConnection").InnerText);
+            //StorageMaxConnection
+            option.StorageMaxConnection = int.Parse(root.SelectSingleNode("StorageMaxConnection").InnerText);
+            //LoggerName
+            option.LoggerName = root.SelectSingleNode("LoggerName").InnerText;
+            return option;
         }
+
 
         /// <summary>将配置文件转换成xml字符串
         /// </summary>
-        public static string TranslateToXml(FDFSOption option)
+        public static string ToXml(FDFSOption option)
         {
             try
             {
@@ -77,49 +109,7 @@ namespace FastDFSCore.Client
         }
 
 
-        private static FDFSOption LoadFromXml(string file)
-        {
-            try
-            {
-                var option = new FDFSOption();
-                var doc = new XmlDocument();
-                XmlReaderSettings settings = new XmlReaderSettings
-                {
-                    IgnoreComments = true //忽略文档里面的注释
-                };
-                XmlReader reader = XmlReader.Create(file, settings);
-                doc.Load(reader);
-                XmlNode root = doc.SelectSingleNode("FDFSClient");
 
-                var allTrackers = root.SelectSingleNode("Trackers");
-                //全部的Tracker节点
-                var trackerNodes = allTrackers.SelectNodes("Tracker");
-                foreach (XmlNode trackerNode in trackerNodes)
-                {
-                    var ipAddress = IPAddress.Parse(trackerNode.SelectSingleNode("IPAddress").InnerText);
-                    var port = int.Parse(trackerNode.SelectSingleNode("Port").InnerText);
-                    option.Trackers.Add(new IPEndPoint(ipAddress, port));
-                }
-                //charset
-                option.Charset = Encoding.GetEncoding(root.SelectSingleNode("Charset").InnerText);
-                //ConnectionTimeout
-                option.ConnectionTimeout = int.Parse(root.SelectSingleNode("ConnectionTimeout").InnerText);
-                //ConnectionLifeTime
-                option.ConnectionLifeTime = int.Parse(root.SelectSingleNode("ConnectionLifeTime").InnerText);
-                //TrackerMaxConnection
-                option.TrackerMaxConnection = int.Parse(root.SelectSingleNode("TrackerMaxConnection").InnerText);
-                //StorageMaxConnection
-                option.StorageMaxConnection = int.Parse(root.SelectSingleNode("StorageMaxConnection").InnerText);
-                //LoggerName
-                option.LoggerName = root.SelectSingleNode("LoggerName").InnerText;
-                return option;
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"加载获取配置信息出错!{ex.Message}", ex);
-            }
-        }
 
     }
 }

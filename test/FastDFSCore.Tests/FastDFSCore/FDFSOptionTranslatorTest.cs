@@ -58,10 +58,10 @@ namespace FastDFSCore.Tests.FastDFSCore
                     new IPEndPoint(IPAddress.Parse("127.0.0.1"),1333)
                 }
             };
-            var xml = FDFSOptionTranslator.TranslateToXml(option);
+            var xml = FDFSOptionHelper.ToXml(option);
             File.WriteAllText("test.xml", xml);
 
-            var readOption = FDFSOptionTranslator.TranslateToOption("test.xml");
+            var readOption = FDFSOptionHelper.GetFDFSOption("test.xml");
 
             Assert.Equal(option.Charset, readOption.Charset);
 

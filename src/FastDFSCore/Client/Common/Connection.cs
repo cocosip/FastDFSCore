@@ -78,7 +78,7 @@ namespace FastDFSCore.Client
                         IChannelPipeline pipeline = channel.Pipeline;
                         pipeline.AddLast(new LoggingHandler(_option.LoggerName));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-                        pipeline.AddLast("fdfs-decoder", new FDFSLengthDecoder(GetContext));
+                        pipeline.AddLast("fdfs-decoder", new FDFSDecoder(GetContext));
                         pipeline.AddLast("fdfs-read", new FDFSReadHandler(SetResponse));
 
                     }));

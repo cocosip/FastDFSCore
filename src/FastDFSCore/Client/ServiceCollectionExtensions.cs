@@ -19,7 +19,7 @@ namespace FastDFSCore.Client
         /// </summary>
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, string file)
         {
-            var option = FDFSOptionTranslator.TranslateToOption(file);
+            var option = FDFSOptionHelper.GetFDFSOption(file);
             return services.AddFastDFSCoreInternal(option);
         }
 

@@ -9,14 +9,14 @@ namespace FastDFSCore.Client
 {
     /// <summary>FDFS长度解码器
     /// </summary>
-    public class FDFSLengthDecoder : ByteToMessageDecoder
+    public class FDFSDecoder : ByteToMessageDecoder
     {
 
         //长度
         readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
         readonly int lengthFieldEndOffset = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
         private Func<ConnectionContext> getConnectionContextAction;
-        public FDFSLengthDecoder(Func<ConnectionContext> getConnectionContext)
+        public FDFSDecoder(Func<ConnectionContext> getConnectionContext)
         {
             this.getConnectionContextAction = getConnectionContext;
             this.lengthFieldEndOffset = lengthFieldLength + 2;

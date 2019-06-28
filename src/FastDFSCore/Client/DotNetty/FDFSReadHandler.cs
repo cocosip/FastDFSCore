@@ -6,7 +6,7 @@ namespace FastDFSCore.Client
     public class FDFSReadHandler : SimpleChannelInboundHandler<ConnectionReceiveItem>
     {
 
-        private Action<ConnectionReceiveItem> _setResponseAction;
+        private readonly Action<ConnectionReceiveItem> _setResponseAction;
         public FDFSReadHandler(Action<ConnectionReceiveItem> setResponseAction)
         {
             _setResponseAction = setResponseAction;

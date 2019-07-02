@@ -124,7 +124,9 @@ namespace FastDFSCore.Sample
             Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var dir = new DirectoryInfo(@"D:\Pictures");
+            var dir =
+            //new DirectoryInfo(@"D:\Pictures");
+            new DirectoryInfo(@"D:\DicomTest\BigTest");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             //new DirectoryInfo(@"G:\安装文件\SystemISO");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\测试Dicom");
@@ -134,6 +136,7 @@ namespace FastDFSCore.Sample
             watch.Start();
             foreach (var fileInfo in fileInfos)
             {
+                //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(fileInfo.FullName),"dcm").ConfigureAwait(false);
                 var fileId = await _fdfsClinet.UploadFileAsync(storageNode, fileInfo.FullName).ConfigureAwait(false);
                 Console.WriteLine("FileId:{0}", fileId);
                 UploadFileIds.Add(fileId);

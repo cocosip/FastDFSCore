@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DotNetty.Common.Internal.Logging;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
@@ -11,11 +13,14 @@ namespace FastDFSCore.Client
         private ConcurrentDictionary<IPEndPoint, Pool> _trackerPools = new ConcurrentDictionary<IPEndPoint, Pool>();
         private ConcurrentDictionary<IPEndPoint, Pool> _storagePools = new ConcurrentDictionary<IPEndPoint, Pool>();
 
+        private readonly ILogger _logger;
+        private readonly object syncObject = new object();
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly List<IPEndPoint> _trackerEndPoints = new List<IPEndPoint>();
         private readonly FDFSOption _option;
         public ConnectionManager(IConnectionPoolFactory connectionPoolFactory, FDFSOption option)
         {
+            _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
             _connectionPoolFactory = connectionPoolFactory;
             _option = option;
             _trackerEndPoints = _option.Trackers;
@@ -36,10 +41,13 @@ namespace FastDFSCore.Client
         public async Task<Connection> GetStorageConnection(IPEndPoint endPoint)
         {
             Pool storagePool;
-            if (!_storagePools.TryGetValue(endPoint, out storagePool))
+            lock (syncObject)
             {
-                storagePool = _connectionPoolFactory.CreatePool(endPoint, _option.StorageMaxConnection, _option.ConnectionLifeTime);
-                _storagePools.TryAdd(endPoint, storagePool);
+                if (!_storagePools.TryGetValue(endPoint, out storagePool))
+                {
+                    storagePool = _connectionPoolFactory.CreatePool(endPoint, _option.StorageMaxConnection, _option.ConnectionLifeTime);
+                    _storagePools.TryAdd(endPoint, storagePool);
+                }
             }
             return await storagePool.GetConnection();
         }

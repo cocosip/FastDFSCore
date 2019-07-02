@@ -28,16 +28,14 @@ namespace FastDFSCore.Client
         /// </summary>
         public async Task<Connection> GetConnection()
         {
-            Connection connection;
-            if (!_connections.TryPop(out connection))
+            if (!_connections.TryPop(out Connection connection))
             {
                 //取不到连接,判断是否还可以创建新的连接,有可能这些连接正在被占用
                 if (_currentConnectionCount < _maxConnection)
                 {
                     //还可以创建新的连接
                     connection = CreateNewConnection();
-                    //新建的放入堆栈中
-                    _connections.Push(connection);
+                    return connection;
                 }
             }
             //无连接可用了

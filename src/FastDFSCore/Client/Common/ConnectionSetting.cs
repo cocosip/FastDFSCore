@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Security.Cryptography.X509Certificates;
 
 namespace FastDFSCore.Client
 {
@@ -25,13 +24,13 @@ namespace FastDFSCore.Client
         /// </summary>
         public int ConnectionLifeTime { get; set; } = 3600;
 
-        /// <summary>Write buffer high water 2M
+        /// <summary>Write buffer high water 16M
         /// </summary>
-        public int WriteBufferHighWaterMark { get; set; } = 1024 * 1024 * 2;
+        public int WriteBufferHighWaterMark { get; set; } = 1024 * 1024 * 16;
 
-        /// <summary>Write buffer low water 1M
+        /// <summary>Write buffer low water 8M
         /// </summary>
-        public int WriteBufferLowWaterMark { get; set; } = 1024 * 1024;
+        public int WriteBufferLowWaterMark { get; set; } = 1024 * 1024 * 8;
 
         /// <summary>Receive
         /// </summary>

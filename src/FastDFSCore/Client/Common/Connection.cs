@@ -68,7 +68,7 @@ namespace FastDFSCore.Client
                     .Channel<TcpSocketChannel>()
                     .Option(ChannelOption.TcpNodelay, _setting.TcpNodelay)
                     .Option(ChannelOption.WriteBufferHighWaterMark, _setting.WriteBufferHighWaterMark)
-                    .Option(ChannelOption.WriteBufferLowWaterMark, _setting.WriteBufferHighWaterMark)
+                    .Option(ChannelOption.WriteBufferLowWaterMark, _setting.WriteBufferLowWaterMark)
                     .Option(ChannelOption.SoRcvbuf, _setting.SoRcvbuf)
                     .Option(ChannelOption.SoSndbuf, _setting.SoSndbuf)
                     .Option(ChannelOption.SoReuseaddr, _setting.SoReuseaddr)
@@ -134,7 +134,7 @@ namespace FastDFSCore.Client
             if (request.StreamRequest)
             {
                 _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
-                var stream = new FixChunkedStream(request.RequestStream, 1024 * 16);
+                var stream = new FixChunkedStream(request.RequestStream, 1024 * 32);
                 _channel.WriteAndFlushAsync(stream).Wait();
             }
             else

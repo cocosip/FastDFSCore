@@ -2,10 +2,9 @@
   <![CDATA[Trackers信息]]>
   <Trackers>
     <Tracker>
-      <IPAddress>127.0.0.1</IPAddress>
+      <IPAddress>192.168.0.6</IPAddress>
       <Port>22122</Port>
     </Tracker>
-
   </Trackers>
   <![CDATA[编码]]>
   <Charset>utf-8</Charset>
@@ -19,4 +18,25 @@
   <StorageMaxConnection>100</StorageMaxConnection>
   <![CDATA[日志名称]]>
   <LoggerName>FDFSLogger</LoggerName>
+  <![CDATA[Socket相关数据配置]]>
+  <TcpSetting>
+    <![CDATA[退出后在指定时间内关闭,ms为单位]]>
+    <QuietPeriodMilliSeconds>100</QuietPeriodMilliSeconds>
+    <![CDATA[超时关闭时间,以s为单位]]>
+    <CloseTimeoutSeconds>1</CloseTimeoutSeconds>
+    <![CDATA[高水位,16Mb]]>
+    <WriteBufferHighWaterMark>16777216</WriteBufferHighWaterMark>
+    <![CDATA[低水位,8Mb]]>
+    <WriteBufferLowWaterMark>8388608‬</WriteBufferLowWaterMark>
+    <![CDATA[接收的Socket缓存大小,1Mb]]>
+    <SoRcvbuf>1048576</SoRcvbuf>
+    <![CDATA[发送的Socket缓存大小,1Mb]]>
+    <SoSndbuf>1048576</SoSndbuf>
+    <![CDATA[Tcp发送是否无延迟]]>
+    <TcpNodelay>true</TcpNodelay>
+    <![CDATA[是否重用端口]]>
+    <SoReuseaddr>false</SoReuseaddr>
+    <![CDATA[是否自动读取]]>
+    <AutoRead>false</AutoRead>
+  </TcpSetting>
 </FDFSClient>

@@ -55,12 +55,12 @@ namespace FastDFSCore.Client
         /// </summary>
         private Connection CreateNewConnection()
         {
-            var setting = new ConnectionSetting()
+            var connectionAddress = new ConnectionAddress()
             {
                 ServerEndPoint = _endPoint
             };
 
-            var connection = _connectionPoolFactory.CreateConnection(setting, ConnectionClose);
+            var connection = _connectionPoolFactory.CreateConnection(connectionAddress, ConnectionClose);
             Interlocked.Increment(ref _currentConnectionCount);
             return connection;
         }

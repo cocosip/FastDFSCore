@@ -47,6 +47,30 @@ namespace FastDFSCore.Client
             option.StorageMaxConnection = int.Parse(root.SelectSingleNode("StorageMaxConnection").InnerText);
             //LoggerName
             option.LoggerName = root.SelectSingleNode("LoggerName").InnerText;
+
+            //tcp相关配置
+            option.TcpSetting = new TcpSetting();
+            //Tcp节点
+            var tcpNode = root.SelectSingleNode("TcpSetting");
+            //退出后指定时间内关闭(ms)
+            option.TcpSetting.QuietPeriodMilliSeconds = int.Parse(tcpNode.SelectSingleNode("QuietPeriodMilliSeconds").InnerText);
+            //关闭超时时间(s)
+            option.TcpSetting.CloseTimeoutSeconds = int.Parse(tcpNode.SelectSingleNode("CloseTimeoutSeconds").InnerText);
+            //高水位
+            option.TcpSetting.WriteBufferHighWaterMark = int.Parse(tcpNode.SelectSingleNode("WriteBufferHighWaterMark").InnerText);
+            //低水位
+            option.TcpSetting.WriteBufferLowWaterMark = int.Parse(tcpNode.SelectSingleNode("WriteBufferLowWaterMark").InnerText);
+            //接收socket缓存大小
+            option.TcpSetting.SoRcvbuf = int.Parse(tcpNode.SelectSingleNode("SoRcvbuf").InnerText);
+            //发送socket缓存大小
+            option.TcpSetting.SoSndbuf = int.Parse(tcpNode.SelectSingleNode("SoSndbuf").InnerText);
+            //Tcp无延迟发送
+            option.TcpSetting.TcpNodelay = bool.Parse(tcpNode.SelectSingleNode("TcpNodelay").InnerText);
+            //重用端口号
+            option.TcpSetting.SoReuseaddr = bool.Parse(tcpNode.SelectSingleNode("SoReuseaddr").InnerText);
+            //是否自动读取
+            option.TcpSetting.AutoRead = bool.Parse(tcpNode.SelectSingleNode("AutoRead").InnerText);
+
             return option;
         }
 
@@ -59,6 +83,7 @@ namespace FastDFSCore.Client
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("<FDFSClient>");
+                sb.AppendLine(ParseNote("Trackers信息,可以配置多台"));
                 sb.AppendLine("<Trackers>");
                 foreach (var tracker in option.Trackers)
                 {
@@ -68,36 +93,90 @@ namespace FastDFSCore.Client
                     sb.AppendLine("</IPAddress>");
 
                     sb.Append("<Port>");
-                    sb.Append(tracker.Port.ToString());
+                    sb.Append(tracker.Port);
                     sb.AppendLine("</Port>");
 
                     sb.AppendLine("</Tracker>");
                 }
                 sb.AppendLine("</Trackers>");
-
+                sb.AppendLine(ParseNote("编码"));
                 sb.Append("<Charset>");
                 sb.Append(option.Charset.BodyName);
                 sb.AppendLine("</Charset>");
 
+                sb.AppendLine(ParseNote("连接超时时间(s)"));
                 sb.Append("<ConnectionTimeout>");
-                sb.Append(option.ConnectionTimeout.ToString());
+                sb.Append(option.ConnectionTimeout);
                 sb.AppendLine("</ConnectionTimeout>");
 
+                sb.AppendLine(ParseNote("连接的有效时间(s)"));
                 sb.Append("<ConnectionLifeTime>");
-                sb.Append(option.ConnectionLifeTime.ToString());
+                sb.Append(option.ConnectionLifeTime);
                 sb.AppendLine("</ConnectionLifeTime>");
 
+                sb.AppendLine(ParseNote("最大Tracker连接数"));
                 sb.Append("<TrackerMaxConnection>");
-                sb.Append(option.TrackerMaxConnection.ToString());
+                sb.Append(option.TrackerMaxConnection);
                 sb.AppendLine("</TrackerMaxConnection>");
 
+                sb.AppendLine(ParseNote("最大Storage连接数"));
                 sb.Append("<StorageMaxConnection>");
-                sb.Append(option.StorageMaxConnection.ToString());
+                sb.Append(option.StorageMaxConnection);
                 sb.AppendLine("</StorageMaxConnection>");
 
                 sb.Append("<LoggerName>");
                 sb.Append(option.LoggerName);
                 sb.AppendLine("</LoggerName>");
+
+                //Tcp参数设置
+                sb.AppendLine("<TcpSetting>");
+
+                sb.AppendLine(ParseNote("退出后在指定时间内关闭(ms)"));
+                sb.Append("<QuietPeriodMilliSeconds>");
+                sb.Append(option.TcpSetting.QuietPeriodMilliSeconds);
+                sb.AppendLine("</QuietPeriodMilliSeconds>");
+
+                sb.AppendLine(ParseNote("超时关闭时间(s)"));
+                sb.Append("<CloseTimeoutSeconds>");
+                sb.Append(option.TcpSetting.CloseTimeoutSeconds);
+                sb.AppendLine("</CloseTimeoutSeconds>");
+
+                sb.AppendLine(ParseNote("高水位"));
+                sb.Append("<WriteBufferHighWaterMark>");
+                sb.Append(option.TcpSetting.WriteBufferHighWaterMark);
+                sb.AppendLine("</WriteBufferHighWaterMark>");
+
+                sb.AppendLine(ParseNote("低水位"));
+                sb.Append("<WriteBufferLowWaterMark>");
+                sb.Append(option.TcpSetting.WriteBufferLowWaterMark);
+                sb.AppendLine("</WriteBufferLowWaterMark>");
+
+                sb.AppendLine(ParseNote("接收的Socket缓存大小"));
+                sb.Append("<SoRcvbuf>");
+                sb.Append(option.TcpSetting.SoRcvbuf);
+                sb.AppendLine("</SoRcvbuf>");
+
+                sb.AppendLine(ParseNote("发送的Socket缓存大小"));
+                sb.Append("<SoSndbuf>");
+                sb.Append(option.TcpSetting.SoSndbuf);
+                sb.AppendLine("</SoSndbuf>");
+
+                sb.AppendLine(ParseNote("Tcp发送无延迟"));
+                sb.Append("<TcpNodelay>");
+                sb.Append(option.TcpSetting.TcpNodelay);
+                sb.AppendLine("</TcpNodelay>");
+
+                sb.AppendLine(ParseNote("是否重用端口"));
+                sb.Append("<SoReuseaddr>");
+                sb.Append(option.TcpSetting.SoReuseaddr);
+                sb.AppendLine("</SoReuseaddr>");
+
+                sb.AppendLine(ParseNote("是否自动读取"));
+                sb.Append("<AutoRead>");
+                sb.Append(option.TcpSetting.AutoRead);
+                sb.AppendLine("</AutoRead>");
+
+                sb.AppendLine("</TcpSetting>");
 
                 sb.AppendLine("</FDFSClient>");
                 return sb.ToString();
@@ -108,6 +187,11 @@ namespace FastDFSCore.Client
             }
         }
 
+
+        private static string ParseNote(string note)
+        {
+            return $"<![CDATA[{note}]]>";
+        }
 
 
 

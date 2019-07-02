@@ -13,9 +13,9 @@ namespace FastDFSCore.Client
 
         /// <summary>创建连接
         /// </summary>
-        public Connection CreateConnection(ConnectionSetting setting, Action<Connection> closeAction)
+        public Connection CreateConnection(ConnectionAddress connectionAddress, Action<Connection> closeAction)
         {
-            return _provider.CreateInstance<Connection>(setting, closeAction);
+            return _provider.CreateInstance<Connection>(connectionAddress, closeAction);
         }
 
         /// <summary>创建连接池

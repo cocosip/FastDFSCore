@@ -9,6 +9,7 @@ using DotNetty.Transport.Channels.Sockets;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -18,9 +19,9 @@ namespace FastDFSCore.Client
         private readonly IServiceProvider _provider;
         private readonly ILogger _logger;
         private readonly FDFSOption _option;
+        private ConnectionAddress _connectionAddress;
         private readonly Action<Connection> _closeAction;
 
-        private readonly ConnectionSetting _setting;
         private IEventLoopGroup _group;
         private IChannel _channel;
 
@@ -36,12 +37,12 @@ namespace FastDFSCore.Client
         private ConnectionContext _connectionContext;
         private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
         private IDownloader _downloader = null;
-        public Connection(IServiceProvider provider, FDFSOption option, ConnectionSetting setting, Action<Connection> closeAction)
+        public Connection(IServiceProvider provider, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
         {
             _provider = provider;
             _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
             _option = option;
-            _setting = setting;
+            _connectionAddress = connectionAddress;
             _closeAction = closeAction;
 
             _creationTime = DateTime.Now;
@@ -58,21 +59,22 @@ namespace FastDFSCore.Client
                 _logger.LogInformation($"Client is running! Don't run again! ChannelId:{_channel.Id.AsLongText()}");
                 return;
             }
-
+            var tcpSetting = _option.TcpSetting;
             try
             {
+
                 _group = new MultithreadEventLoopGroup();
                 var bootstrap = new Bootstrap();
                 bootstrap
                     .Group(_group)
                     .Channel<TcpSocketChannel>()
-                    .Option(ChannelOption.TcpNodelay, _setting.TcpNodelay)
-                    .Option(ChannelOption.WriteBufferHighWaterMark, _setting.WriteBufferHighWaterMark)
-                    .Option(ChannelOption.WriteBufferLowWaterMark, _setting.WriteBufferLowWaterMark)
-                    .Option(ChannelOption.SoRcvbuf, _setting.SoRcvbuf)
-                    .Option(ChannelOption.SoSndbuf, _setting.SoSndbuf)
-                    .Option(ChannelOption.SoReuseaddr, _setting.SoReuseaddr)
-                    .Option(ChannelOption.AutoRead, _setting.AutoRead)
+                    .Option(ChannelOption.TcpNodelay, tcpSetting.TcpNodelay)
+                    .Option(ChannelOption.WriteBufferHighWaterMark, tcpSetting.WriteBufferHighWaterMark)
+                    .Option(ChannelOption.WriteBufferLowWaterMark, tcpSetting.WriteBufferLowWaterMark)
+                    .Option(ChannelOption.SoRcvbuf, tcpSetting.SoRcvbuf)
+                    .Option(ChannelOption.SoSndbuf, tcpSetting.SoSndbuf)
+                    .Option(ChannelOption.SoReuseaddr, tcpSetting.SoReuseaddr)
+                    .Option(ChannelOption.AutoRead, tcpSetting.AutoRead)
                     .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
@@ -83,7 +85,7 @@ namespace FastDFSCore.Client
 
                     }));
 
-                _channel = _setting.LocalEndPoint == null ? await bootstrap.ConnectAsync(_setting.ServerEndPoint) : await bootstrap.ConnectAsync(_setting.ServerEndPoint, _setting.LocalEndPoint);
+                _channel = _connectionAddress.LocalEndPoint == null ? await bootstrap.ConnectAsync(_connectionAddress.ServerEndPoint) : await bootstrap.ConnectAsync(_connectionAddress.ServerEndPoint, _connectionAddress.LocalEndPoint);
 
                 _isRuning = true;
 
@@ -92,7 +94,7 @@ namespace FastDFSCore.Client
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(_setting.QuietPeriodMilliSeconds), TimeSpan.FromSeconds(_setting.CloseTimeoutSeconds));
+                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(tcpSetting.QuietPeriodMilliSeconds), TimeSpan.FromSeconds(tcpSetting.CloseTimeoutSeconds));
             }
 
         }
@@ -107,7 +109,7 @@ namespace FastDFSCore.Client
             }
             finally
             {
-                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(_setting.QuietPeriodMilliSeconds), TimeSpan.FromSeconds(_setting.CloseTimeoutSeconds));
+                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(_option.TcpSetting.QuietPeriodMilliSeconds), TimeSpan.FromSeconds(_option.TcpSetting.CloseTimeoutSeconds));
             }
         }
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -35,28 +34,55 @@ namespace FastDFSCore.Client
 
         public string LoggerName { get; set; } = "FDFSLogger";
 
+        /// <summary>SocketTcp相关参数设置
+        /// </summary>
+        public TcpSetting TcpSetting { get; set; }
 
         public FDFSOption()
         {
 
         }
 
-        public void SelfCopy(FDFSOption option)
-        {
-            if (Trackers.Any())
-            {
-                Trackers.Clear();
-            }
-            foreach (var tracker in option.Trackers)
-            {
-                Trackers.Add(tracker);
-            }
-            Charset = option.Charset;
-            ConnectionTimeout = option.ConnectionTimeout;
-            ConnectionLifeTime = option.ConnectionLifeTime;
-            TrackerMaxConnection = option.TrackerMaxConnection;
-            StorageMaxConnection = option.StorageMaxConnection;
-            LoggerName = option.LoggerName;
-        }
+    }
+
+    /// <summary>Tcp的相关配置
+    /// </summary>
+    public class TcpSetting
+    {
+        /// <summary>Quiet after connection channel close (ms)
+        /// </summary>
+        public int QuietPeriodMilliSeconds { get; set; } = 100;
+
+        /// <summary>Timeout when close the channel (s)
+        /// </summary>
+        public int CloseTimeoutSeconds { get; set; } = 1;
+
+        /// <summary>Write buffer high water 16M
+        /// </summary>
+        public int WriteBufferHighWaterMark { get; set; } = 1024 * 1024 * 16;
+
+        /// <summary>Write buffer low water 8M
+        /// </summary>
+        public int WriteBufferLowWaterMark { get; set; } = 1024 * 1024 * 8;
+
+        /// <summary>Receive
+        /// </summary>
+        public int SoRcvbuf { get; set; } = 1024 * 1024;
+
+        /// <summary>Send
+        /// </summary>
+        public int SoSndbuf { get; set; } = 1024 * 1024;
+
+        /// <summary>Whether write and flush now
+        /// </summary>
+        public bool TcpNodelay { get; set; } = true;
+
+        /// <summary>Reuse ip address
+        /// </summary>
+        public bool SoReuseaddr { get; set; } = false;
+
+        /// <summary>AutoRead
+        /// </summary>
+        public bool AutoRead { get; set; } = true;
     }
 }

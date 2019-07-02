@@ -68,9 +68,7 @@ namespace FastDFSCore.Client
             option.TcpSetting.TcpNodelay = bool.Parse(tcpNode.SelectSingleNode("TcpNodelay").InnerText);
             //重用端口号
             option.TcpSetting.SoReuseaddr = bool.Parse(tcpNode.SelectSingleNode("SoReuseaddr").InnerText);
-            //是否自动读取
-            option.TcpSetting.AutoRead = bool.Parse(tcpNode.SelectSingleNode("AutoRead").InnerText);
-
+      
             return option;
         }
 
@@ -170,11 +168,6 @@ namespace FastDFSCore.Client
                 sb.Append("<SoReuseaddr>");
                 sb.Append(option.TcpSetting.SoReuseaddr);
                 sb.AppendLine("</SoReuseaddr>");
-
-                sb.AppendLine(ParseNote("是否自动读取"));
-                sb.Append("<AutoRead>");
-                sb.Append(option.TcpSetting.AutoRead);
-                sb.AppendLine("</AutoRead>");
 
                 sb.AppendLine("</TcpSetting>");
 

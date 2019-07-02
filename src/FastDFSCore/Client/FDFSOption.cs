@@ -80,9 +80,5 @@ namespace FastDFSCore.Client
         /// <summary>Reuse ip address
         /// </summary>
         public bool SoReuseaddr { get; set; } = false;
-
-        /// <summary>AutoRead
-        /// </summary>
-        public bool AutoRead { get; set; } = true;
     }
 }

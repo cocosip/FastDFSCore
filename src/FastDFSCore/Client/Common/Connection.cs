@@ -74,7 +74,7 @@ namespace FastDFSCore.Client
                     .Option(ChannelOption.SoRcvbuf, tcpSetting.SoRcvbuf)
                     .Option(ChannelOption.SoSndbuf, tcpSetting.SoSndbuf)
                     .Option(ChannelOption.SoReuseaddr, tcpSetting.SoReuseaddr)
-                    .Option(ChannelOption.AutoRead, tcpSetting.AutoRead)
+                    .Option(ChannelOption.AutoRead, true)
                     .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;

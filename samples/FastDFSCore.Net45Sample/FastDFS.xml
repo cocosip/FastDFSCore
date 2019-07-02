@@ -36,7 +36,5 @@
     <TcpNodelay>true</TcpNodelay>
     <![CDATA[是否重用端口]]>
     <SoReuseaddr>false</SoReuseaddr>
-    <![CDATA[是否自动读取]]>
-    <AutoRead>false</AutoRead>
   </TcpSetting>
 </FDFSClient>

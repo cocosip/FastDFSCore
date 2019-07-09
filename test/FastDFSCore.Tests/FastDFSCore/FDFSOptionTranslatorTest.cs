@@ -35,6 +35,16 @@ namespace FastDFSCore.Tests.FastDFSCore
             Assert.Equal(20, option.StorageMaxConnection);
             Assert.Equal("Name1", option.LoggerName);
 
+            Assert.Equal(30, option.TcpSetting.QuietPeriodMilliSeconds);
+            Assert.Equal(1, option.TcpSetting.CloseTimeoutSeconds);
+            Assert.Equal(16777216, option.TcpSetting.WriteBufferHighWaterMark);
+            Assert.Equal(8388608, option.TcpSetting.WriteBufferLowWaterMark);
+            Assert.Equal(1048576, option.TcpSetting.SoRcvbuf);
+            Assert.Equal(1048576, option.TcpSetting.SoSndbuf);
+            Assert.True(option.TcpSetting.TcpNodelay);
+            Assert.False(option.TcpSetting.SoReuseaddr);
+
+
             var tracker = option.Trackers.FirstOrDefault();
 
             Assert.Equal("127.1.1.1", tracker.ToIPv4Address());
@@ -56,7 +66,8 @@ namespace FastDFSCore.Tests.FastDFSCore
                 Trackers = new List<IPEndPoint>()
                 {
                     new IPEndPoint(IPAddress.Parse("127.0.0.1"),1333)
-                }
+                },
+                TcpSetting = new TcpSetting()
             };
             var xml = FDFSOptionHelper.ToXml(option);
             File.WriteAllText("test.xml", xml);

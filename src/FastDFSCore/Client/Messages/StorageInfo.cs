@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FastDFSCore
+namespace FastDFSCore.Client
 {
     /// <summary>Storage信息
     /// </summary>

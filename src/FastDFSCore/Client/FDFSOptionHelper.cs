@@ -68,7 +68,9 @@ namespace FastDFSCore.Client
             option.TcpSetting.TcpNodelay = bool.Parse(tcpNode.SelectSingleNode("TcpNodelay").InnerText);
             //重用端口号
             option.TcpSetting.SoReuseaddr = bool.Parse(tcpNode.SelectSingleNode("SoReuseaddr").InnerText);
-      
+            
+            //关闭读取流
+            reader.Close();
             return option;
         }
 

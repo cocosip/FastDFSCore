@@ -40,7 +40,7 @@ namespace FastDFSCore.Client
 
         public FDFSOption()
         {
-
+            TcpSetting = new TcpSetting();
         }
 
     }

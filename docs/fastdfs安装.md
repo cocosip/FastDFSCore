@@ -3,10 +3,7 @@
 ## 下载与安装必要软件
 
 - 必要软件:
-  - 安装unzip: `yum install unzip`
-  - 安装wget: `yum install wget`
-  - 安装gcc(c语言编译器): `yum install gcc`
-  - 安装c++编译器: `yum install gcc-c++`
+  - 安装必要的软件:`yum -y install zlib zlib-devel pcre pcre-devel gcc gcc-c++ openssl openssl-devel libevent libevent-devel perl unzip net-tools wget`
 
 - 创建目录
   
@@ -58,11 +55,95 @@
 
 - **到此为止,fastdfs的基本功能已经安装完成,客户端可以使用相应的sdk进行正常的操作了,把它当作一个存储服务器来用**
 
+## fastdfs nginx安装
+
+- fastdfs nginx 基础安装:
+  - 下载,解压nginx: `wget http://nginx.org/download/nginx-1.17.1.tar.gz`, `tar zxvf nginx-1.17.1.tar.gz`
+  - 下载,解压fastdfs-nginx-module: `wget https://github.com/happyfish100/fastdfs-nginx-module/archive/V1.20.tar.gz`, `tar zxvf V1.20.tar.gz`
+  - 版本编译时的设置:
+    - 进入到fastdfs-nginx-module目录,`cd fastdfs-nginx-module-1.20/src`
+    - 修改config文件:
+
+      ```json
+      ngx_module_incs="/usr/include/fastdfs /usr/include/fastcommon/"
+      CORE_INCS="$CORE_INCS /usr/include/fastdfs /usr/include/fastcommon/"
+      ```
+
+  - 拷贝必要的文件:
+    - `cp /usr/local/fast_download/fastdfs-5.11/conf/http.conf /etc/fdfs` (该文件在fastdfs源文件中的conf目录下)
+    - `cp /usr/local/fast_download/fastdfs-5.11/conf/mime.types /etc/fdfs` (该文件在fastdfs源文件中的conf目录下)
+    - `cp /usr/local/fast_download/fastdfs-nginx-module-1.20/src/mod_fastdfs.conf /etc/fdfs/` (该文件在下载的fastdfs-nginx-module的src目录下)
+  - 修改mod_fastdfs.conf文件
+
+  ```json
+  base_path=/usr/local/fastdfs/storage
+  #tracker地址
+  tracker_server=192.168.0.129:22122
+  store_path0=/usr/local/fastdfs/storage_save
+  #url是否包含group
+  url_have_group_name = true
+  ```
+
+- storage nginx 安装:
+  - storage nginx 编译设置: `cd /usr/local/fast_download/nginx-1.17.1`,`./configure --prefix=/usr/local/nginx_storage --add-module=/usr/local/fast_download/fastdfs-nginx-module-1.20/src`
+  - 编译&安装: `make`, `make install`
+  - storage nginx配置
+    - 定位到 storage nginx安装目录下,`cd /usr/local/nginx_storage`
+    - 编辑配置文件`vim conf/nginx.conf`,添加location节点如下,其中 root的内容为 storage保存存储文件的路径(store_path0,store_path1...)
+
+    ``` json
+    location /group1/M00 {
+        root /usr/local/fastdfs/storage_save;
+        ngx_fastdfs_module;
+    }
+
+    #如果存在多个 store_path
+    location /group1/M01 {
+        root /usr/local/fastdfs/storage_save2;
+        ngx_fastdfs_module;
+    }
+    ```
+
+    - 添加软链接: `ln  -s  /usr/local/fastdfs/storage_save/data /usr/local/fastdfs/storage_save/data/M00`
+    - 启动nginx: `/usr/local/nginx_storage/sbin/nginx`
+  
+- tracker nginx安装:
+  - tracker nginx 编译设置: `cd /usr/local/fast_download/nginx-1.17.1`,`./configure --prefix=/usr/local/nginx_tracker --add-module=/usr/local/fast_download/fastdfs-nginx-module-1.20/src`
+  - 编译&安装: `make`, `make install`
+  - storage nginx配置
+    - 定位到 tracker nginx安装目录下,`cd /usr/local/nginx_tracker`
+    - 编辑配置文件
+
+    ``` json
+    upstream fdfs_group1 {
+        #storage nginx的ip与端口
+        server 192.168.0.129:8080;
+    }
+
+    #也可以用如下方式配置
+    #upstream fdfs_group1 {
+    #    server 10.195.0.23:1789 weight=1 max_fails=2 fail_timeout=30s;
+    #    server 10.195.0.25:1789 weight=1 max_fails=2 fail_timeout=30s;
+    #}
+
+    #ip地址端口号等配置
+    server {
+        listen       8081;
+        server_name  192.168.0.129;
+        location /group1/M00 {
+            proxy_pass http://fdfs_group1;
+        }
+    }
+
+    ```
+
+    - 启动nginx: `/usr/local/nginx_tracker/sbin/nginx`
+
 ## 问题解决方案
 
 - > 一些低版本的linux在安装fastdfs时会出现 '未找到命令的错误',这时候可以运行 `yum -y install zlib zlib-devel pcre pcre-devel gcc gcc-c++ openssl openssl-devel libevent libevent-devel perl unzip net-tools wget` 安装一些相关的配置组件
 
-- >安装好组件后,可能还会出现 `undefined reference to 'g_exe_name'` 这样的错误,可以运行 `./make.sh clean` 清理下。
+- > 安装好组件后,可能还会出现 `undefined reference to 'g_exe_name'` 这样的错误,可以运行 `./make.sh clean` 清理下。
 
 ## 防火墙配置
 

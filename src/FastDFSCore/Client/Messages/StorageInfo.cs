@@ -253,11 +253,15 @@ namespace FastDFSCore.Client
         /// </summary>
         public bool IsTrunkServer { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public StorageInfo()
         {
 
         }
 
+        /// <summary>ToString
+        /// </summary>
         public override string ToString()
         {
             return $"[Status:{Status},Id:{StorageId},IPAddr:{IPAddress},SrcIPAddr:{SrcIPAddress},DomainName:{DomainName},Version:{Version},JoinTime:{JoinTime},UpTime:{UpTime},TotalMb:{TotalMb},FreeMb:{FreeMb},UploadPriority:{UploadPriority},StorePathCount:{StorePathCount},SubdirCount:{SubdirCount},CurrentWritePath:{CurrentWritePath},StoragePort:{StoragePort},StorageHttpPort:{StorageHttpPort}...LastSourceUpdate:{LastSourceUpdate},LastSyncUpdate:{LastSyncUpdate},LastHeartbeatTime:{LastHeartbeatTime},IsTrunkServer:{IsTrunkServer}]";

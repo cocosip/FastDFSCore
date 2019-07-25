@@ -2,18 +2,31 @@
 
 namespace FastDFSCore.Client
 {
+    /// <summary>查询更新信息
+    /// </summary>
     public class QueryUpdateResponse : FDFSResponse
     {
-
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
+
+        /// <summary>IP地址
+        /// </summary>
         public string IPAddress { get; set; }
+
+        /// <summary>端口号
+        /// </summary>
         public int Port { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public QueryUpdateResponse()
         {
 
         }
 
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
             byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];

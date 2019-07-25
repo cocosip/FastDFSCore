@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>客户端连接
+    /// </summary>
     public class Connection
     {
         private readonly IServiceProvider _provider;
@@ -30,13 +32,28 @@ namespace FastDFSCore.Client
         private DateTime _creationTime;
         private DateTime _lastUseTime;
 
+        /// <summary>是否正在使用
+        /// </summary>
         public bool IsUsing { get { return _isUsing; } }
+
+        /// <summary>创建时间
+        /// </summary>
         public DateTime CreationTime { get { return _creationTime; } }
+
+        /// <summary>最后使用时间
+        /// </summary>
         public DateTime LastUseTime { get { return _lastUseTime; } }
 
         private ConnectionContext _connectionContext;
         private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
         private IDownloader _downloader = null;
+
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="provider">provider</param>
+        /// <param name="option">FDFSOption</param>
+        /// <param name="connectionAddress"></param>
+        /// <param name="closeAction"></param>
         public Connection(IServiceProvider provider, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
         {
             _provider = provider;
@@ -146,6 +163,8 @@ namespace FastDFSCore.Client
             return _taskCompletionSource.Task;
         }
 
+        /// <summary>打开连接
+        /// </summary>
         public async Task OpenAsync()
         {
             if (!_isRuning)
@@ -156,6 +175,8 @@ namespace FastDFSCore.Client
             _lastUseTime = DateTime.Now;
         }
 
+        /// <summary>关闭连接
+        /// </summary>
         public async Task CloseAsync()
         {
             _isUsing = false;
@@ -248,6 +269,8 @@ namespace FastDFSCore.Client
 
         #endregion
 
+        /// <summary>释放连接
+        /// </summary>
         public async Task DisposeAsync()
         {
             await ShutdownAsync().ConfigureAwait(false);

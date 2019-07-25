@@ -21,7 +21,8 @@ namespace FastDFSCore.Client
         public byte[] Body { get; set; }
 
 
-
+        /// <summary>读取ChunkBody数据
+        /// </summary>
         public void ReadChunkBody(IByteBuffer buffer, int chunkSize)
         {
             Body = new byte[chunkSize];
@@ -29,14 +30,16 @@ namespace FastDFSCore.Client
             IsChunkWriting = true;
         }
 
-
+        /// <summary>读取Header数据
+        /// </summary>
         public void ReadHeader(IByteBuffer buffer)
         {
             Header = new FDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());
             IsChunkWriting = false;
         }
 
-
+        /// <summary>从IByteBuffer中加载当前的ConnectionReceiveItem信息
+        /// </summary>
         public void ReadFromBuffer(IByteBuffer buffer)
         {
             Header = new FDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());

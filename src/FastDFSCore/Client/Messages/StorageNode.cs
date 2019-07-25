@@ -2,6 +2,8 @@
 
 namespace FastDFSCore.Client
 {
+    /// <summary>Storage节点
+    /// </summary>
     public class StorageNode
     {
         /// <summary>组名
@@ -16,11 +18,18 @@ namespace FastDFSCore.Client
         /// </summary>
         public byte StorePathIndex { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public StorageNode()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <param name="endPoint">Storage IPEndPoint</param>
+        /// <param name="storePathIndex">StorePathIndex</param>
         public StorageNode(string groupName, IPEndPoint endPoint, byte storePathIndex)
         {
             GroupName = groupName;
@@ -28,6 +37,12 @@ namespace FastDFSCore.Client
             StorePathIndex = storePathIndex;
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <param name="ipAddress">IP地址</param>
+        /// <param name="port">端口号</param>
+        /// <param name="storePathIndex">StorePathIndex</param>
         public StorageNode(string groupName, string ipAddress, int port, byte storePathIndex)
         {
             GroupName = groupName;

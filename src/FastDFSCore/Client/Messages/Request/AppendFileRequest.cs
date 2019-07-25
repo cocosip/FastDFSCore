@@ -5,7 +5,6 @@ namespace FastDFSCore.Client
 {
     /// <summary>
     /// 附加文件
-    /// 
     /// Reqeust 
     ///     Cmd: STORAGE_PROTO_CMD_APPEND_FILE 24
     ///     Body:
@@ -21,28 +20,43 @@ namespace FastDFSCore.Client
     public class AppendFileRequest : FDFSRequest<AppendFileResponse>
     {
 
+        /// <summary>文件FileId
+        /// </summary>
         public string FileId { get; set; }
 
-
+        /// <summary>Ctor
+        /// </summary>
         public AppendFileRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="fileId">文件FileId</param>
+        /// <param name="contentBytes">文件二进制数据</param>
         public AppendFileRequest(string fileId, byte[] contentBytes)
         {
             FileId = fileId;
             RequestStream = new MemoryStream(contentBytes);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="fileId">文件FileId</param>
+        /// <param name="stream">文件流</param>
         public AppendFileRequest(string fileId, Stream stream)
         {
             FileId = fileId;
             RequestStream = stream;
         }
 
+        /// <summary>是否为流文件请求
+        /// </summary>
         public override bool StreamRequest => true;
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
 

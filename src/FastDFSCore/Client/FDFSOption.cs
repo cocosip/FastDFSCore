@@ -32,12 +32,16 @@ namespace FastDFSCore.Client
         /// </summary>
         public int StorageMaxConnection { get; set; } = 50;
 
+        /// <summary>日志名称
+        /// </summary>
         public string LoggerName { get; set; } = "FDFSLogger";
 
         /// <summary>SocketTcp相关参数设置
         /// </summary>
-        public TcpSetting TcpSetting { get; set; }
+        public TcpSetting TcpSetting { get; set; } = default;
 
+        /// <summary>Ctor
+        /// </summary>
         public FDFSOption()
         {
             TcpSetting = new TcpSetting();

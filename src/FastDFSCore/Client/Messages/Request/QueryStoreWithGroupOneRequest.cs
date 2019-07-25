@@ -21,18 +21,27 @@ namespace FastDFSCore.Client
     /// </summary>
     public class QueryStoreWithGroupOneRequest : FDFSRequest<QueryStoreWithGroupResponse>
     {
+        /// <summary>组名
+        /// </summary>
         public string GropName { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public QueryStoreWithGroupOneRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
         public QueryStoreWithGroupOneRequest(string groupName)
         {
             GropName = groupName;
         }
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             //消息体长度为group name的最大长度,16

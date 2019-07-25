@@ -3,6 +3,8 @@ using System.Text;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>工具类
+    /// </summary>
     public static class Util
     {
         /// <summary>去除扩展名开始的.
@@ -22,6 +24,11 @@ namespace FastDFSCore.Client
             return groupBytes;
         }
 
+        /// <summary>创建文件扩展名二进制
+        /// </summary>
+        /// <param name="encoding">编码</param>
+        /// <param name="fileExt">扩展名</param>
+        /// <returns></returns>
         public static byte[] CreateFileExtBuffer(Encoding encoding, string fileExt)
         {
             byte[] extBuffer = new byte[Consts.FDFS_FILE_EXT_NAME_MAX_LEN];
@@ -35,6 +42,11 @@ namespace FastDFSCore.Client
             return extBuffer;
         }
 
+        /// <summary>创建前缀二进制
+        /// </summary>
+        /// <param name="encoding">编码</param>
+        /// <param name="prefix">前缀</param>
+        /// <returns></returns>
         public static byte[] CreatePrefixBuffer(Encoding encoding, string prefix)
         {
             byte[] prefixBuffer = new byte[Consts.FDFS_FILE_PREFIX_MAX_LEN];
@@ -43,12 +55,21 @@ namespace FastDFSCore.Client
             return prefixBuffer;
         }
 
-
+        /// <summary>String转二进制
+        /// </summary>
+        /// <param name="encoding">编码</param>
+        /// <param name="input">string字符串</param>
+        /// <returns></returns>
         public static byte[] StringToByte(Encoding encoding, string input)
         {
             return encoding.GetBytes(input);
         }
 
+        /// <summary>二进制转String
+        /// </summary>
+        /// <param name="encoding">编码</param>
+        /// <param name="input">二进制</param>
+        /// <returns></returns>
         public static string ByteToString(Encoding encoding, byte[] input)
         {
             char[] chars = encoding.GetChars(input);
@@ -56,6 +77,13 @@ namespace FastDFSCore.Client
             return result;
         }
 
+        /// <summary>二进制转字符串
+        /// </summary>
+        /// <param name="encoding">编码</param>
+        /// <param name="input">二进制</param>
+        /// <param name="startIndex">开始位置</param>
+        /// <param name="count">转换的数量</param>
+        /// <returns></returns>
         public static string ByteToString(Encoding encoding, byte[] input, int startIndex, int count)
         {
             char[] chars = encoding.GetChars(input, startIndex, count);
@@ -63,7 +91,8 @@ namespace FastDFSCore.Client
             return result;
         }
 
-
+        /// <summary>long类型转二进制
+        /// </summary>
         public static byte[] LongToBuffer(long l)
         {
             byte[] buffer = new byte[8];
@@ -78,6 +107,8 @@ namespace FastDFSCore.Client
             return buffer;
         }
 
+        /// <summary>二进制转换为long
+        /// </summary>
         public static long BufferToLong(byte[] buffer, int offset = 0)
         {
 #pragma warning disable CS0675 
@@ -93,7 +124,8 @@ namespace FastDFSCore.Client
 
         }
 
-
+        /// <summary>从二进制加载GroupInfo
+        /// </summary>
         public static GroupInfo LoadGroupInfo(Encoding encoding, byte[] buffer)
         {
             var groupInfo = new GroupInfo();
@@ -129,6 +161,8 @@ namespace FastDFSCore.Client
             return groupInfo;
         }
 
+        /// <summary>从二进制加载StorageInfo
+        /// </summary>
         public static StorageInfo LoadStorageInfo(Encoding encoding, byte[] buffer)
         {
             var storageInfo = new StorageInfo();

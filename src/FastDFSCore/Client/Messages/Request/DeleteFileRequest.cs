@@ -14,20 +14,29 @@ namespace FastDFSCore.Client
     /// Response
     ///     Cmd: STORAGE_PROTO_CMD_RESP
     ///     Status: 0 right other wrong
-    ///     Body: 
-    ///         
+    ///     Body:       
     /// </summary>
     public class DeleteFileRequest : FDFSRequest<DeleteFileResponse>
     {
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
 
+        /// <summary>文件FileId
+        /// </summary>
         public string FileId { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public DeleteFileRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <param name="fileId">文件FileId</param>
         public DeleteFileRequest(string groupName, string fileId)
         {
             GroupName = groupName;
@@ -35,8 +44,8 @@ namespace FastDFSCore.Client
         }
 
 
-        /// 1,string groupName
-        /// 2,string fileName
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
 

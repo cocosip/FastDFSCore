@@ -3,11 +3,16 @@ using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
-
+    /// <summary>获取全部的Group返回信息
+    /// </summary>
     public class ListAllGroupResponse : FDFSResponse
     {
+        /// <summary>Group信息列表
+        /// </summary>
         public List<GroupInfo> GroupInfos { get; set; } = new List<GroupInfo>();
 
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
             if (data.Length % Consts.FDFS_GROUP_INFO_SIZE != 0)

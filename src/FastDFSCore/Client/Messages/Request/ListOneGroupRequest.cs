@@ -26,17 +26,27 @@
     /// </summary>
     public class ListOneGroupRequest : FDFSRequest<ListOneGroupResponse>
     {
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
+
+        /// <summary>Ctor
+        /// </summary>
         public ListOneGroupRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
         public ListOneGroupRequest(string groupName)
         {
             GroupName = groupName;
         }
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             byte[] bodyBuffer = Util.CreateGroupNameBuffer(option.Charset, GroupName);

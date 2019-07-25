@@ -5,10 +5,15 @@ using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>FastDFS客户端
+    /// </summary>
     public class FDFSClient : IFDFSClient
     {
         private readonly IExecuter _executer;
         private readonly IDownloaderFactory _downloaderFactory;
+
+        /// <summary>Ctor
+        /// </summary>
         public FDFSClient(IExecuter executer, IDownloaderFactory downloaderFactory)
         {
             _executer = executer;
@@ -292,7 +297,7 @@ namespace FastDFSCore.Client
         /// </summary>
         /// <param name="storageNode"></param>
         /// <param name="fileId"></param>
-        /// <param name="filePath">文件保存路径</param>
+        /// <param name="downloader">文件下载器</param>
         /// <returns></returns>
         public async Task<string> DownloadFileEx(StorageNode storageNode, string fileId, IDownloader downloader)
         {

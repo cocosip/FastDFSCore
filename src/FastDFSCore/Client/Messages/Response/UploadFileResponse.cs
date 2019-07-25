@@ -6,14 +6,23 @@ namespace FastDFSCore.Client
     /// </summary>
     public class UploadFileResponse : FDFSResponse
     {
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
 
+        /// <summary>文件FileId
+        /// </summary>
         public string FileId { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public UploadFileResponse()
         {
 
         }
+
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
             byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];

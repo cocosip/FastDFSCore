@@ -22,7 +22,8 @@ namespace FastDFSCore.Client
         /// </summary>
         public byte StorePathIndex { get; set; }
 
-
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
 

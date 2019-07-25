@@ -2,6 +2,8 @@
 
 namespace FastDFSCore.Client
 {
+    /// <summary>查询一个可用的Storage返回
+    /// </summary>
     public class QueryFetchOneResponse : FDFSResponse
     {
 
@@ -17,11 +19,18 @@ namespace FastDFSCore.Client
         /// </summary>
         public int Port { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public QueryFetchOneResponse()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <param name="iPAddress">IP地址</param>
+        /// <param name="port">端口号</param>
         public QueryFetchOneResponse(string groupName, string iPAddress, int port)
         {
             GroupName = groupName;
@@ -29,7 +38,8 @@ namespace FastDFSCore.Client
             Port = port;
         }
 
-
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
             byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];

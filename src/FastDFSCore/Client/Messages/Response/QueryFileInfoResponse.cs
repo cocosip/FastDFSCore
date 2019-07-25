@@ -2,8 +2,12 @@
 
 namespace FastDFSCore.Client
 {
+    /// <summary>查询文件信息返回
+    /// </summary>
     public class QueryFileInfoResponse : FDFSResponse
     {
+        /// <summary>文件大小
+        /// </summary>
         public long FileSize { get; set; }
 
         /// <summary>创建时间
@@ -14,12 +18,15 @@ namespace FastDFSCore.Client
         /// </summary>
         public long Crc32 { get; set; }
 
-
+        /// <summary>Ctor
+        /// </summary>
         public QueryFileInfoResponse()
         {
 
         }
 
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
 

@@ -3,6 +3,8 @@ using System;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>ServiceCollection扩展
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
 

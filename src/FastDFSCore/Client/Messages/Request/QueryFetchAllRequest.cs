@@ -20,21 +20,33 @@ namespace FastDFSCore.Client
     /// </summary>
     public class QueryFetchAllRequest : FDFSRequest<QueryFetchAllResponse>
     {
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
 
+        /// <summary>文件FileId
+        /// </summary>
         public string FileId { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public QueryFetchAllRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="groupName">组名</param>
+        /// <param name="fileId">文件FileId</param>
         public QueryFetchAllRequest(string groupName, string fileId)
         {
             GroupName = groupName;
             FileId = fileId;
         }
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             byte[] groupNameBuffer = Util.CreateGroupNameBuffer(option.Charset, GroupName);

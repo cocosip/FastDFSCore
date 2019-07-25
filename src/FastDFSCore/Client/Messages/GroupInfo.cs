@@ -48,15 +48,19 @@
         /// </summary>
         public int SubdirCount { get; set; }
 
+        /// <summary>当前Trunk的FileId
+        /// </summary>
         public long CurrentTrunkFileId { get; set; }
 
-
+        /// <summary>Ctor
+        /// </summary>
         public GroupInfo()
         {
 
         }
 
-
+        /// <summary>ToString
+        /// </summary>
         public override string ToString()
         {
             return $"[GroupName:{GroupName},FreeDisk:{FreeMb},ServerCount:{ServerCount},ServerPort:{StoragePort},ServerHttpPort:{StorageHttpPort},ActiveServerCount:{ActiveCount},CurrentWriteServerIndex:{CurrentWriteServerIndex},StorePathCount:{StorePathCount},SubdirCount:{SubdirCount}]";

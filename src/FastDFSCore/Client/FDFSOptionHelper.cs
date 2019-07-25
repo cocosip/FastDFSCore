@@ -6,6 +6,8 @@ using System.Xml;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>FastDFSCore配置信息帮助类
+    /// </summary>
     public static class FDFSOptionHelper
     {
         /// <summary>从文件中读取配置信息
@@ -68,7 +70,7 @@ namespace FastDFSCore.Client
             option.TcpSetting.TcpNodelay = bool.Parse(tcpNode.SelectSingleNode("TcpNodelay").InnerText);
             //重用端口号
             option.TcpSetting.SoReuseaddr = bool.Parse(tcpNode.SelectSingleNode("SoReuseaddr").InnerText);
-            
+
             //关闭读取流
             reader.Close();
             return option;

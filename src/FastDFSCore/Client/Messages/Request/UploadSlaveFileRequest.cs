@@ -25,7 +25,8 @@ namespace FastDFSCore.Client
     /// </summary>
     public class UploadSlaveFileRequest : FDFSRequest<UploadSlaveFileResponse>
     {
-
+        /// <summary>主文件FileId
+        /// </summary>
         public string MasterFileId { get; set; }
 
         /// <summary>从文件,文件前缀
@@ -36,11 +37,19 @@ namespace FastDFSCore.Client
         /// </summary>
         public string FileExt { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public UploadSlaveFileRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="masterFileId">主文件FileId</param>
+        /// <param name="prefix">前缀</param>
+        /// <param name="fileExt">扩展名</param>
+        /// <param name="stream">文件流</param>
         public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, Stream stream)
         {
             MasterFileId = masterFileId;
@@ -49,6 +58,12 @@ namespace FastDFSCore.Client
             RequestStream = stream;
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="masterFileId">主文件FileId</param>
+        /// <param name="prefix">前缀</param>
+        /// <param name="fileExt">扩展名</param>
+        /// <param name="contentBytes">文件二进制</param>
         public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, byte[] contentBytes)
         {
             MasterFileId = masterFileId;
@@ -58,8 +73,12 @@ namespace FastDFSCore.Client
             RequestStream = new MemoryStream(contentBytes);
         }
 
+        /// <summary>是否流请求
+        /// </summary>
         public override bool StreamRequest => true;
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             //文件名长度数组

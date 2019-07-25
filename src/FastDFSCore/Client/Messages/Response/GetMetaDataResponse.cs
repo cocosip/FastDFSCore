@@ -3,16 +3,23 @@ using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>获取文件MetaData返回
+    /// </summary>
     public class GetMetaDataResponse : FDFSResponse
     {
+        /// <summary>MetaData集合
+        /// </summary>
         public IDictionary<string, string> MetaData { get; set; }
 
-
+        /// <summary>Ctor
+        /// </summary>
         public GetMetaDataResponse()
         {
 
         }
 
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
             MetaData = new Dictionary<string, string>();

@@ -2,7 +2,8 @@
 
 namespace FastDFSCore.Client
 {
-
+    /// <summary>FastDFSCore通讯的请求
+    /// </summary>
     public abstract class FDFSRequest
     {
         /// <summary>头部
@@ -30,6 +31,8 @@ namespace FastDFSCore.Client
         public abstract byte[] EncodeBody(FDFSOption option);
     }
 
+    /// <summary>FDFSRequest, <seealso cref="FastDFSCore.Client.FDFSRequest"/>
+    /// </summary>
     public abstract class FDFSRequest<T> : FDFSRequest where T : FDFSResponse
     {
 

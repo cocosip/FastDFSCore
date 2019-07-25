@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>时间工具类
+    /// </summary>
     public static class DateTimeUtil
     {
         /// <summary> 将时间转换成int32类型

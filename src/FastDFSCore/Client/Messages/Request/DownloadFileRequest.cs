@@ -20,20 +20,35 @@ namespace FastDFSCore.Client
     /// </summary>
     public class DownloadFileRequest : FDFSRequest<DownloadFileResponse>
     {
+        /// <summary>偏移量
+        /// </summary>
         public long Offset { get; set; }
 
+        /// <summary>下载的大小
+        /// </summary>
         public long ByteSize { get; set; }
 
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
 
+        /// <summary>文件FileId
+        /// </summary>
         public string FileId { get; set; }
 
-
+        /// <summary>Ctor
+        /// </summary>
         public DownloadFileRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="offset">偏移量</param>
+        /// <param name="byteSize">下载的大小</param>
+        /// <param name="groupName">组名</param>
+        /// <param name="fileId">文件FileId</param>
         public DownloadFileRequest(long offset, long byteSize, string groupName, string fileId)
         {
             Offset = offset;
@@ -42,6 +57,8 @@ namespace FastDFSCore.Client
             FileId = fileId;
         }
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             byte[] groupNameBuffer = Util.CreateGroupNameBuffer(option.Charset, GroupName);

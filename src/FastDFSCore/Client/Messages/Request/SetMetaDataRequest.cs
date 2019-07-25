@@ -26,20 +26,35 @@ namespace FastDFSCore.Client
     /// </summary>
     public class SetMetaDataRequest : FDFSRequest<SetMetaDataResonse>
     {
-
+        /// <summary>文件FileId
+        /// </summary>
         public string FileId { get; set; }
 
+        /// <summary>组名
+        /// </summary>
         public string GroupName { get; set; }
 
+        /// <summary>MetaData字典
+        /// </summary>
         public IDictionary<string, string> MetaData { get; set; }
 
+        /// <summary>MetaDataOption选项,<see cref="FastDFSCore.Client.MetaDataOption"/>
+        /// </summary>
         public MetaDataOption Option { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
         public SetMetaDataRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="fileId">文件FileId</param>
+        /// <param name="groupName">组名</param>
+        /// <param name="metaData">MetaData</param>
+        /// <param name="option">MetaDataOption</param>
         public SetMetaDataRequest(string fileId, string groupName, IDictionary<string, string> metaData, MetaDataOption option)
         {
             FileId = fileId;
@@ -48,6 +63,8 @@ namespace FastDFSCore.Client
             Option = option;
         }
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
 

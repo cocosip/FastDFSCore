@@ -2,6 +2,8 @@
 
 namespace FastDFSCore.Client
 {
+    /// <summary>EndPoint扩展
+    /// </summary>
     public static class EndPointExtensions
     {
         /// <summary>Parse IPAddress to ipv4 string, exp: 127.0.0.1

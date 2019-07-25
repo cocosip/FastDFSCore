@@ -3,9 +3,14 @@ using System.Net;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>连接池工厂
+    /// </summary>
     public class ConnectionPoolFactory : IConnectionPoolFactory
     {
         private readonly IServiceProvider _provider;
+
+        /// <summary>Ctor
+        /// </summary>
         public ConnectionPoolFactory(IServiceProvider provider)
         {
             _provider = provider;

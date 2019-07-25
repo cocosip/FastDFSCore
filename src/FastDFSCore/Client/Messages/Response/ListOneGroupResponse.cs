@@ -2,11 +2,16 @@
 
 namespace FastDFSCore.Client
 {
+    /// <summary>查询一个Group返回
+    /// </summary>
     public class ListOneGroupResponse : FDFSResponse
     {
+        /// <summary>Group信息
+        /// </summary>
         public GroupInfo GroupInfo { get; set; }
 
-
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
             if (data.Length != Consts.FDFS_GROUP_INFO_SIZE)

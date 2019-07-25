@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>连接管理器
+    /// </summary>
     public interface IConnectionManager
     {
         /// <summary>获取Tracker的连接

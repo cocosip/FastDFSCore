@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>查询全部的Group
+    /// </summary>
     public class QueryFetchAllResponse : FDFSResponse
     {
         /// <summary>组名
@@ -17,13 +19,15 @@ namespace FastDFSCore.Client
         /// </summary>
         public int Port { get; set; }
 
-
+        /// <summary>Ctor
+        /// </summary>
         public QueryFetchAllResponse()
         {
 
         }
 
-
+        /// <summary>LoadContent
+        /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
 

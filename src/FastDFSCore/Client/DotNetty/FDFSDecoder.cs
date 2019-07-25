@@ -16,12 +16,17 @@ namespace FastDFSCore.Client
         readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
         readonly int lengthFieldEndOffset = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
         private Func<ConnectionContext> getConnectionContextAction;
+
+        /// <summary>Ctor
+        /// </summary>
         public FDFSDecoder(Func<ConnectionContext> getConnectionContext)
         {
-            this.getConnectionContextAction = getConnectionContext;
-            this.lengthFieldEndOffset = lengthFieldLength + 2;
+            getConnectionContextAction = getConnectionContext;
+            lengthFieldEndOffset = lengthFieldLength + 2;
         }
 
+        /// <summary>Decode
+        /// </summary>
         protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
         {
             object decoded = this.Decode(context, input);
@@ -110,11 +115,15 @@ namespace FastDFSCore.Client
             return receiveItem;
         }
 
+        /// <summary>获取未调整的长度
+        /// </summary>
         protected long GetUnadjustedFrameLength(IByteBuffer buffer, int offset)
         {
             return buffer.GetLong(offset);
         }
 
+        /// <summary>提取框架数据
+        /// </summary>
         protected virtual IByteBuffer ExtractFrame(IChannelHandlerContext context, IByteBuffer buffer, int index, int length)
         {
             IByteBuffer buff = buffer.Slice(index, length);

@@ -25,6 +25,8 @@
     /// </summary>
     public class ListAllGroupRequest : FDFSRequest<ListAllGroupResponse>
     {
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             Header = new FDFSHeader(0, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ALL_GROUPS, 0);

@@ -1,5 +1,7 @@
 ﻿namespace FastDFSCore.Client
 {
+    /// <summary>连接上下文
+    /// </summary>
     public class ConnectionContext
     {
         /// <summary>头部
@@ -30,6 +32,8 @@
         /// </summary>
         public long WritePosition { get; set; }
 
+        /// <summary>是否读取完成
+        /// </summary>
         public bool IsReadCompleted
         {
             get
@@ -42,11 +46,15 @@
             }
         }
 
+        /// <summary>是否写入完成
+        /// </summary>
         public bool IsWriteCompleted
         {
             get { return Header.Length == WritePosition; }
         }
 
+        /// <summary>获取未读的长度
+        /// </summary>
         public long GetUnreadLength()
         {
             return Header.Length - ReadPosition;

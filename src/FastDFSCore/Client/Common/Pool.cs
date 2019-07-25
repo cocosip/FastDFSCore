@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>连接池
+    /// </summary>
     public class Pool
     {
         private IPEndPoint _endPoint;
@@ -15,6 +17,8 @@ namespace FastDFSCore.Client
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
 
+        /// <summary>Ctor
+        /// </summary>
         public Pool(IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime)
         {
             _connectionPoolFactory = connectionPoolFactory;
@@ -86,7 +90,8 @@ namespace FastDFSCore.Client
             return (lastUseTime != default(DateTime)) && ((DateTime.Now - lastUseTime).TotalSeconds > _connectionLifeTime);
         }
 
-
+        /// <summary>关闭连接池
+        /// </summary>
         public void Shutdown()
         {
             foreach (var connection in _connections)

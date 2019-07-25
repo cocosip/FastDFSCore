@@ -22,6 +22,8 @@ namespace FastDFSCore.Sample
             _fs.Write(buffers, 0, buffers.Length);
         }
 
+        /// <summary>释放
+        /// </summary>
         public override void Release()
         {
             base.Release();

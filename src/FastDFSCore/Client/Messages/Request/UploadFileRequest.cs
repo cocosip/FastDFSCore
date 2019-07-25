@@ -31,13 +31,18 @@ namespace FastDFSCore.Client
         /// </summary>
         public string FileExt { get; set; }
 
-
-
+        /// <summary>Ctor
+        /// </summary>
         public UploadFileRequest()
         {
 
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="storePathIndex">StorePathIndex</param>
+        /// <param name="fileExt">文件扩展名</param>
+        /// <param name="stream">文件流</param>
         public UploadFileRequest(byte storePathIndex, string fileExt, Stream stream)
         {
             StorePathIndex = storePathIndex;
@@ -45,6 +50,11 @@ namespace FastDFSCore.Client
             RequestStream = stream;
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="storePathIndex">StorePathIndex</param>
+        /// <param name="fileExt">文件扩展名</param>
+        /// <param name="contentBytes">文件二进制</param>
         public UploadFileRequest(byte storePathIndex, string fileExt, byte[] contentBytes)
         {
             StorePathIndex = storePathIndex;
@@ -57,6 +67,8 @@ namespace FastDFSCore.Client
         /// </summary>
         public override bool StreamRequest => true;
 
+        /// <summary>EncodeBody
+        /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
             //1.StorePathIndex

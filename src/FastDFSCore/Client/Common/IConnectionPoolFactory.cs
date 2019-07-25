@@ -3,6 +3,8 @@ using System.Net;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>连接池工厂
+    /// </summary>
     public interface IConnectionPoolFactory
     {
         /// <summary>创建连接

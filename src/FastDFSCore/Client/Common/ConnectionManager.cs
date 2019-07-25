@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
 {
+    /// <summary>连接管理器
+    /// </summary>
     public class ConnectionManager : IConnectionManager
     {
         private ConcurrentDictionary<IPEndPoint, Pool> _trackerPools = new ConcurrentDictionary<IPEndPoint, Pool>();
@@ -18,6 +20,11 @@ namespace FastDFSCore.Client
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly List<IPEndPoint> _trackerEndPoints = new List<IPEndPoint>();
         private readonly FDFSOption _option;
+
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="connectionPoolFactory">连接池工厂</param>
+        /// <param name="option">FDFSOption</param>
         public ConnectionManager(IConnectionPoolFactory connectionPoolFactory, FDFSOption option)
         {
             _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);

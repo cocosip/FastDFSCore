@@ -81,7 +81,7 @@ cd fastdfs-5.11
 ./make.sh || exit 1
 ./make.sh install || exit 1
 
-cd /etc/fdfs/
+cd /etc/fdfs
 # 拷贝配置文件
 mv client.conf.sample client.conf
 mv storage.conf.sample storage.conf
@@ -121,14 +121,15 @@ sed -i "/^tracker_server=/c\tracker_server=$local_ip:22122" client.conf
 
 # fastdfs-nginx-module配置
 ngx_module_incs_path="/usr/include/fastdfs /usr/include/fastcommon/"
-core_incs_path="$CORE_INCS /usr/include/fastdfs /usr/include/fastcommon/"
+core_incs_path="\$CORE_INCS /usr/include/fastdfs /usr/include/fastcommon/"
 # 
 cd ${software_path}"/fastdfs-nginx-module-1.20/src"
-sed -i "/^ngx_module_incs=/c\ngx_module_incs=$ngx_module_incs_path" config
-sed -i "/^CORE_INCS=/c\CORE_INCS=$core_incs_path" config
+sed -i "/^.*ngx_module_incs=/c\ngx_module_incs=\"/usr/include/fastdfs /usr/include/fastcommon/\"" config
+sed -i "/^.*CORE_INCS=/c\CORE_INCS=\"\$CORE_INCS /usr/include/fastdfs /usr/include/fastcommon/\"" config
+
 
 # 配置mod_fastdfs.conf配置
-cd etc/fdfs
+cd /etc/fdfs
 # 配置base_path
 sed -i "/^base_path=/c\base_path=$storage_data_path" mod_fastdfs.conf
 # 配置tracker地址
@@ -150,9 +151,9 @@ make install || exit 1
 # storage nginx配置
 cd ${storage_nginx_path}"/conf"
 # storage nginx端口号设置
-sed -i "/^.*\listen.*$/c\listen  8080;" nginx.conf
+sed -i "/^\s*\r*\listen.*$/c\listen  8080;" nginx.conf
 # storage nginx ip 地址设置
-sed -i "/^.*\server_name.*$/c\server_name  $local_ip;" nginx.conf
+sed -i "/^\s*\r*server_name.*$/c\server_name  $local_ip;" nginx.conf
 # 添加location节点
 sed -i "/^.*\#error_page.*$/i\        location \/$group_name\/M00 {" nginx.conf
 sed -i "/^.*\#error_page.*$/i\            root $storage_data_path\/data;" nginx.conf
@@ -169,15 +170,31 @@ make || exit 1
 make install || exit 1
 # tracker nginx配置
 cd ${tracker_nginx_path}"/conf"
-# storage nginx端口号设置
-sed -i "/^.*\listen.*$/c\listen  8081;" nginx.conf
-# storage nginx ip 地址设置
-sed -i "/^.*\server_name.*$/c\server_name  $local_ip;" nginx.conf
+# tracker nginx端口号设置
+sed -i "/^\s*\r*listen.*$/c\listen  8081;" nginx.conf
+# tracker nginx ip 地址设置
+sed -i "/^\s*\r*server_name.*$/c\server_name  $local_ip;" nginx.conf
 
 # 配置upstram
 sed -i "/^.*\#gzip.*$/i\        upstream fdfs_$group_name {" nginx.conf
 sed -i "/^.*\#gzip.*$/i\            server ${local_ip}:8080;" nginx.conf
 sed -i "/^.*\#gzip.*$/i\        }" nginx.conf
+# 添加location节点
+sed -i "/^.*\#error_page.*$/i\        location \/$group_name\/M00 {" nginx.conf
+sed -i "/^.*\#error_page.*$/i\            proxy_pass http://fdfs_$group_name;" nginx.conf
+sed -i "/^.*\#error_page.*$/i\        }" nginx.conf
+
+# 防火墙
+firewall-cmd --zone=public --add-port=22122/tcp --permanent
+firewall-cmd --zone=public --add-port=23000/tcp --permanent
+firewall-cmd --zone=public --add-port=8080/tcp --permanent
+firewall-cmd --zone=public --add-port=8081/tcp --permanent
+
+# 运行
+fdfs_trackerd /etc/fdfs/tracker.conf
+fdfs_storaged /etc/fdfs/storage.conf
+${tracker_nginx_path}"/sbin/nginx"
+${storage_nginx_path}"/sbin/nginx"
 
 
 echo -e "[--------------------fastdfs install finish--------------------]"

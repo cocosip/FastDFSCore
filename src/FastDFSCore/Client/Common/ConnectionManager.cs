@@ -12,13 +12,14 @@ namespace FastDFSCore.Client
     /// </summary>
     public class ConnectionManager : IConnectionManager
     {
-        private ConcurrentDictionary<IPEndPoint, Pool> _trackerPools = new ConcurrentDictionary<IPEndPoint, Pool>();
-        private ConcurrentDictionary<IPEndPoint, Pool> _storagePools = new ConcurrentDictionary<IPEndPoint, Pool>();
+        private readonly ConcurrentDictionary<IPEndPoint, Pool> _trackerPools = new ConcurrentDictionary<IPEndPoint, Pool>();
+        private readonly ConcurrentDictionary<IPEndPoint, Pool> _storagePools = new ConcurrentDictionary<IPEndPoint, Pool>();
 
+        private bool _isRunning = false;
         private readonly ILogger _logger;
         private readonly object syncObject = new object();
         private readonly IConnectionPoolFactory _connectionPoolFactory;
-        private readonly List<IPEndPoint> _trackerEndPoints = new List<IPEndPoint>();
+        private List<IPEndPoint> _trackerEndPoints = new List<IPEndPoint>();
         private readonly FDFSOption _option;
 
         /// <summary>Ctor
@@ -30,7 +31,7 @@ namespace FastDFSCore.Client
             _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
             _connectionPoolFactory = connectionPoolFactory;
             _option = option;
-            _trackerEndPoints = _option.Trackers;
+
         }
 
         /// <summary>获取Tracker的连接
@@ -63,26 +64,35 @@ namespace FastDFSCore.Client
         /// </summary>
         public void Start()
         {
+            if (_isRunning)
+            {
+                return;
+            }
+            _trackerEndPoints = _option.Trackers;
             foreach (var trackerEndPoint in _option.Trackers)
             {
                 var pool = _connectionPoolFactory.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime);
                 _trackerPools.TryAdd(trackerEndPoint, pool);
             }
+            _isRunning = true;
         }
 
         /// <summary>关闭
         /// </summary>
         public void Shutdown()
         {
-
-            foreach (var item in _trackerPools)
+            if (_isRunning)
             {
-                item.Value.Shutdown();
+                foreach (var item in _trackerPools)
+                {
+                    item.Value.Shutdown();
+                }
+                foreach (var item in _storagePools)
+                {
+                    item.Value.Shutdown();
+                }
             }
-            foreach (var item in _storagePools)
-            {
-                item.Value.Shutdown();
-            }
+            _isRunning = false;
         }
     }
 }

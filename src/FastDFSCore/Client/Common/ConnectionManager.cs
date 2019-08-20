@@ -17,7 +17,7 @@ namespace FastDFSCore.Client
 
         private bool _isRunning = false;
         private readonly ILogger _logger;
-        private readonly object syncObject = new object();
+        private readonly object SyncObject = new object();
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private List<IPEndPoint> _trackerEndPoints = new List<IPEndPoint>();
         private readonly FDFSOption _option;
@@ -49,12 +49,13 @@ namespace FastDFSCore.Client
         public async Task<Connection> GetStorageConnection(IPEndPoint endPoint)
         {
             Pool storagePool;
-            lock (syncObject)
+            lock (SyncObject)
             {
                 if (!_storagePools.TryGetValue(endPoint, out storagePool))
                 {
                     storagePool = _connectionPoolFactory.CreatePool(endPoint, _option.StorageMaxConnection, _option.ConnectionLifeTime);
                     _storagePools.TryAdd(endPoint, storagePool);
+                    _logger.LogDebug("_storagePools 中不存在连接池:{0}", endPoint.ToStringAddress());
                 }
             }
             return await storagePool.GetConnection();

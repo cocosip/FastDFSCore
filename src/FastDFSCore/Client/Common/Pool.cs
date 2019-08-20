@@ -87,7 +87,7 @@ namespace FastDFSCore.Client
         /// </summary>
         private bool IsConnectionExpired(DateTime lastUseTime)
         {
-            return (lastUseTime != default(DateTime)) && ((DateTime.Now - lastUseTime).TotalSeconds > _connectionLifeTime);
+            return (lastUseTime != default) && ((DateTime.Now - lastUseTime).TotalSeconds > _connectionLifeTime);
         }
 
         /// <summary>关闭连接池

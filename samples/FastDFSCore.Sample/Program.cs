@@ -124,7 +124,8 @@ namespace FastDFSCore.Sample
             Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-            var dir =
+            var dir = 
+            //new DirectoryInfo(@"D:\DicomTest\ZHOUNING");
             new DirectoryInfo(@"D:\Pictures");
             //new DirectoryInfo(@"D:\DicomTest\BigTest");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");

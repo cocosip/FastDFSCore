@@ -20,7 +20,7 @@ namespace FastDFSCore.Client
         private readonly IServiceProvider _provider;
         private readonly ILogger _logger;
         private readonly FDFSOption _option;
-        private ConnectionAddress _connectionAddress;
+        private readonly ConnectionAddress _connectionAddress;
         private readonly Action<Connection> _closeAction;
 
         private IEventLoopGroup _group;
@@ -28,7 +28,7 @@ namespace FastDFSCore.Client
 
         private bool _isRuning = false;
         private bool _isUsing = false;
-        private DateTime _creationTime;
+        private readonly DateTime _creationTime;
         private DateTime _lastUseTime;
 
         /// <summary>是否正在使用

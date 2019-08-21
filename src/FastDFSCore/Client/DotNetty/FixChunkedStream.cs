@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
- 
+
 namespace FastDFSCore.Client
 {
+    using DotNetty.Buffers;
+    using DotNetty.Handlers.Streams;
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Threading;
-    using DotNetty.Buffers;
-    using DotNetty.Handlers.Streams;
 
     /// <summary>DotNetty 修复后的ChunkedStream
     /// </summary>

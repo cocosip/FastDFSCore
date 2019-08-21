@@ -48,14 +48,13 @@ namespace FastDFSCore.Client
             //开始运行,初始化文件流
             BeginWrite();
 
-            Task.Factory.StartNew(() =>
+            Task.Run(() =>
             {
                 while (_isComplete == 0)
                 {
                     try
                     {
-                        byte[] buffer;
-                        if (_pendingWriteQueue.TryDequeue(out buffer))
+                        if (_pendingWriteQueue.TryDequeue(out byte[] buffer))
                         {
                             //写入文件
                             WriteToFile(buffer);
@@ -74,7 +73,7 @@ namespace FastDFSCore.Client
                 }
                 //释放
                 Release();
-            }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            });
         }
 
 

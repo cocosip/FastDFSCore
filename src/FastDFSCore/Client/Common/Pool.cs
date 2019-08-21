@@ -10,10 +10,10 @@ namespace FastDFSCore.Client
     /// </summary>
     public class Pool
     {
-        private IPEndPoint _endPoint;
-        private int _maxConnection;
+        private readonly IPEndPoint _endPoint;
+        private readonly int _maxConnection;
+        private readonly int _connectionLifeTime;
         private int _currentConnectionCount;
-        private int _connectionLifeTime;
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
 

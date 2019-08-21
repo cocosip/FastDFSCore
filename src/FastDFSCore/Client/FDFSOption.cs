@@ -38,7 +38,7 @@ namespace FastDFSCore.Client
 
         /// <summary>SocketTcp相关参数设置
         /// </summary>
-        public TcpSetting TcpSetting { get; set; } = default;
+        public TcpSetting TcpSetting { get; set; }
 
         /// <summary>Ctor
         /// </summary>

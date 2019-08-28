@@ -5,7 +5,7 @@
     <AssemblyName>FastDFSCore</AssemblyName>
     <PackageId>FastDFSCore</PackageId>
     <RootNamespace>FastDFSCore</RootNamespace>
-    <Description>FastDFS .net core 客户端</Description>
+    <Description>分布式文件系统FastDFS c#客户端(支持netstandard2.0与.net4.5)</Description>
   </PropertyGroup>
 
 
@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <PackageReference Include="Nito.AsyncEx" Version="3.0.1" />
+    <PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Nito.AsyncEx" Version="5.0.0" />

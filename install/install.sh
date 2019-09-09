@@ -733,7 +733,7 @@ install_storage() {
     # 配置base_path
     sed -i "/^base_path=/c\base_path=$storage_data_path" mod_fastdfs.conf
     # 配置tracker地址
-    sed -i "/^tracker_server=/c\tracker_server=$storage_tracker_ip:storage_tracker_port" mod_fastdfs.conf
+    sed -i "/^tracker_server=/c\tracker_server=$storage_tracker_ip:$storage_tracker_port" mod_fastdfs.conf
     # 配置组名
     sed -i "/^group_name=/c\group_name=$group_name" mod_fastdfs.conf
     # 配置store_path0

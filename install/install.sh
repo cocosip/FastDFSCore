@@ -15,7 +15,7 @@ tracker_nginx_port=8081
 # tracker 对应的storage ip地址
 tracker_storage_ip=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"`
 # tracker 对应的storage nginx端口号
-tracker_storage_nginx_port=8081
+tracker_storage_nginx_port=8080
 
 # storage 配置的tracker ip
 storage_tracker_ip=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"`
@@ -915,6 +915,7 @@ do_install() {
 	check_root
     set_global_config
     set_tracker_config
+	set_storage_config
 	config_confirm
 	install_global
 	install_tracker

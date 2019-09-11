@@ -15,13 +15,13 @@ namespace FastDFSCore.Client
         //长度
         readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
         readonly int lengthFieldEndOffset = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
-        private Func<ConnectionContext> getConnectionContextAction;
+        private readonly Func<ConnectionContext> _getContextAction;
 
         /// <summary>Ctor
         /// </summary>
-        public FDFSDecoder(Func<ConnectionContext> getConnectionContext)
+        public FDFSDecoder(Func<ConnectionContext> getContextAction)
         {
-            getConnectionContextAction = getConnectionContext;
+            _getContextAction = getContextAction;
             lengthFieldEndOffset = lengthFieldLength + 2;
         }
 
@@ -29,7 +29,7 @@ namespace FastDFSCore.Client
         /// </summary>
         protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
         {
-            object decoded = this.Decode(context, input);
+            object decoded = Decode(context, input);
             if (decoded != null)
             {
                 output.Add(decoded);
@@ -47,7 +47,7 @@ namespace FastDFSCore.Client
         /// <returns>The <see cref="IByteBuffer" /> which represents the frame or <c>null</c> if no frame could be created.</returns>
         protected virtual object Decode(IChannelHandlerContext context, IByteBuffer input)
         {
-            var connectionContext = getConnectionContextAction();
+            var connectionContext = _getContextAction();
 
             var receiveItem = new ConnectionReceiveItem();
 

@@ -164,12 +164,4 @@ namespace FastDFSCore.Client
         /// </summary>
         Merge
     }
-
-
-    //public enum TargetServer
-    //{
-    //    Tracker,
-    //    Storage
-    //}
-
 }

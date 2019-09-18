@@ -731,15 +731,15 @@ install_storage() {
 
 	# 配置mod_fastdfs.conf配置
     # 配置base_path
-    sed -i "/^base_path=/c\base_path=$storage_data_path" mod_fastdfs.conf
+    sed -i "/^base_path/c\base_path=$storage_data_path" mod_fastdfs.conf
     # 配置tracker地址
-    sed -i "/^tracker_server=/c\tracker_server=$storage_tracker_ip:$storage_tracker_port" mod_fastdfs.conf
+    sed -i "/^tracker_server/c\tracker_server=$storage_tracker_ip:$storage_tracker_port" mod_fastdfs.conf
     # 配置组名
-    sed -i "/^group_name=/c\group_name=$group_name" mod_fastdfs.conf
+    sed -i "/^group_name/c\group_name=$group_name" mod_fastdfs.conf
     # 配置store_path0
-    sed -i "/^store_path0=/c\store_path0=$storage_data_path" mod_fastdfs.conf
+    sed -i "/^store_path0/c\store_path0=$storage_data_path" mod_fastdfs.conf
     # 配置url是否包含group
-    sed -i "/^url_have_group_name=/c\url_have_group_name=true" mod_fastdfs.conf
+    sed -i "/^url_have_group_name/c\url_have_group_name=true" mod_fastdfs.conf
 
 	# storage nginx安装
     cd ${software_path}"/nginx-1.17.1"

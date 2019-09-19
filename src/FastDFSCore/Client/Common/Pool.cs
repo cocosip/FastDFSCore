@@ -10,22 +10,27 @@ namespace FastDFSCore.Client
     /// </summary>
     public class Pool
     {
+        private bool _isRunning = false;
         private readonly IPEndPoint _endPoint;
         private readonly int _maxConnection;
         private readonly int _connectionLifeTime;
+        private readonly int _scanTimeoutConnectionInterval;
         private int _currentConnectionCount;
+        private readonly IScheduleService _scheduleService;
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
 
         /// <summary>Ctor
         /// </summary>
-        public Pool(IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime)
+        public Pool(IScheduleService scheduleService, IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime, int scanTimeoutConnectionInterval)
         {
+            _scheduleService = scheduleService;
             _connectionPoolFactory = connectionPoolFactory;
             _endPoint = endPoint;
             _maxConnection = maxConnection;
             _currentConnectionCount = 0;
             _connectionLifeTime = connectionLifeTime;
+            _scanTimeoutConnectionInterval = scanTimeoutConnectionInterval;
         }
 
         /// <summary>获取一个连接
@@ -48,7 +53,7 @@ namespace FastDFSCore.Client
                 throw new ArgumentOutOfRangeException($"无可用的连接,连接地址:{_endPoint.Address}:{_endPoint.Port}");
             }
             //判断连接是否过期
-            if (IsConnectionExpired(connection.LastUseTime))
+            if (IsConnectionExpired(connection))
             {
                 await RemoveConnection(connection);
                 return await GetConnection();
@@ -85,15 +90,54 @@ namespace FastDFSCore.Client
 
         /// <summary>判断连接是否已经过期
         /// </summary>
-        private bool IsConnectionExpired(DateTime lastUseTime)
+        private bool IsConnectionExpired(Connection connection)
         {
-            return (lastUseTime != default) && ((DateTime.Now - lastUseTime).TotalSeconds > _connectionLifeTime);
+            return (connection.LastUseTime != default) && ((DateTime.Now - connection.LastUseTime).TotalSeconds > _connectionLifeTime);
+        }
+
+        private void StartScanTimeoutConnectionTask()
+        {
+            _scheduleService.StartTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection", ScanTimeoutConnection, 1000, 1);
+        }
+
+        private void StopScanTimeoutConnectionTask()
+        {
+            _scheduleService.StopTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection");
+        }
+
+        private void ScanTimeoutConnection()
+        {
+            foreach (var connection in _connections)
+            {
+                if (IsConnectionExpired(connection))
+                {
+                    connection.DisposeAsync().Wait();
+                }
+            }
+        }
+
+        /// <summary>开始运行
+        /// </summary>
+        public void Start()
+        {
+
+            if (_isRunning)
+            {
+                return;
+            }
+            _isRunning = true;
+            StartScanTimeoutConnectionTask();
         }
 
         /// <summary>关闭连接池
         /// </summary>
         public void Shutdown()
         {
+            if (_isRunning)
+            {
+                StopScanTimeoutConnectionTask();
+                _isRunning = false;
+            }
             foreach (var connection in _connections)
             {
                 connection.DisposeAsync().Wait();

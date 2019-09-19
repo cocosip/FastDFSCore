@@ -53,7 +53,8 @@ namespace FastDFSCore.Client
             {
                 if (!_storagePools.TryGetValue(endPoint, out storagePool))
                 {
-                    storagePool = _connectionPoolFactory.CreatePool(endPoint, _option.StorageMaxConnection, _option.ConnectionLifeTime);
+                    storagePool = _connectionPoolFactory.CreatePool(endPoint, _option.StorageMaxConnection, _option.ConnectionLifeTime, _option.ScanTimeoutConnectionInterval);
+                    storagePool.Start();
                     _storagePools.TryAdd(endPoint, storagePool);
                     _logger.LogDebug("_storagePools 中不存在连接池:{0}", endPoint.ToStringAddress());
                 }
@@ -72,7 +73,8 @@ namespace FastDFSCore.Client
             _trackerEndPoints = _option.Trackers;
             foreach (var trackerEndPoint in _option.Trackers)
             {
-                var pool = _connectionPoolFactory.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime);
+                var pool = _connectionPoolFactory.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime, _option.ScanTimeoutConnectionInterval);
+                pool.Start();
                 _trackerPools.TryAdd(trackerEndPoint, pool);
             }
             _isRunning = true;

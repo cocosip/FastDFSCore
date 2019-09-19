@@ -22,7 +22,11 @@ namespace FastDFSCore.Client
 
         /// <summary>连接的有效时间,3600s
         /// </summary>
-        public int ConnectionLifeTime { get; set; } = 3600;
+        public int ConnectionLifeTime { get; set; } = 600;
+
+        /// <summary>查询超时的连接的时间间隔
+        /// </summary>
+        public int ScanTimeoutConnectionInterval { get; set; } = 10;
 
         /// <summary>Tracker最大连接数
         /// </summary>

@@ -126,8 +126,8 @@ namespace FastDFSCore.Sample
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var dir = 
             //new DirectoryInfo(@"D:\DicomTest\ZHOUNING");
-            new DirectoryInfo(@"D:\Pictures");
-            //new DirectoryInfo(@"D:\DicomTest\BigTest");
+            //new DirectoryInfo(@"D:\Pictures");
+            new DirectoryInfo(@"D:\DicomTest\BigTest");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
             //new DirectoryInfo(@"G:\安装文件\SystemISO");
             //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\测试Dicom");

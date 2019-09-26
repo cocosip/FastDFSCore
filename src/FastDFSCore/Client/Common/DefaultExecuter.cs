@@ -7,7 +7,7 @@ namespace FastDFSCore.Client
     /// </summary>
     public class DefaultExecuter : IExecuter
     {
-        private IConnectionManager _connectionManager;
+        private readonly IConnectionManager _connectionManager;
 
         /// <summary>Ctor
         /// </summary>

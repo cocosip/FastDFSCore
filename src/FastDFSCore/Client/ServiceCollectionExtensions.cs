@@ -31,6 +31,7 @@ namespace FastDFSCore.Client
         {
             services
                 .AddSingleton<FDFSOption>(option)
+                .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<IConnectionPoolFactory, ConnectionPoolFactory>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
                 .AddSingleton<IDownloaderFactory, DefaultDownloaderFactory>()

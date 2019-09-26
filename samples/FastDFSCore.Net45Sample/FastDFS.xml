@@ -12,6 +12,8 @@
   <ConnectionTimeout>5</ConnectionTimeout>
   <![CDATA[连接的有效时间,3600s]]>
   <ConnectionLifeTime>3600</ConnectionLifeTime>
+  <![CDATA[查询超时的连接的时间间隔,10s]]>
+  <ScanTimeoutConnectionInterval>10</ScanTimeoutConnectionInterval>
   <![CDATA[Tracker最大的连接数]]>
   <TrackerMaxConnection>50</TrackerMaxConnection>
   <![CDATA[Storage最大连接数]]>
@@ -27,7 +29,7 @@
     <![CDATA[高水位,16Mb]]>
     <WriteBufferHighWaterMark>16777216</WriteBufferHighWaterMark>
     <![CDATA[低水位,8Mb]]>
-    <WriteBufferLowWaterMark>8388608‬</WriteBufferLowWaterMark>
+    <WriteBufferLowWaterMark>8388608</WriteBufferLowWaterMark>
     <![CDATA[接收的Socket缓存大小,1Mb]]>
     <SoRcvbuf>1048576</SoRcvbuf>
     <![CDATA[发送的Socket缓存大小,1Mb]]>

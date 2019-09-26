@@ -43,6 +43,10 @@ namespace FastDFSCore.Client
         /// </summary>
         public DateTime LastUseTime { get { return _lastUseTime; } }
 
+        /// <summary>名称
+        /// </summary>
+        public string Name { get; private set; }
+
         private ConnectionContext _connectionContext;
         private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
         private IDownloader _downloader = null;
@@ -64,6 +68,7 @@ namespace FastDFSCore.Client
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
             _isRuning = false;
+            Name = Guid.NewGuid().ToString();
         }
 
         /// <summary>运行
@@ -122,6 +127,7 @@ namespace FastDFSCore.Client
             try
             {
                 await _channel.CloseAsync();
+                _isRuning = false;
             }
             finally
             {

@@ -13,6 +13,6 @@ namespace FastDFSCore.Client
 
         /// <summary>创建连接池
         /// </summary>
-        Pool CreatePool(IPEndPoint endPoint, int maxConnection, int connectionLifeTime);
+        Pool CreatePool(IPEndPoint endPoint, int maxConnection, int connectionLifeTime, int scanTimeoutConnectionInterval);
     }
 }

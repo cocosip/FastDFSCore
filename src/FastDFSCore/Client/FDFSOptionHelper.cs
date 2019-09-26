@@ -43,6 +43,9 @@ namespace FastDFSCore.Client
             option.ConnectionTimeout = int.Parse(root.SelectSingleNode("ConnectionTimeout").InnerText);
             //ConnectionLifeTime
             option.ConnectionLifeTime = int.Parse(root.SelectSingleNode("ConnectionLifeTime").InnerText);
+            //ScanTimeoutConnectionInterval
+            option.ScanTimeoutConnectionInterval= int.Parse(root.SelectSingleNode("ScanTimeoutConnectionInterval").InnerText);
+
             //TrackerMaxConnection
             option.TrackerMaxConnection = int.Parse(root.SelectSingleNode("TrackerMaxConnection").InnerText);
             //StorageMaxConnection
@@ -115,6 +118,11 @@ namespace FastDFSCore.Client
                 sb.Append("<ConnectionLifeTime>");
                 sb.Append(option.ConnectionLifeTime);
                 sb.AppendLine("</ConnectionLifeTime>");
+
+                sb.AppendLine(ParseNote("查询超时的连接的时间间隔(s)"));
+                sb.Append("<ScanTimeoutConnectionInterval>");
+                sb.Append(option.ScanTimeoutConnectionInterval);
+                sb.AppendLine("</ScanTimeoutConnectionInterval>");
 
                 sb.AppendLine(ParseNote("最大Tracker连接数"));
                 sb.Append("<TrackerMaxConnection>");

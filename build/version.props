@@ -5,5 +5,6 @@
         <VersionPatch>5</VersionPatch>
         <VersionQuality></VersionQuality>
         <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+        <VersionSuffix>Pre</VersionSuffix>
     </PropertyGroup>
 </Project>

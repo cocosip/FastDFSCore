@@ -1,6 +1,6 @@
 # FastDFSCore 是 fastdfs的 c#客户端
 
-[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/cocosip/FastDFSCore/blob/master/LICENSE) ![GitHub last commit](https://img.shields.io/github/last-commit/cocosip/FastDFSCore.svg) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/cocosip/FastDFSCore.svg)
+[![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu) [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/cocosip/FastDFSCore/blob/master/LICENSE) ![GitHub last commit](https://img.shields.io/github/last-commit/cocosip/FastDFSCore.svg) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/cocosip/FastDFSCore.svg)
 
 | Build Server | Platform | Build Status |
 | ------------ | -------- | ------------ |

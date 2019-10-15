@@ -28,8 +28,11 @@ namespace FastDFSCore.Client
         {
             //连接管理器
             var connectionManager = provider.GetService<IConnectionManager>();
+            if (connectionManager == null)
+            {
+                throw new NullReferenceException("IConnectionManager is null!");
+            }
             connectionManager.Start();
-
             return provider;
         }
     }

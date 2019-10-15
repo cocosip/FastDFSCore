@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -26,6 +27,10 @@ namespace FastDFSCore.Client
         public async Task<T> Execute<T>(FDFSRequest<T> request, IPEndPoint endPoint = null) where T : FDFSResponse, new()
         {
             var connection = endPoint == null ? await _connectionManager.GetTrackerConnection() : await _connectionManager.GetStorageConnection(endPoint);
+            if (connection == null)
+            {
+                throw new NullReferenceException($"Can't find connection,ipaddr:[{endPoint.ToStringAddress()}] ");
+            }
             await connection.OpenAsync();
             var response = await connection.SendRequestAsync<T>(request);
             await connection.CloseAsync();

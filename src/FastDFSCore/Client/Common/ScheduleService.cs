@@ -16,9 +16,9 @@ namespace FastDFSCore.Client
 
         /// <summary>Ctor
         /// </summary>
-        public ScheduleService(FDFSOption option)
+        public ScheduleService(ILoggerFactory loggerFactory, FDFSOption option)
         {
-            _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
+            _logger = loggerFactory.CreateLogger(option.LoggerName);
         }
 
         /// <summary>开始定时任务

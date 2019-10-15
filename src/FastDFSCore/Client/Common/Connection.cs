@@ -1,5 +1,4 @@
 ﻿using DotNetty.Buffers;
-using DotNetty.Common.Internal.Logging;
 using DotNetty.Common.Utilities;
 using DotNetty.Handlers.Logging;
 using DotNetty.Handlers.Streams;
@@ -54,13 +53,14 @@ namespace FastDFSCore.Client
         /// <summary>Ctor
         /// </summary>
         /// <param name="provider">provider</param>
+        /// <param name="loggerFactory">loggerFactory</param>
         /// <param name="option">FDFSOption</param>
         /// <param name="connectionAddress"></param>
         /// <param name="closeAction"></param>
-        public Connection(IServiceProvider provider, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
+        public Connection(IServiceProvider provider,ILoggerFactory loggerFactory, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
         {
             _provider = provider;
-            _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
+            _logger = loggerFactory.CreateLogger(option.LoggerName);
             _option = option;
             _connectionAddress = connectionAddress;
             _closeAction = closeAction;

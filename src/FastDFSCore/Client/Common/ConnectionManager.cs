@@ -24,11 +24,12 @@ namespace FastDFSCore.Client
 
         /// <summary>Ctor
         /// </summary>
+        /// <param name="loggerFactory">日志工厂</param>
         /// <param name="connectionPoolFactory">连接池工厂</param>
         /// <param name="option">FDFSOption</param>
-        public ConnectionManager(IConnectionPoolFactory connectionPoolFactory, FDFSOption option)
+        public ConnectionManager(ILoggerFactory loggerFactory, IConnectionPoolFactory connectionPoolFactory, FDFSOption option)
         {
-            _logger = InternalLoggerFactory.DefaultFactory.CreateLogger(option.LoggerName);
+            _logger = loggerFactory.CreateLogger(option.LoggerName);
             _connectionPoolFactory = connectionPoolFactory;
             _option = option;
 

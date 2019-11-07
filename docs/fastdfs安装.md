@@ -12,10 +12,10 @@
 
 - 安装libfastcommon
   
-  - 下载libfastcommon: `wget https://github.com/happyfish100/libfastcommon/archive/V1.0.39.zip`
-  - 解压libfastcommon: `unzip V1.0.39.zip` 得到文件目录 `libfastcommon-1.0.39`
+  - 下载libfastcommon: `wget https://github.com/happyfish100/libfastcommon/archive/V1.0.41.zip`
+  - 解压libfastcommon: `unzip V1.0.41.zip` 得到文件目录 `libfastcommon-1.0.41`
   - 安装:
-    - 定位到目录 `cd libfastcommon-1.0.39`,运行 `./make.sh`
+    - 定位到目录 `cd libfastcommon-1.0.41`,运行 `./make.sh`
     创建软连接:
       - `ln -s /usr/lib64/libfastcommon.so /usr/local/lib/libfastcommon.so`
       - `ln -s /usr/lib64/libfastcommon.so /usr/lib/libfastcommon.so`
@@ -25,8 +25,8 @@
 
 - 安装fastdfs
 
-  - 下载fastdfs: `wget https://github.com/happyfish100/fastdfs/archive/V5.11.tar.gz`
-  - 解压fastdfs: `tar zxvf V5.11.tar.gz`,得到文件目录 `fastdfs-5.11`
+  - 下载fastdfs: `wget https://github.com/happyfish100/fastdfs/archive/V6.01.tar.gz`
+  - 解压fastdfs: `tar zxvf V6.01.tar.gz`,得到文件目录 `fastdfs-6.01`
   - 安装: 定位到fastdfs解压出来的目录,运行 `./make.sh`,执行完成后再运行 `./make.sh install`
   - 配置： 定位到fast运行目录 `cd /etc/fdfs` (正常安装完成后,会自动创建 `/etc/fdfs` 目录,该目录是固定的)
   - 配置文件: `cd /etc/fdfs`,在该目录中执行
@@ -49,7 +49,7 @@
   - Client配置,用来临时测试
     - Client配置: Client需要配置 `client.conf`
     - Client主要参数说明:  `base_path`(Client存放日志等基础目录,该目录必须先创建好), `tracker_server`(Tracker的地址,必须与Tracker对应)
-    - 用Client测试Tracker与Storage: `fdfs_upload_file client.conf /usr/local/fast_download/V1.0.39.zip` (测试上传的客户端可以自己定义),如果上传成功会出现类似的路径  **`group1/M00/00/00/wKgBcFzd0FaAID6HAAMmG0YMmVg.39.zip`**
+    - 用Client测试Tracker与Storage: `fdfs_upload_file client.conf /usr/local/fast_download/V1.0.41.zip` (测试上传的客户端可以自己定义),如果上传成功会出现类似的路径  **`group1/M00/00/00/wKgBcFzd0FaAID6HAAMmG0YMmVg.41.zip`**
   
   > 上传文件之后,可以到对应的Storage服务器上,查看存储目录,如 `store_path0` 参数对应目录下的文件是否存在
 
@@ -59,9 +59,9 @@
 
 - fastdfs nginx 基础安装:
   - 下载,解压nginx: `wget http://nginx.org/download/nginx-1.17.1.tar.gz`, `tar zxvf nginx-1.17.1.tar.gz`
-  - 下载,解压fastdfs-nginx-module: `wget https://github.com/happyfish100/fastdfs-nginx-module/archive/V1.20.tar.gz`, `tar zxvf V1.20.tar.gz`
+  - 下载,解压fastdfs-nginx-module: `wget https://github.com/happyfish100/fastdfs-nginx-module/archive/V1.21.tar.gz`, `tar zxvf V1.21.tar.gz`
   - 版本编译时的设置:
-    - 进入到fastdfs-nginx-module目录,`cd fastdfs-nginx-module-1.20/src`
+    - 进入到fastdfs-nginx-module目录,`cd fastdfs-nginx-module-1.21/src`
     - 修改config文件:
 
       ```json
@@ -70,8 +70,8 @@
       ```
 
   - 拷贝必要的文件:
-    - `cp /usr/local/fast_download/fastdfs-5.11/conf/http.conf /etc/fdfs` (该文件在fastdfs源文件中的conf目录下)
-    - `cp /usr/local/fast_download/fastdfs-5.11/conf/mime.types /etc/fdfs` (该文件在fastdfs源文件中的conf目录下)
+    - `cp /usr/local/fast_download/fastdfs-6.01/conf/http.conf /etc/fdfs` (该文件在fastdfs源文件中的conf目录下)
+    - `cp /usr/local/fast_download/fastdfs-6.01/conf/mime.types /etc/fdfs` (该文件在fastdfs源文件中的conf目录下)
     - `cp /usr/local/fast_download/fastdfs-nginx-module-1.20/src/mod_fastdfs.conf /etc/fdfs/` (该文件在下载的fastdfs-nginx-module的src目录下)
   - 修改mod_fastdfs.conf文件
 

@@ -77,29 +77,14 @@ public class BuildParameters
         else
         {
             //需要发布到Nuget
-            if (string.IsNullOrWhiteSpace(suffix))
+            if (ShouldPublishToNuGet && !string.IsNullOrWhiteSpace(versionQuality))
             {
-                //如果本地发布,就加dev,如果是nuget发布,就加preview
-                if (IsLocalBuild)
-                {
-                    suffix += "dev-" + Util.CreateStamp();
-                }
-                else
-                {
-                    //需要发布到Nuget
-                    if (ShouldPublishToNuGet)
-                    {
-                        if (!string.IsNullOrWhiteSpace(versionQuality))
-                        {
-                            suffix += "preview";
-                        }
-                        else
-                        {
-                            suffix = "";
-                        }
-                    }
-                }
+                suffix = string.IsNullOrWhiteSpace(suffix) ? "Pre" : suffix;
             }
+			else
+			{
+			    suffix = "";
+			}
         }
         suffix = string.IsNullOrWhiteSpace(suffix) ? null : suffix;
         context.Information($"Suffix:{suffix}");

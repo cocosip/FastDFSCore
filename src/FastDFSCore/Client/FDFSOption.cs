@@ -88,5 +88,21 @@ namespace FastDFSCore.Client
         /// <summary>Reuse ip address
         /// </summary>
         public bool SoReuseaddr { get; set; } = false;
+
+        /// <summary>Enable client to reConnect the server
+        /// </summary>
+        public bool EnableReConnect { get; set; } = false;
+
+        /// <summary>ReConnect delay seconds (s)
+        /// </summary>
+        public int ReConnectDelaySeconds { get; set; } = 2;
+
+        /// <summary>ReConnect interval
+        /// </summary>
+        public int ReConnectIntervalMilliSeconds { get; set; } = 1000;
+
+        /// <summary>Try reConnect max count
+        /// </summary>
+        public int ReConnectMaxCount { get; set; } = 10;
     }
 }

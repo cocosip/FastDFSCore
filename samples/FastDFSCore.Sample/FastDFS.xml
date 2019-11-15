@@ -38,5 +38,13 @@
     <TcpNodelay>true</TcpNodelay>
     <![CDATA[是否重用端口]]>
     <SoReuseaddr>false</SoReuseaddr>
+    <![CDATA[是否开启客户端重连机制]]>
+    <EnableReConnect>true</EnableReConnect>
+    <![CDATA[重连延迟秒数]]>
+    <ReConnectDelaySeconds>2</ReConnectDelaySeconds>
+    <![CDATA[重连时间间隔]]>
+    <ReConnectIntervalMilliSeconds>1000</ReConnectIntervalMilliSeconds>
+    <![CDATA[最大重连次数]]>
+    <ReConnectMaxCount>false</ReConnectMaxCount>
   </TcpSetting>
 </FDFSClient>

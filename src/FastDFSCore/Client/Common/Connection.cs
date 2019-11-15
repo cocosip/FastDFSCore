@@ -8,6 +8,7 @@ using DotNetty.Transport.Channels.Sockets;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Client
@@ -24,11 +25,15 @@ namespace FastDFSCore.Client
 
         private IEventLoopGroup _group;
         private IChannel _channel;
+        private Bootstrap _bootStrap;
 
+        private int _reConnectAttempt = 0;
         private bool _isRuning = false;
         private bool _isUsing = false;
         private readonly DateTime _creationTime;
         private DateTime _lastUseTime;
+
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         /// <summary>是否正在使用
         /// </summary>
@@ -57,7 +62,7 @@ namespace FastDFSCore.Client
         /// <param name="option">FDFSOption</param>
         /// <param name="connectionAddress"></param>
         /// <param name="closeAction"></param>
-        public Connection(IServiceProvider provider,ILoggerFactory loggerFactory, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
+        public Connection(IServiceProvider provider, ILoggerFactory loggerFactory, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
         {
             _provider = provider;
             _logger = loggerFactory.CreateLogger(option.LoggerName);
@@ -85,8 +90,8 @@ namespace FastDFSCore.Client
             {
 
                 _group = new MultithreadEventLoopGroup();
-                var bootstrap = new Bootstrap();
-                bootstrap
+                _bootStrap = new Bootstrap();
+                _bootStrap
                     .Group(_group)
                     .Channel<TcpSocketChannel>()
                     .Option(ChannelOption.TcpNodelay, tcpSetting.TcpNodelay)
@@ -104,12 +109,18 @@ namespace FastDFSCore.Client
                         pipeline.AddLast("fdfs-decoder", new FDFSDecoder(GetContext));
                         pipeline.AddLast("fdfs-read", new FDFSReadHandler(SetResponse));
 
+                        //重连
+                        if (_option.TcpSetting.EnableReConnect)
+                        {
+                            //Reconnect to server
+                            pipeline.AddLast("reconnect", _provider.CreateInstance<ReConnectHandler>(_option, new Func<Task>(DoReConnectIfNeed)));
+                        }
+
                     }));
 
-                _channel = _connectionAddress.LocalEndPoint == null ? await bootstrap.ConnectAsync(_connectionAddress.ServerEndPoint) : await bootstrap.ConnectAsync(_connectionAddress.ServerEndPoint, _connectionAddress.LocalEndPoint);
+                await DoConnect();
 
                 _isRuning = true;
-
                 _logger.LogInformation($"Client Run! serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
             }
             catch (Exception ex)
@@ -192,6 +203,52 @@ namespace FastDFSCore.Client
 
 
         #region Private method
+
+        /// <summary>连接到服务器端
+        /// </summary>
+        private async Task DoConnect()
+        {
+            _channel = _connectionAddress.LocalEndPoint == null ? await _bootStrap.ConnectAsync(_connectionAddress.ServerEndPoint) : await _bootStrap.ConnectAsync(_connectionAddress.ServerEndPoint, _connectionAddress.LocalEndPoint);
+
+            _logger.LogInformation($"Client DoConnect! name:{Name},serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
+        }
+
+        /// <summary>重连机制
+        /// </summary>
+        private async Task DoReConnectIfNeed()
+        {
+            if (!_option.TcpSetting.EnableReConnect || _option.TcpSetting.ReConnectMaxCount < _reConnectAttempt)
+            {
+                return;
+            }
+            if (_channel != null && !_channel.Active)
+            {
+                await _semaphoreSlim.WaitAsync();
+                bool reConnectSuccess = false;
+                try
+                {
+                    _logger.LogInformation($"Try to reconnect server!");
+                    await DoConnect();
+                    Interlocked.Exchange(ref _reConnectAttempt, 0);
+                    reConnectSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("ReConnect fail!{0}", ex.Message);
+                }
+                finally
+                {
+                    Interlocked.Increment(ref _reConnectAttempt);
+                    _semaphoreSlim.Release();
+                }
+                //Try again!
+                if (_reConnectAttempt < _option.TcpSetting.ReConnectMaxCount && !reConnectSuccess)
+                {
+                    Thread.Sleep(_option.TcpSetting.ReConnectIntervalMilliSeconds);
+                    await DoReConnectIfNeed();
+                }
+            }
+        }
 
         /// <summary>设置返回值
         /// </summary>

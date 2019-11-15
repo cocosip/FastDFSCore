@@ -7,8 +7,7 @@
     <RootNamespace>FastDFSCore</RootNamespace>
     <Description>分布式文件系统FastDFS c#客户端</Description>
   </PropertyGroup>
-
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(TargetFramework)'=='Debug|AnyCPU|netstandard2.0'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />

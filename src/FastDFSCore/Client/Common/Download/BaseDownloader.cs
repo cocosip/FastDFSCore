@@ -68,7 +68,7 @@ namespace FastDFSCore.Client
                     {
                         Logger.LogError("下载出现错误,{0}", ex.Message);
                         Interlocked.Exchange(ref _isComplete, 1);
-                        throw;
+                        OnException(ex);
                     }
                 }
                 //释放
@@ -104,12 +104,18 @@ namespace FastDFSCore.Client
         /// </summary>
         public abstract void WriteToFile(byte[] buffers);
 
-
         /// <summary>释放
         /// </summary>
         public virtual void Release()
         {
             Interlocked.Exchange(ref _isComplete, 1);
+        }
+
+        /// <summary>当出现异常时处理
+        /// </summary>
+        protected virtual void OnException(Exception e)
+        {
+            Release();
         }
     }
 }

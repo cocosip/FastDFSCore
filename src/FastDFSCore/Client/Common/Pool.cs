@@ -82,7 +82,8 @@ namespace FastDFSCore.Client
             Interlocked.Decrement(ref _currentConnectionCount);
         }
 
-
+        /// <summary>连接关闭,将连接放会堆栈
+        /// </summary>
         private void ConnectionClose(Connection connection)
         {
             _connections.Push(connection);
@@ -95,11 +96,15 @@ namespace FastDFSCore.Client
             return (connection.LastUseTime != default) && ((DateTime.Now - connection.LastUseTime).TotalSeconds > _connectionLifeTime);
         }
 
+        /// <summary>搜索超时的连接,将会断开
+        /// </summary>
         private void StartScanTimeoutConnectionTask()
         {
-            _scheduleService.StartTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection", ScanTimeoutConnection, 1000, 1);
+            _scheduleService.StartTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection", ScanTimeoutConnection, _scanTimeoutConnectionInterval * 1000, 1000);
         }
 
+        /// <summary>停止搜索超时的连接
+        /// </summary>
         private void StopScanTimeoutConnectionTask()
         {
             _scheduleService.StopTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection");

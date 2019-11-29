@@ -45,6 +45,6 @@
     <![CDATA[重连时间间隔]]>
     <ReConnectIntervalMilliSeconds>1000</ReConnectIntervalMilliSeconds>
     <![CDATA[最大重连次数]]>
-    <ReConnectMaxCount>false</ReConnectMaxCount>
+    <ReConnectMaxCount>10</ReConnectMaxCount>
   </TcpSetting>
 </FDFSClient>

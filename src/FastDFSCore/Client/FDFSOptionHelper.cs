@@ -73,6 +73,8 @@ namespace FastDFSCore.Client
             option.TcpSetting.TcpNodelay = bool.Parse(tcpNode.SelectSingleNode("TcpNodelay").InnerText);
             //重用端口号
             option.TcpSetting.SoReuseaddr = bool.Parse(tcpNode.SelectSingleNode("SoReuseaddr").InnerText);
+            //最大重连连接次数
+            option.TcpSetting.ReConnectMaxCount = int.Parse(tcpNode.SelectSingleNode("ReConnectMaxCount").InnerText);
 
             //关闭读取流
             reader.Close();
@@ -180,6 +182,11 @@ namespace FastDFSCore.Client
                 sb.Append("<SoReuseaddr>");
                 sb.Append(option.TcpSetting.SoReuseaddr);
                 sb.AppendLine("</SoReuseaddr>");
+
+                sb.AppendLine(ParseNote("最大重连次数"));
+                sb.Append("<ReConnectMaxCount>");
+                sb.Append(option.TcpSetting.ReConnectMaxCount);
+                sb.AppendLine("</ReConnectMaxCount>");
 
                 sb.AppendLine("</TcpSetting>");
 

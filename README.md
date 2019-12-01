@@ -17,6 +17,10 @@
 - 基于dotnetty socket通讯
 - 支持文件流上传,流下载到本地文件
 
+## FastDFS
+
+- [项目地址](https://github.com/happyfish100/fastdfs)
+
 ## FastDFS的相关教程
 
 - [安装教程](/docs/fastdfs安装.md)

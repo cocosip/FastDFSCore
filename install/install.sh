@@ -242,14 +242,14 @@ install_global() {
 	
 	# 下载软件
 	wget -P ${software_path} https://github.com/happyfish100/libfastcommon/archive/V1.0.41.zip
-    wget -P ${software_path} https://github.com/happyfish100/fastdfs/archive/V6.01.tar.gz
+    wget -P ${software_path} https://github.com/happyfish100/fastdfs/archive/V6.03.tar.gz
     wget -P ${software_path} http://nginx.org/download/nginx-1.17.1.tar.gz
     wget -P ${software_path} https://github.com/happyfish100/fastdfs-nginx-module/archive/V1.21.tar.gz
 
 	cd ${software_path}
     # 解压软件
     unzip V1.0.41.zip
-    tar zxvf V6.01.tar.gz
+    tar zxvf V6.03.tar.gz
     tar zxvf nginx-1.17.1.tar.gz
     tar zxvf V1.21.tar.gz
 
@@ -265,7 +265,7 @@ install_global() {
 
 	# 安装fastdfs
     cd ..
-    cd fastdfs-6.01
+    cd fastdfs-6.03
     ./make.sh || exit 1
     ./make.sh install || exit 1
 
@@ -275,8 +275,8 @@ install_global() {
     mv storage.conf.sample storage.conf
     mv tracker.conf.sample tracker.conf
     # http.conf和mime.types,mod_fastdfs.conf,到/etc/fdfs下
-    cp ${software_path}"/fastdfs-6.01/conf/http.conf" /etc/fdfs/
-    cp ${software_path}"/fastdfs-6.01/conf/mime.types" /etc/fdfs/
+    cp ${software_path}"/fastdfs-6.03/conf/http.conf" /etc/fdfs/
+    cp ${software_path}"/fastdfs-6.03/conf/mime.types" /etc/fdfs/
     cp ${software_path}"/fastdfs-nginx-module-1.21/src/mod_fastdfs.conf" /etc/fdfs/
 
 	# fastdfs-nginx-module配置

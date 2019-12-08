@@ -168,7 +168,7 @@ namespace FastDFSCore.Client
             //流文件发送
             if (request.StreamRequest)
             {
-                _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
+                _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray())).Wait();
                 var stream = new FixChunkedStream(request.RequestStream, 1024 * 32);
                 _channel.WriteAndFlushAsync(stream).Wait();
             }

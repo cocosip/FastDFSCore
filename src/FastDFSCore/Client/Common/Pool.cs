@@ -16,6 +16,8 @@ namespace FastDFSCore.Client
         private readonly int _connectionLifeTime;
         private readonly int _scanTimeoutConnectionInterval;
         private int _currentConnectionCount;
+
+        private readonly SemaphoreSlim _semaphoreSlim;
         private readonly IScheduleService _scheduleService;
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
@@ -28,6 +30,9 @@ namespace FastDFSCore.Client
             _connectionPoolFactory = connectionPoolFactory;
             _endPoint = endPoint;
             _maxConnection = maxConnection;
+
+            _semaphoreSlim = new SemaphoreSlim(1, maxConnection);
+
             _currentConnectionCount = 0;
             _connectionLifeTime = connectionLifeTime;
             _scanTimeoutConnectionInterval = scanTimeoutConnectionInterval;
@@ -37,21 +42,24 @@ namespace FastDFSCore.Client
         /// </summary>
         public async Task<Connection> GetConnection()
         {
-            if (!_connections.TryPop(out Connection connection))
+            Connection connection = null;
+            //如果连接为空,则创建新的
+            if (_connections.IsEmpty)
             {
                 //取不到连接,判断是否还可以创建新的连接,有可能这些连接正在被占用
                 if (_currentConnectionCount < _maxConnection)
                 {
                     //还可以创建新的连接
-                    connection = CreateNewConnection();
-                    return connection;
+                    return CreateNewConnection();
+                }
+                //无法创建新的连接,只能等待
+                await _semaphoreSlim.WaitAsync();
+                if (!_connections.TryPop(out connection))
+                {
+                    throw new Exception($"无法获取新连接,当前Pool:{_endPoint.Address}@{_endPoint.Port}");
                 }
             }
-            //无连接可用了
-            if (connection == null)
-            {
-                throw new ArgumentOutOfRangeException($"无可用的连接,连接地址:{_endPoint.Address}:{_endPoint.Port}");
-            }
+
             //判断连接是否过期
             if (IsConnectionExpired(connection))
             {
@@ -86,7 +94,11 @@ namespace FastDFSCore.Client
         /// </summary>
         private void ConnectionClose(Connection connection)
         {
-            _connections.Push(connection);
+            if (connection != null)
+            {
+                _connections.Push(connection);
+                _semaphoreSlim.Release();
+            }
         }
 
         /// <summary>判断连接是否已经过期

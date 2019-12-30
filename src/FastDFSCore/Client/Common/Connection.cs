@@ -58,14 +58,14 @@ namespace FastDFSCore.Client
         /// <summary>Ctor
         /// </summary>
         /// <param name="provider">provider</param>
-        /// <param name="loggerFactory">loggerFactory</param>
+        /// <param name="logger">logger</param>
         /// <param name="option">FDFSOption</param>
         /// <param name="connectionAddress"></param>
         /// <param name="closeAction"></param>
-        public Connection(IServiceProvider provider, ILoggerFactory loggerFactory, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
+        public Connection(IServiceProvider provider, ILogger<Connection> logger, FDFSOption option, ConnectionAddress connectionAddress, Action<Connection> closeAction)
         {
             _provider = provider;
-            _logger = loggerFactory.CreateLogger(option.LoggerName);
+            _logger = logger;
             _option = option;
             _connectionAddress = connectionAddress;
             _closeAction = closeAction;

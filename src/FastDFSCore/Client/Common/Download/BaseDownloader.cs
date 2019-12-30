@@ -13,7 +13,10 @@ namespace FastDFSCore.Client
     {
         private bool _isRunning = false;
         private int _isComplete = 0;
-        private ILogger Logger { get; }
+
+        /// <summary>Logger
+        /// </summary>
+        protected ILogger Logger { get; private set; }
 
         /// <summary>FDFSOption <see cref="FastDFSCore.Client.FDFSOption"/>
         /// </summary>
@@ -23,10 +26,10 @@ namespace FastDFSCore.Client
 
         /// <summary>Ctor
         /// </summary>
-        public BaseDownloader(ILoggerFactory loggerFactory, FDFSOption option)
+        public BaseDownloader(ILogger<BaseDownloader> logger, FDFSOption option)
         {
             Option = option;
-            Logger = loggerFactory.CreateLogger(option.LoggerName);
+            Logger = logger;
         }
 
 

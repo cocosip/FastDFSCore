@@ -15,9 +15,9 @@ namespace FastDFSCore.Client
 
         /// <summary>Ctor
         /// </summary>
-        public ReConnectHandler(ILoggerFactory loggerFactory, FDFSOption option, Func<Task> reConnectAction)
+        public ReConnectHandler(ILogger<ReConnectHandler> logger, FDFSOption option, Func<Task> reConnectAction)
         {
-            _logger = loggerFactory.CreateLogger(option.LoggerName);
+            _logger = logger;
             _option = option;
             _reConnectAction = reConnectAction;
         }

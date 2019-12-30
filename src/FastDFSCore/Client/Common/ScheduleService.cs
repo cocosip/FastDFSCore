@@ -1,5 +1,4 @@
-﻿using DotNetty.Common.Internal.Logging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,9 +15,9 @@ namespace FastDFSCore.Client
 
         /// <summary>Ctor
         /// </summary>
-        public ScheduleService(ILoggerFactory loggerFactory, FDFSOption option)
+        public ScheduleService(ILogger<ScheduleService> logger, FDFSOption option)
         {
-            _logger = loggerFactory.CreateLogger(option.LoggerName);
+            _logger = logger;
         }
 
         /// <summary>开始定时任务

@@ -13,7 +13,7 @@ namespace FastDFSCore.Client
 
         /// <summary>Ctor
         /// </summary>
-        public FileDownloader(ILoggerFactory loggerFactory, FDFSOption option, string savePath) : base(loggerFactory, option)
+        public FileDownloader(ILogger<BaseDownloader> logger, FDFSOption option, string savePath) : base(logger, option)
         {
             SavePath = savePath;
         }

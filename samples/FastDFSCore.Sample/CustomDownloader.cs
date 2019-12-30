@@ -8,7 +8,7 @@ namespace FastDFSCore.Sample
     {
         private string _path;
         private FileStream _fs;
-        public CustomDownloader(ILoggerFactory loggerFactory, FDFSOption option, string path) : base(loggerFactory, option)
+        public CustomDownloader(ILogger<CustomDownloader> logger, FDFSOption option, string path) : base(logger, option)
         {
             _path = path;
         }

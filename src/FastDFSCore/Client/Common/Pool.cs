@@ -42,7 +42,6 @@ namespace FastDFSCore.Client
         /// </summary>
         public async Task<Connection> GetConnection()
         {
-            Connection connection = null;
             //如果连接为空,则创建新的
             if (_connections.IsEmpty)
             {
@@ -54,10 +53,11 @@ namespace FastDFSCore.Client
                 }
                 //无法创建新的连接,只能等待
                 await _semaphoreSlim.WaitAsync();
-                if (!_connections.TryPop(out connection))
-                {
-                    throw new Exception($"无法获取新连接,当前Pool:{_endPoint.Address}@{_endPoint.Port}");
-                }
+            }
+            //获取连接
+            if (!_connections.TryPop(out Connection connection))
+            {
+                throw new Exception($"无法获取新连接,当前Pool:{_endPoint.Address}@{_endPoint.Port}");
             }
 
             //判断连接是否过期

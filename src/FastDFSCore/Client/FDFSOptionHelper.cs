@@ -44,7 +44,7 @@ namespace FastDFSCore.Client
             //ConnectionLifeTime
             option.ConnectionLifeTime = int.Parse(root.SelectSingleNode("ConnectionLifeTime").InnerText);
             //ScanTimeoutConnectionInterval
-            option.ScanTimeoutConnectionInterval= int.Parse(root.SelectSingleNode("ScanTimeoutConnectionInterval").InnerText);
+            option.ScanTimeoutConnectionInterval = int.Parse(root.SelectSingleNode("ScanTimeoutConnectionInterval").InnerText);
 
             //TrackerMaxConnection
             option.TrackerMaxConnection = int.Parse(root.SelectSingleNode("TrackerMaxConnection").InnerText);
@@ -73,6 +73,15 @@ namespace FastDFSCore.Client
             option.TcpSetting.TcpNodelay = bool.Parse(tcpNode.SelectSingleNode("TcpNodelay").InnerText);
             //重用端口号
             option.TcpSetting.SoReuseaddr = bool.Parse(tcpNode.SelectSingleNode("SoReuseaddr").InnerText);
+            //是否开启重连机制
+            option.TcpSetting.EnableReConnect = bool.Parse(tcpNode.SelectSingleNode("EnableReConnect").InnerText);
+
+            //重连延迟时间
+            option.TcpSetting.ReConnectDelaySeconds = int.Parse(tcpNode.SelectSingleNode("ReConnectDelaySeconds").InnerText);
+            
+            //重连时间间隔
+            option.TcpSetting.ReConnectIntervalMilliSeconds = int.Parse(tcpNode.SelectSingleNode("ReConnectIntervalMilliSeconds").InnerText);
+
             //最大重连连接次数
             option.TcpSetting.ReConnectMaxCount = int.Parse(tcpNode.SelectSingleNode("ReConnectMaxCount").InnerText);
 
@@ -182,6 +191,22 @@ namespace FastDFSCore.Client
                 sb.Append("<SoReuseaddr>");
                 sb.Append(option.TcpSetting.SoReuseaddr);
                 sb.AppendLine("</SoReuseaddr>");
+
+
+                sb.AppendLine(ParseNote("是否开启重连机制"));
+                sb.Append("<EnableReConnect>");
+                sb.Append(option.TcpSetting.EnableReConnect);
+                sb.AppendLine("</EnableReConnect>");
+
+                sb.AppendLine(ParseNote("重连延迟秒数"));
+                sb.Append("<ReConnectDelaySeconds>");
+                sb.Append(option.TcpSetting.ReConnectDelaySeconds);
+                sb.AppendLine("</ReConnectDelaySeconds>");
+
+                sb.AppendLine(ParseNote("重连时间间隔"));
+                sb.Append("<ReConnectIntervalMilliSeconds>");
+                sb.Append(option.TcpSetting.ReConnectIntervalMilliSeconds);
+                sb.AppendLine("</ReConnectIntervalMilliSeconds>");
 
                 sb.AppendLine(ParseNote("最大重连次数"));
                 sb.Append("<ReConnectMaxCount>");

@@ -335,7 +335,7 @@ namespace FastDFSCore.Client
         /// </summary>
         public async Task DisposeAsync()
         {
-            await ShutdownAsync().ConfigureAwait(false);
+            await ShutdownAsync();
             _connectionContext = null;
             _downloader?.Release();
         }

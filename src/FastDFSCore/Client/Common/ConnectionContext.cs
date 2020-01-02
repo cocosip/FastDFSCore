@@ -40,7 +40,7 @@
             {
                 if (Header != null)
                 {
-                    return Header.Length == ReadPosition;
+                    return Header.Length == ReadPosition && ReadPosition > 0;
                 }
                 return false;
             }

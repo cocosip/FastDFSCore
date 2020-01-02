@@ -87,7 +87,10 @@ namespace FastDFSCore.Client
             //关闭连接内的数据
             await connection.ShutdownAsync();
             //更新当前连接数
-            Interlocked.Decrement(ref _currentConnectionCount);
+            if (_currentConnectionCount > 0)
+            {
+                Interlocked.Decrement(ref _currentConnectionCount);
+            }
         }
 
         /// <summary>连接关闭,将连接放会堆栈
@@ -128,7 +131,10 @@ namespace FastDFSCore.Client
             {
                 if (IsConnectionExpired(connection))
                 {
-                    connection.DisposeAsync().Wait();
+                    AsyncHelper.RunSync(() =>
+                    {
+                        return connection.DisposeAsync();
+                    });
                 }
             }
         }

@@ -61,7 +61,7 @@ namespace FastDFSCore.Client
             //获取连接
             if (!_connections.TryPop(out Connection connection))
             {
-                throw new Exception($"无法获取新连接,当前Pool:{_endPoint.Address}@{_endPoint.Port}");
+                throw new Exception($"无法获取新连接,当前Pool '{_endPoint.ToStringAddress()}'.");
             }
 
             //判断连接是否过期

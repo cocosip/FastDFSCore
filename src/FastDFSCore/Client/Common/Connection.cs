@@ -165,10 +165,10 @@ namespace FastDFSCore.Client
             List<byte> newBuffer = new List<byte>();
             newBuffer.AddRange(headerBuffer);
             newBuffer.AddRange(bodyBuffer);
+
             //流文件发送
             if (request.StreamRequest)
             {
-
                 _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
                 var stream = new FixChunkedStream(request.RequestStream);
                 _channel.WriteAndFlushAsync(stream);

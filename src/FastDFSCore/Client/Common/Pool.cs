@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
@@ -18,20 +19,22 @@ namespace FastDFSCore.Client
         private int _currentConnectionCount;
 
         private readonly SemaphoreSlim _semaphoreSlim;
+        private readonly ILogger _logger;
         private readonly IScheduleService _scheduleService;
         private readonly IConnectionPoolFactory _connectionPoolFactory;
         private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
 
         /// <summary>Ctor
         /// </summary>
-        public Pool(IScheduleService scheduleService, IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime, int scanTimeoutConnectionInterval)
+        public Pool(ILogger<Pool> logger, IScheduleService scheduleService, IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime, int scanTimeoutConnectionInterval)
         {
+            _logger = logger;
             _scheduleService = scheduleService;
             _connectionPoolFactory = connectionPoolFactory;
             _endPoint = endPoint;
             _maxConnection = maxConnection;
 
-            _semaphoreSlim = new SemaphoreSlim(1, maxConnection);
+            _semaphoreSlim = new SemaphoreSlim(1);
 
             _currentConnectionCount = 0;
             _connectionLifeTime = connectionLifeTime;
@@ -45,6 +48,7 @@ namespace FastDFSCore.Client
             //如果连接为空,则创建新的
             if (_connections.IsEmpty)
             {
+                _logger.LogDebug("Current connections is empty! CurrentConnectionCount:{0},MaxConnection:{1}", _currentConnectionCount, _maxConnection);
                 //取不到连接,判断是否还可以创建新的连接,有可能这些连接正在被占用
                 if (_currentConnectionCount < _maxConnection)
                 {
@@ -100,8 +104,9 @@ namespace FastDFSCore.Client
             if (connection != null)
             {
                 _connections.Push(connection);
-                _semaphoreSlim.Release();
             }
+            _semaphoreSlim.Release();
+            _logger.LogDebug("Release a connection,connection name:{0}.", connection.Name);
         }
 
         /// <summary>判断连接是否已经过期

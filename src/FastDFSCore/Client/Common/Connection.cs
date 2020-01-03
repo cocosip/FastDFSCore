@@ -168,13 +168,17 @@ namespace FastDFSCore.Client
             //流文件发送
             if (request.StreamRequest)
             {
-                _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray())).Wait();
-                var stream = new FixChunkedStream(request.RequestStream, 1024 * 32);
-                _channel.WriteAndFlushAsync(stream).Wait();
+
+                _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
+                var stream = new FixChunkedStream(request.RequestStream);
+                _channel.WriteAndFlushAsync(stream);
             }
             else
             {
-                _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer.ToArray())).Wait();
+                AsyncHelper.RunSync(() =>
+                {
+                    return _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
+                });
             }
             return _taskCompletionSource.Task;
         }

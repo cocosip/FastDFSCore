@@ -95,7 +95,7 @@ namespace FastDFSCore.Client
 
 
             //2个长度,主文件FileId数组长度,文件长度
-            long length = 2 * Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_PREFIX_MAX_LEN + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + masterFileIdBuffer.Length + RequestStream.Length;
+            long length = 2 * Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_PREFIX_MAX_LEN + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + masterFileIdBuffer.Length;
 
             List<byte> bodyBuffer = new List<byte>();
             bodyBuffer.AddRange(masterFileIdLenBuffer);

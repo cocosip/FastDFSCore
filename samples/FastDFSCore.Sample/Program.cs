@@ -8,6 +8,7 @@ using DotNetty.Common.Internal.Logging;
 using Microsoft.Extensions.Logging.Console;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace FastDFSCore.Sample
 {
@@ -18,30 +19,22 @@ namespace FastDFSCore.Sample
         static IDownloaderFactory _downloaderFactory;
         static void Main(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             IServiceCollection services = new ServiceCollection();
-            //services.AddFastDFSCore(c =>
-            //{
-            //    c.TrackerMaxConnection = 10;
-            //    c.StorageMaxConnection = 50;
-            //    c.Trackers = new List<IPEndPoint>()
-            //    {
-            //        new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
-            //    };
-            //});
-            services.AddLogging();
+            services.AddLogging(l =>
+            {
+                l.AddConsole(c =>
+                {
+                    c.LogToStandardErrorThreshold = LogLevel.Trace;
+                });
+            });
             services.AddFastDFSCore("FastDFS.xml");
-
-#pragma warning disable CS0618 // 类型或成员已过时
-            //InternalLoggerFactory.DefaultFactory.AddProvider(new ConsoleLoggerProvider((s, level) => true, false));
-#pragma warning restore CS0618 // 类型或成员已过时
 
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore();
             _fdfsClinet = _provider.GetService<IFDFSClient>();
             _downloaderFactory = _provider.GetService<IDownloaderFactory>();
 
-            RunAsync().Wait();
+            RunAsync();
             //GroupInfoAsync().Wait();
             //StorageInfoAsync().Wait();
             //DownloadToPath().Wait();
@@ -50,10 +43,6 @@ namespace FastDFSCore.Sample
             Console.ReadLine();
         }
 
-        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Console.WriteLine(e.ExceptionObject.ToString());
-        }
 
         /// <summary>查询组信息
         /// </summary>
@@ -83,11 +72,11 @@ namespace FastDFSCore.Sample
 
         }
 
-        public static async Task RunAsync()
+        public static async void RunAsync()
         {
-            await BatchUploadTest().ConfigureAwait(false);
-            //await BatchUploadTest().ConfigureAwait(false);
-            await BatchCustomDownloadTest().ConfigureAwait(false);
+            await BatchUploadTest();
+            //await BatchUploadTest();
+            await BatchCustomDownloadTest();
         }
 
         /// <summary>上传单个文件
@@ -103,7 +92,7 @@ namespace FastDFSCore.Sample
                 //FileId:M00/02/BB/wKgABl0AkfAAAAABAH8oAOpc-Jk809.iso
                 //@"D:\Pictures\1.jpg";
 
-                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filename).ConfigureAwait(false);
+                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, filename);
                 //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(filename), "jpg");
                 Console.WriteLine("上传文件位置:{0},路径:{1}", filename, fileId);
             }
@@ -119,27 +108,22 @@ namespace FastDFSCore.Sample
         /// </summary>
         public static async Task BatchUploadTest()
         {
-            _fdfsClinet = _provider.GetService<IFDFSClient>();
-
 
             Console.WriteLine("-------------批量上传测试---------");
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var dir =
-            //new DirectoryInfo(@"D:\DicomTest\ZHOUNING");
+            new DirectoryInfo(@"D:\DicomTests");
             //new DirectoryInfo(@"D:\Pictures");
-            new DirectoryInfo(@"D:\DicomTest\BigTest");
-            //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\DICOM 100 Test");
-            //new DirectoryInfo(@"G:\安装文件\SystemISO");
-            //new DirectoryInfo(@"G:\Kayisoft\TMEasy PACS\测试Dicom");
+            //new DirectoryInfo(@"D:\DicomTest\BigTest");
             //G:\安装文件\SystemISO
             var fileInfos = dir.GetFiles();
             long totalSize = 0;
             watch.Start();
             foreach (var fileInfo in fileInfos)
             {
-                //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(fileInfo.FullName),"dcm").ConfigureAwait(false);
-                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, fileInfo.FullName).ConfigureAwait(false);
+                //var fileId = await _fdfsClinet.UploadFileAsync(storageNode, File.ReadAllBytes(fileInfo.FullName),"dcm");
+                var fileId = await _fdfsClinet.UploadFileAsync(storageNode, fileInfo.FullName);
                 Console.WriteLine("FileId:{0}", fileId);
                 UploadFileIds.Add(fileId);
                 totalSize += fileInfo.Length;

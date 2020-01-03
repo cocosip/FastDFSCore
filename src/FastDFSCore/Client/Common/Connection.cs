@@ -33,7 +33,7 @@ namespace FastDFSCore.Client
         private readonly DateTime _creationTime;
         private DateTime _lastUseTime;
 
-        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
         /// <summary>是否正在使用
         /// </summary>
@@ -175,10 +175,7 @@ namespace FastDFSCore.Client
             }
             else
             {
-                AsyncHelper.RunSync(() =>
-                {
-                    return _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
-                });
+                _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
             }
             return _taskCompletionSource.Task;
         }

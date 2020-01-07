@@ -13,13 +13,6 @@ namespace FastDFSCore.Client
             return iPAddress.MapToIPv4().ToString();
         }
 
-        /// <summary>Parse IPEndPoint to ipv4 string, exp: 127.0.0.1
-        /// </summary>
-        public static string ToIPv4Address(this IPEndPoint iPEndPoint)
-        {
-            return iPEndPoint.Address.ToIPv4Address();
-        }
-
         /// <summary>Parse IPEndPoint to string address. exp: 127.0.0.1:10001
         /// </summary>
         public static string ToStringAddress(this IPEndPoint iPEndPoint)

@@ -56,7 +56,7 @@ namespace FastDFSCore.Client
                     return CreateNewConnection();
                 }
                 //无法创建新的连接,只能等待
-                _autoResetEvent.WaitOne();
+                _autoResetEvent.WaitOne(5000);
             }
             //获取连接
             if (!_connections.TryPop(out Connection connection))
@@ -99,7 +99,7 @@ namespace FastDFSCore.Client
 
         /// <summary>连接关闭,将连接放会堆栈
         /// </summary>
-        private void ConnectionClose(Connection connection)
+        public void ConnectionClose(Connection connection)
         {
             if (connection != null)
             {

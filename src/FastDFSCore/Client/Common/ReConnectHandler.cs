@@ -22,9 +22,7 @@ namespace FastDFSCore.Client
             _reConnectAction = reConnectAction;
         }
 
-
-
-        /// <summary>
+        /// <summary>ChannelInactive
         /// </summary>
         public override void ChannelInactive(IChannelHandlerContext context)
         {

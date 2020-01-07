@@ -46,15 +46,13 @@ namespace FastDFSCore.Tests.Client
 
             Assert.NotNull(connection1);
             Assert.NotNull(connection2);
+            pool.ConnectionClose(connection1);
 
-            Assert.Throws<Exception>(() =>
+            var connection3 = AsyncHelper.RunSync(() =>
             {
-                var connection3 = AsyncHelper.RunSync(() =>
-                {
-                    return pool.GetConnection();
-                });
+                return pool.GetConnection();
             });
-
+            Assert.NotNull(connection3);
 
         }
 

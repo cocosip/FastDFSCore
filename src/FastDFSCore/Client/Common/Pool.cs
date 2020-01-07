@@ -18,7 +18,7 @@ namespace FastDFSCore.Client
         private readonly int _scanTimeoutConnectionInterval;
         private int _currentConnectionCount;
 
-        private readonly SemaphoreSlim _semaphoreSlim;
+        private readonly AutoResetEvent _autoResetEvent;
         private readonly ILogger _logger;
         private readonly IScheduleService _scheduleService;
         private readonly IConnectionPoolFactory _connectionPoolFactory;
@@ -34,7 +34,7 @@ namespace FastDFSCore.Client
             _endPoint = endPoint;
             _maxConnection = maxConnection;
 
-            _semaphoreSlim = new SemaphoreSlim(1);
+            _autoResetEvent = new AutoResetEvent(false);
 
             _currentConnectionCount = 0;
             _connectionLifeTime = connectionLifeTime;
@@ -56,7 +56,7 @@ namespace FastDFSCore.Client
                     return CreateNewConnection();
                 }
                 //无法创建新的连接,只能等待
-                await _semaphoreSlim.WaitAsync();
+                _autoResetEvent.WaitOne();
             }
             //获取连接
             if (!_connections.TryPop(out Connection connection))
@@ -105,7 +105,7 @@ namespace FastDFSCore.Client
             {
                 _connections.Push(connection);
             }
-            _semaphoreSlim.Release();
+            _autoResetEvent.Set();
             _logger.LogDebug("Release a connection,connection name:{0}.", connection.Name);
         }
 

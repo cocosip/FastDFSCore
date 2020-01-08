@@ -51,7 +51,13 @@ namespace FastDFSCore.Client
         {
             byte[] prefixBuffer = new byte[Consts.FDFS_FILE_PREFIX_MAX_LEN];
             byte[] prefixData = encoding.GetBytes(prefix);
-            Array.Copy(prefixData, 0, prefixBuffer, 0, prefixData.Length);
+
+            int prefix_len = prefixData.Length;
+            if (prefix_len > Consts.FDFS_FILE_PREFIX_MAX_LEN)
+            {
+                prefix_len = Consts.FDFS_FILE_PREFIX_MAX_LEN;
+            }
+            Array.Copy(prefixData, 0, prefixBuffer, 0, prefix_len);
             return prefixBuffer;
         }
 

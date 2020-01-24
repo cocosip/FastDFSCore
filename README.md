@@ -14,13 +14,13 @@
 ## Features
 
 - Base on `netstandard2.0`
-- Based on `DotNetty` Communication
+- Base on `DotNetty` Communication
 - Support connection pool
 - Support for file streams to upload, network streams download to the local
 
 ## FastDFS
 
-- [FastDFS project](https://github.com/happyfish100/fastdfs)
+- [FastDFS Project](https://github.com/happyfish100/fastdfs)
 
 ## Guide
 

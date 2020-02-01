@@ -1,14 +1,21 @@
-///////////////////////////////////////////////////////////////////////////////
-// ARGUMENTS
-///////////////////////////////////////////////////////////////////////////////
+// Install modules
+#module nuget:?package=Cake.DotNetTool.Module&version=0.4.0
+
+// Install addins.
+#addin "nuget:https://api.nuget.org/v3/index.json?package=Cake.Coveralls&version=0.10.0"
+#addin "nuget:https://api.nuget.org/v3/index.json?package=Cake.Twitter&version=0.10.0"
+#addin "nuget:https://api.nuget.org/v3/index.json?package=Cake.Gitter&version=0.11.0"
 
 // Install tools.
-#tool "nuget:https://api.nuget.org/v3/index.json?package=gitreleasemanager&version=0.7.0"
-#tool "nuget:https://api.nuget.org/v3/index.json?package=GitVersion.CommandLine&version=3.6.2"
-#tool "nuget:https://api.nuget.org/v3/index.json?package=coveralls.io&version=1.3.4"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=coveralls.io&version=1.4.2"
 #tool "nuget:https://api.nuget.org/v3/index.json?package=OpenCover&version=4.6.519"
-#tool "nuget:https://api.nuget.org/v3/index.json?package=ReportGenerator&version=2.4.5"
-#tool "nuget:https://api.nuget.org/v3/index.json?package=SignClient&version=0.9.1&include=/tools/netcoreapp2.0/SignClient.dll"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=ReportGenerator&version=4.0.4"
+#tool "nuget:https://api.nuget.org/v3/index.json?package=nuget.commandline&version=5.3.1"
+
+// Install .NET Core Global tools.
+#tool "dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=5.1.2"
+#tool "dotnet:https://api.nuget.org/v3/index.json?package=SignClient&version=1.0.82"
+#tool "dotnet:https://api.nuget.org/v3/index.json?package=GitReleaseManager.Tool&version=0.10.2"
 
 #load "./build/parameters.cake"
 

@@ -54,10 +54,8 @@ namespace FastDFSCore.Transport
                     .Group(_group)
                     .Channel<TcpSocketChannel>()
                     .Option(ChannelOption.TcpNodelay, tcpSetting.TcpNodelay)
-                    .Option(ChannelOption.WriteBufferHighWaterMark, tcpSetting.WriteBufferHighWaterMark)
-                    .Option(ChannelOption.WriteBufferLowWaterMark, tcpSetting.WriteBufferLowWaterMark)
-                    .Option(ChannelOption.SoRcvbuf, tcpSetting.SoRcvbuf)
-                    .Option(ChannelOption.SoSndbuf, tcpSetting.SoSndbuf)
+                    .Option(ChannelOption.WriteBufferHighWaterMark, 16777216)
+                    .Option(ChannelOption.WriteBufferLowWaterMark, 8388608)
                     .Option(ChannelOption.SoReuseaddr, tcpSetting.SoReuseaddr)
                     .Option(ChannelOption.AutoRead, true)
                     .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
@@ -85,7 +83,7 @@ namespace FastDFSCore.Transport
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
-                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(tcpSetting.QuietPeriodMilliSeconds), TimeSpan.FromSeconds(tcpSetting.CloseTimeoutSeconds));
+                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
             }
         }
 
@@ -101,7 +99,7 @@ namespace FastDFSCore.Transport
             }
             finally
             {
-                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(Option.TcpSetting.QuietPeriodMilliSeconds), TimeSpan.FromSeconds(Option.TcpSetting.CloseTimeoutSeconds));
+                await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
             }
         }
 

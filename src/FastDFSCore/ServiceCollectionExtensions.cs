@@ -37,6 +37,7 @@ namespace FastDFSCore
         /// </summary>
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, Action<FDFSOption> configure = null)
         {
+            services.AddSingleton<IFDFSOptionTransformer, FDFSOptionTransformer>();
             var option = new FDFSOption();
             configure?.Invoke(option);
             return services.AddFastDFSCoreInternal(option);
@@ -46,7 +47,10 @@ namespace FastDFSCore
         /// </summary>
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, string file)
         {
-            var option = FDFSOptionHelper.GetFDFSOption(file);
+            services.AddSingleton<IFDFSOptionTransformer, FDFSOptionTransformer>();
+            
+            var transformer = services.GetSingletonInstance<IFDFSOptionTransformer>();
+            var option = transformer.GetOptionFromFile(file);
             return services.AddFastDFSCoreInternal(option);
         }
 

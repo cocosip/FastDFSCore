@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace FastDFSCore.Utility
@@ -96,6 +97,20 @@ namespace FastDFSCore.Utility
                   ((buffer[offset + 7] >= 0 ? buffer[offset + 7] : 256 + buffer[offset + 7]));
 #pragma warning restore CS0675 
 
+        }
+
+        /// <summary>合并byte数组
+        /// </summary>
+        public static byte[] Combine(params byte[][] arrays)
+        {
+            var destination = new byte[arrays.Sum(x => x.Length)];
+            var offset = 0;
+            foreach (var data in arrays)
+            {
+                Buffer.BlockCopy(data, 0, destination, offset, data.Length);
+                offset += data.Length;
+            }
+            return destination;
         }
     }
 }

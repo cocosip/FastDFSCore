@@ -28,6 +28,13 @@ namespace FastDFSCore.Codecs
             return buffer;
         }
 
+        /// <summary>编码Long类型
+        /// </summary>
+        public static byte[] EncodeLong(long l)
+        {
+            return ByteUtil.LongToBuffer(l);
+        }
+
 
         /// <summary>解码字符串操作
         /// </summary>

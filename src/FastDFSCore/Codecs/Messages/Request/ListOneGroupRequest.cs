@@ -34,13 +34,13 @@
         /// </summary>
         public ListOneGroupRequest()
         {
-
+            Header = new FDFSHeader(Consts.TRACKER_PROTO_CMD_SERVER_LIST_ONE_GROUP);
         }
 
         /// <summary>Ctor
         /// </summary>
         /// <param name="groupName">组名</param>
-        public ListOneGroupRequest(string groupName)
+        public ListOneGroupRequest(string groupName) : this()
         {
             GroupName = groupName;
         }
@@ -49,8 +49,8 @@
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
-            byte[] bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
-            Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ONE_GROUP, 0);
+            var bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            //Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ONE_GROUP, 0);
             return bodyBuffer;
         }
     }

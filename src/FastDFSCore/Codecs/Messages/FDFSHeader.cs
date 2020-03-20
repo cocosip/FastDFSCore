@@ -35,6 +35,22 @@ namespace FastDFSCore.Codecs.Messages
             Status = status;
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        public FDFSHeader(byte command, byte status)
+        {
+            Command = command;
+            Status = status;
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public FDFSHeader(byte command)
+        {
+            Command = command;
+        }
+
+
         /// <summary>头部转换成二进制数据
         /// </summary>
         public byte[] ToBytes()

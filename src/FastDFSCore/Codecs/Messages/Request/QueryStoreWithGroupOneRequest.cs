@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace FastDFSCore.Codecs.Messages
+﻿namespace FastDFSCore.Codecs.Messages
 {
     /// <summary>
     /// 查询可存储的Storage
@@ -29,13 +26,13 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public QueryStoreWithGroupOneRequest()
         {
-
+            Header = new FDFSHeader(Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_STORE_WITH_GROUP_ONE);
         }
 
         /// <summary>Ctor
         /// </summary>
         /// <param name="groupName">组名</param>
-        public QueryStoreWithGroupOneRequest(string groupName)
+        public QueryStoreWithGroupOneRequest(string groupName) : this()
         {
             GropName = groupName;
         }
@@ -46,8 +43,8 @@ namespace FastDFSCore.Codecs.Messages
         {
             //消息体长度为group name的最大长度,16
 
-            byte[] bodyBuffer = EndecodeUtil.EncodeGroupName(GropName, option.Charset);
-            Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_STORE_WITH_GROUP_ONE, 0);
+           var bodyBuffer = EndecodeUtil.EncodeGroupName(GropName, option.Charset);
+            //Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_STORE_WITH_GROUP_ONE, 0);
             return bodyBuffer;
         }
     }

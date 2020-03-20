@@ -25,11 +25,18 @@
     /// </summary>
     public class ListAllGroupRequest : FDFSRequest<ListAllGroupResponse>
     {
+        /// <summary>Ctor
+        /// </summary>
+        public ListAllGroupRequest()
+        {
+            Header = new FDFSHeader(0, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ALL_GROUPS, 0);
+        }
+
         /// <summary>EncodeBody
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
-            Header = new FDFSHeader(0, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ALL_GROUPS, 0);
+            //Header = new FDFSHeader(0, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ALL_GROUPS, 0);
             var bodyBuffer = new byte[0];
             return bodyBuffer;
         }

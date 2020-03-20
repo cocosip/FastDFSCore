@@ -36,7 +36,7 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public UploadFileRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_UPLOAD_FILE);
         }
 
         /// <summary>Ctor
@@ -44,7 +44,7 @@ namespace FastDFSCore.Codecs.Messages
         /// <param name="storePathIndex">StorePathIndex</param>
         /// <param name="fileExt">文件扩展名</param>
         /// <param name="stream">文件流</param>
-        public UploadFileRequest(byte storePathIndex, string fileExt, Stream stream)
+        public UploadFileRequest(byte storePathIndex, string fileExt, Stream stream) : this()
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
@@ -56,7 +56,7 @@ namespace FastDFSCore.Codecs.Messages
         /// <param name="storePathIndex">StorePathIndex</param>
         /// <param name="fileExt">文件扩展名</param>
         /// <param name="contentBytes">文件二进制</param>
-        public UploadFileRequest(byte storePathIndex, string fileExt, byte[] contentBytes)
+        public UploadFileRequest(byte storePathIndex, string fileExt, byte[] contentBytes) : this()
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
@@ -75,21 +75,18 @@ namespace FastDFSCore.Codecs.Messages
             //1.StorePathIndex
 
             //2.文件长度
-            byte[] fileSizeBuffer = ByteUtil.LongToBuffer(RequestStream.Length);
+            var fileSizeBuffer = EndecodeUtil.EncodeLong(RequestStream.Length);
             //3.扩展名
-            if (FileExt.Length > Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
-                throw new ArgumentException("文件扩展名过长");
             byte[] extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
             //4.文件数据,这里不写入
-            int lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
+            //int lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
 
-            List<byte> bodyBuffer = new List<byte>(lenth);
-            bodyBuffer.Add(StorePathIndex);
+            var bodyBuffer = new List<byte>
+            {
+                StorePathIndex
+            };
             bodyBuffer.AddRange(fileSizeBuffer);
             bodyBuffer.AddRange(extBuffer);
-
-            //头部
-            Header = new FDFSHeader(lenth + RequestStream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
             return bodyBuffer.ToArray();
         }
 

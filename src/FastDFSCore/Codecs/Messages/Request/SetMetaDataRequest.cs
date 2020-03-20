@@ -47,7 +47,7 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public SetMetaDataRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_SET_METADATA);
         }
 
         /// <summary>Ctor
@@ -56,7 +56,7 @@ namespace FastDFSCore.Codecs.Messages
         /// <param name="groupName">组名</param>
         /// <param name="metaData">MetaData</param>
         /// <param name="option">MetaDataOption</param>
-        public SetMetaDataRequest(string fileId, string groupName, IDictionary<string, string> metaData, MetaDataOption option)
+        public SetMetaDataRequest(string fileId, string groupName, IDictionary<string, string> metaData, MetaDataOption option) : this()
         {
             FileId = fileId;
             GroupName = groupName;
@@ -68,39 +68,27 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
-
             string optionString = (Option == MetaDataOption.Overwrite) ? "O" : "M";
+            var optionBuffer = EndecodeUtil.EncodeString(optionString, option.Charset);
 
-            byte[] optionBuffer = ByteUtil.StringToByte(optionString, option.Charset);
-
-
-            byte[] groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
 
 
-            byte[] fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
-            byte[] metaDataBuffer = CreateMetaDataBuffer(option, MetaData);
+            var fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
+            var metaDataBuffer = CreateMetaDataBuffer(option, MetaData);
 
-            byte[] fileIdLengthBuffer = ByteUtil.LongToBuffer(fileIdBuffer.Length);
-            byte[] metaDataSizeBuffer = ByteUtil.LongToBuffer(metaDataBuffer.Length);
+            var fileIdLengthBuffer = ByteUtil.LongToBuffer(fileIdBuffer.Length);
+            var metaDataSizeBuffer = ByteUtil.LongToBuffer(metaDataBuffer.Length);
 
-            int length = Consts.FDFS_PROTO_PKG_LEN_SIZE +  // filename length
-                         Consts.FDFS_PROTO_PKG_LEN_SIZE +  // metadata size
-                         1 +  // operation flag
-                         Consts.FDFS_GROUP_NAME_MAX_LEN +  // group name
-                         fileIdBuffer.Length +  // file name
-                         metaDataBuffer.Length;            // metadata 
+            //int length = Consts.FDFS_PROTO_PKG_LEN_SIZE +  // filename length
+            //             Consts.FDFS_PROTO_PKG_LEN_SIZE +  // metadata size
+            //             1 +  // operation flag
+            //             Consts.FDFS_GROUP_NAME_MAX_LEN +  // group name
+            //             fileIdBuffer.Length +  // file name
+            //             metaDataBuffer.Length;            // metadata 
 
-            List<byte> bodyBuffer = new List<byte>();
-            bodyBuffer.AddRange(fileIdLengthBuffer);
-            bodyBuffer.AddRange(metaDataSizeBuffer);
-            bodyBuffer.AddRange(optionBuffer);
-            bodyBuffer.AddRange(groupNameBuffer);
-            bodyBuffer.AddRange(fileIdBuffer);
-            bodyBuffer.AddRange(metaDataBuffer);
 
-            Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_SET_METADATA, 0);
-
-            return bodyBuffer.ToArray();
+            return ByteUtil.Combine(fileIdLengthBuffer, metaDataSizeBuffer, optionBuffer, groupNameBuffer, fileIdBuffer, metaDataBuffer);
         }
 
         private byte[] CreateMetaDataBuffer(FDFSOption option, IDictionary<string, string> metaData)
@@ -114,9 +102,9 @@ namespace FastDFSCore.Codecs.Messages
                     metaDataBuffer.Add(Consts.METADATA_PAIR_SEPARATER);
                 }
 
-                metaDataBuffer.AddRange(ByteUtil.StringToByte(p.Key, option.Charset));
+                metaDataBuffer.AddRange(EndecodeUtil.EncodeString(p.Key, option.Charset));
                 metaDataBuffer.Add(Consts.METADATA_KEY_VALUE_SEPARATOR);
-                metaDataBuffer.AddRange(ByteUtil.StringToByte(p.Value, option.Charset));
+                metaDataBuffer.AddRange(EndecodeUtil.EncodeString(p.Value, option.Charset));
             }
             return metaDataBuffer.ToArray();
         }

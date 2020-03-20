@@ -35,15 +35,12 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public override void LoadContent(FDFSOption option, byte[] data)
         {
-            byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
-            Array.Copy(data, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);
-            GroupName = EndecodeUtil.DecodeString(groupNameBuffer, option.Charset);
+            var span = data.AsSpan();
+            var groupNameSpan = span.Slice(0, Consts.FDFS_GROUP_NAME_MAX_LEN);
+            GroupName = EndecodeUtil.DecodeString(groupNameSpan.ToArray(), option.Charset);
 
-            //Util.ByteToString(option.Charset, groupNameBuffer).TrimEnd('\0');
-
-            byte[] fileNameBuffer = new byte[data.Length - Consts.FDFS_GROUP_NAME_MAX_LEN];
-            Array.Copy(data, Consts.FDFS_GROUP_NAME_MAX_LEN, fileNameBuffer, 0, fileNameBuffer.Length);
-            FileId = EndecodeUtil.DecodeString(fileNameBuffer, option.Charset);
+            var fileNameSpan = span.Slice(Consts.FDFS_GROUP_NAME_MAX_LEN, data.Length - Consts.FDFS_GROUP_NAME_MAX_LEN);
+            FileId = EndecodeUtil.DecodeString(fileNameSpan.ToArray(), option.Charset);
         }
     }
 }

@@ -82,13 +82,13 @@
         /// </summary>
         public ListStorageRequest()
         {
-
+            Header = new FDFSHeader(Consts.TRACKER_PROTO_CMD_SERVER_LIST_STORAGE);
         }
 
         /// <summary>Ctor
         /// </summary>
         /// <param name="groupName">组名称</param>
-        public ListStorageRequest(string groupName)
+        public ListStorageRequest(string groupName) : this()
         {
             GroupName = groupName;
         }
@@ -97,8 +97,8 @@
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
-            byte[] bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
-            Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVER_LIST_STORAGE, 0);
+            var bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            //Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVER_LIST_STORAGE, 0);
             return bodyBuffer;
         }
     }

@@ -42,7 +42,7 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public UploadSlaveFileRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_UPLOAD_SLAVE_FILE);
         }
 
         /// <summary>Ctor
@@ -51,7 +51,7 @@ namespace FastDFSCore.Codecs.Messages
         /// <param name="prefix">前缀</param>
         /// <param name="fileExt">扩展名</param>
         /// <param name="stream">文件流</param>
-        public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, Stream stream)
+        public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, Stream stream) : this()
         {
             MasterFileId = masterFileId;
             Prefix = prefix;
@@ -65,7 +65,7 @@ namespace FastDFSCore.Codecs.Messages
         /// <param name="prefix">前缀</param>
         /// <param name="fileExt">扩展名</param>
         /// <param name="contentBytes">文件二进制</param>
-        public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, byte[] contentBytes)
+        public UploadSlaveFileRequest(string masterFileId, string prefix, string fileExt, byte[] contentBytes) : this()
         {
             MasterFileId = masterFileId;
 
@@ -83,33 +83,25 @@ namespace FastDFSCore.Codecs.Messages
         public override byte[] EncodeBody(FDFSOption option)
         {
             //文件名长度数组
-            byte[] masterFileIdLenBuffer = ByteUtil.LongToBuffer((long)MasterFileId.Length);
+            var masterFileIdLenBuffer = EndecodeUtil.EncodeLong((long)MasterFileId.Length);
             //文件长度数组
-            byte[] fileSizeBuffer = ByteUtil.LongToBuffer(RequestStream.Length);
+            var fileSizeBuffer = EndecodeUtil.EncodeLong(RequestStream.Length);
+
             //从文件前缀名数据
-            byte[] prefixBuffer = EndecodeUtil.EncodePrefix(Prefix, option.Charset);
-            byte[] extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
+            var prefixBuffer = EndecodeUtil.EncodePrefix(Prefix, option.Charset);
+            var extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
             //主文件Id
-            byte[] masterFileIdBuffer = ByteUtil.StringToByte(MasterFileId, option.Charset);
+            var masterFileIdBuffer = EndecodeUtil.EncodeString(MasterFileId, option.Charset);
 
 
             //2个长度,主文件FileId数组长度,文件长度
-            long length = 2 * Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_PREFIX_MAX_LEN + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + masterFileIdBuffer.Length;
+            //long length = 2 * Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_PREFIX_MAX_LEN + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + masterFileIdBuffer.Length;
 
-            List<byte> bodyBuffer = new List<byte>();
-            bodyBuffer.AddRange(masterFileIdLenBuffer);
-            bodyBuffer.AddRange(fileSizeBuffer);
-            bodyBuffer.AddRange(prefixBuffer);
-            bodyBuffer.AddRange(extBuffer);
-            bodyBuffer.AddRange(masterFileIdBuffer);
+            return ByteUtil.Combine(masterFileIdLenBuffer, fileSizeBuffer, prefixBuffer, extBuffer, masterFileIdBuffer);
 
             //文件内容
             //Array.Copy(ContentBytes, 0, bodyBuffer, offset, ContentBytes.Length);
-
-            //头部
-            Header = new FDFSHeader(length + RequestStream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_SLAVE_FILE, 0);
-
-            return bodyBuffer.ToArray();
+ 
         }
     }
 }

@@ -37,12 +37,14 @@ namespace FastDFSCore.Sample
 
         public static async void RunAsync()
         {
+           
+            await BatchUploadTest();
+            await BatchDownloadTest();
+
             //获取GroupInfo
             await GroupInfoAsync();
             //获取StorageInfo
             await StorageInfoAsync();
-            await BatchUploadTest();
-            await BatchDownloadTest();
             //await BatchCustomDownloadTest();
         }
 

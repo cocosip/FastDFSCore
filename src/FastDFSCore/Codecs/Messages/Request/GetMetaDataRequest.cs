@@ -1,5 +1,4 @@
 ﻿using FastDFSCore.Utility;
-using System.Collections.Generic;
 
 namespace FastDFSCore.Codecs.Messages
 {
@@ -30,7 +29,7 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public GetMetaDataRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_GET_METADATA);
         }
 
         /// <summary>Ctor
@@ -48,17 +47,10 @@ namespace FastDFSCore.Codecs.Messages
         public override byte[] EncodeBody(FDFSOption option)
         {
 
-            byte[] groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
-
-            //Util.CreateGroupNameBuffer(option.Charset, GroupName);
-            var fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
-            var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
-            List<byte> bodyBuffer = new List<byte>();
-            bodyBuffer.AddRange(groupNameBuffer);
-            bodyBuffer.AddRange(fileIdBuffer);
-
-            Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_GET_METADATA, 0);
-            return bodyBuffer.ToArray();
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var fileIdBuffer = EndecodeUtil.EncodeString(FileId, option.Charset);
+            //var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
+            return ByteUtil.Combine(groupNameBuffer, fileIdBuffer);
         }
     }
 }

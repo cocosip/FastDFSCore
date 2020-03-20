@@ -29,14 +29,14 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public AppendFileRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_APPEND_FILE);
         }
 
         /// <summary>Ctor
         /// </summary>
         /// <param name="fileId">文件FileId</param>
         /// <param name="contentBytes">文件二进制数据</param>
-        public AppendFileRequest(string fileId, byte[] contentBytes)
+        public AppendFileRequest(string fileId, byte[] contentBytes) : this()
         {
             FileId = fileId;
             RequestStream = new MemoryStream(contentBytes);
@@ -46,7 +46,7 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         /// <param name="fileId">文件FileId</param>
         /// <param name="stream">文件流</param>
-        public AppendFileRequest(string fileId, Stream stream)
+        public AppendFileRequest(string fileId, Stream stream) : this()
         {
             FileId = fileId;
             RequestStream = stream;
@@ -60,21 +60,14 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
+            var fileIdLenBuffer = ByteUtil.LongToBuffer(FileId.Length);
+            var fileSizeBuffer = ByteUtil.LongToBuffer(RequestStream.Length);
+            var fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
 
-            byte[] fileIdLenBuffer = ByteUtil.LongToBuffer(FileId.Length);
-            byte[] fileSizeBuffer = ByteUtil.LongToBuffer(RequestStream.Length);
-            byte[] fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
+            //long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + FileId.Length + RequestStream.Length;
 
-            long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + FileId.Length + RequestStream.Length;
+            return ByteUtil.Combine(fileIdLenBuffer, fileSizeBuffer, fileIdBuffer);
 
-            List<byte> bodyBuffer = new List<byte>();
-            bodyBuffer.AddRange(fileIdLenBuffer);
-            bodyBuffer.AddRange(fileSizeBuffer);
-            bodyBuffer.AddRange(fileIdBuffer);
-
-            Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_APPEND_FILE, 0);
-
-            return bodyBuffer.ToArray();
         }
     }
 }

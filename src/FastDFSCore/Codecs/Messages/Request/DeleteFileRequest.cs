@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FastDFSCore.Utility;
+using System;
 using System.Collections.Generic;
 
 namespace FastDFSCore.Codecs.Messages
@@ -30,14 +31,14 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public DeleteFileRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_DELETE_FILE);
         }
 
         /// <summary>Ctor
         /// </summary>
         /// <param name="groupName">组名</param>
         /// <param name="fileId">文件FileId</param>
-        public DeleteFileRequest(string groupName, string fileId)
+        public DeleteFileRequest(string groupName, string fileId) : this()
         {
             GroupName = groupName;
             FileId = fileId;
@@ -48,22 +49,12 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var fileIdBuffer = EndecodeUtil.EncodeString(FileId, option.Charset);
 
-            byte[] groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
-            if (groupNameBuffer.Length > Consts.FDFS_GROUP_NAME_MAX_LEN)
-            {
-                throw new ArgumentException("GroupName is too long.");
-            }
-            byte[] fileIdBuffer = EndecodeUtil.EncodeString(FileId, option.Charset);
+            //var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
+            return ByteUtil.Combine(groupNameBuffer, fileIdBuffer);
 
-            var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
-            List<byte> bodyBuffer = new List<byte>();
-            bodyBuffer.AddRange(groupNameBuffer);
-            bodyBuffer.AddRange(fileIdBuffer);
-
-            Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_DELETE_FILE, 0);
-
-            return bodyBuffer.ToArray();
         }
     }
 }

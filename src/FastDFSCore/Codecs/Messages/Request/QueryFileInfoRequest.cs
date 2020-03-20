@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FastDFSCore.Utility;
+using System.Collections.Generic;
 
 namespace FastDFSCore.Codecs.Messages
 {
@@ -32,14 +33,14 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public QueryFileInfoRequest()
         {
-
+            Header = new FDFSHeader(Consts.STORAGE_PROTO_CMD_QUERY_FILE_INFO);
         }
 
         /// <summary>Ctor
         /// </summary>
         /// <param name="groupName">组名</param>
         /// <param name="fileId">文件FileId</param>
-        public QueryFileInfoRequest(string groupName, string fileId)
+        public QueryFileInfoRequest(string groupName, string fileId) : this()
         {
             GroupName = groupName;
             FileId = fileId;
@@ -49,15 +50,10 @@ namespace FastDFSCore.Codecs.Messages
         /// </summary>
         public override byte[] EncodeBody(FDFSOption option)
         {
-            byte[] groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
             var fileIdBuffer = EndecodeUtil.EncodeString(FileId, option.Charset);
-            var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
-            List<byte> bodyBuffer = new List<byte>();
-            bodyBuffer.AddRange(groupNameBuffer);
-            bodyBuffer.AddRange(fileIdBuffer);
-
-            Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_QUERY_FILE_INFO, 0);
-            return bodyBuffer.ToArray();
+            //var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
+            return ByteUtil.Combine(groupNameBuffer, fileIdBuffer);
         }
     }
 }

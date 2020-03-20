@@ -165,6 +165,11 @@ namespace FastDFSCore.Transport
             }
 
             var bodyBuffer = request.EncodeBody(_option);
+            if (request.Header.Length == 0)
+            {
+                request.Header.Length = request.StreamRequest ? request.RequestStream.Length + bodyBuffer.Length : bodyBuffer.Length;
+            }
+
             var headerBuffer = request.Header.ToBytes();
             List<byte> newBuffer = new List<byte>();
             newBuffer.AddRange(headerBuffer);

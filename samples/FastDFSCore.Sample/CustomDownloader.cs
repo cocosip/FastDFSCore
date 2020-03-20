@@ -1,4 +1,4 @@
-﻿using FastDFSCore.Client;
+﻿using FastDFSCore.Transport.Download;
 using Microsoft.Extensions.Logging;
 using System.IO;
 

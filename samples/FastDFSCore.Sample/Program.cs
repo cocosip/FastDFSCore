@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using FastDFSCore.Client;
-using System.Net;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using DotNetty.Common.Internal.Logging;
-using Microsoft.Extensions.Logging.Console;
-using System.IO;
-using System.Diagnostics;
+﻿using FastDFSCore.Transport.Download;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace FastDFSCore.Sample
 {
@@ -44,7 +41,7 @@ namespace FastDFSCore.Sample
             await GroupInfoAsync();
             //获取StorageInfo
             await StorageInfoAsync();
-            //await BatchUploadTest();
+            await BatchUploadTest();
             await BatchDownloadTest();
             //await BatchCustomDownloadTest();
         }

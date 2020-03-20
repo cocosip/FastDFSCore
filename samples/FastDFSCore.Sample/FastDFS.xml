@@ -15,9 +15,9 @@
   <![CDATA[查询超时的连接的时间间隔,10s]]>
   <ScanTimeoutConnectionInterval>10</ScanTimeoutConnectionInterval>
   <![CDATA[Tracker最大的连接数]]>
-  <TrackerMaxConnection>50</TrackerMaxConnection>
+  <TrackerMaxConnection>1</TrackerMaxConnection>
   <![CDATA[Storage最大连接数]]>
-  <StorageMaxConnection>100</StorageMaxConnection>
+  <StorageMaxConnection>3</StorageMaxConnection>
   <![CDATA[日志名称]]>
   <LoggerName>FDFSLogger</LoggerName>
   <![CDATA[Socket相关数据配置]]>

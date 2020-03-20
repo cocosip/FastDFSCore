@@ -9,11 +9,11 @@ namespace FastDFSCore.Transport
     {
         /// <summary>获取Tracker的连接
         /// </summary>
-        Task<Connection> GetTrackerConnection();
+        Task<IConnection> GetTrackerConnection();
 
         /// <summary>获取Storage连接
         /// </summary>
-        Task<Connection> GetStorageConnection(IPEndPoint endPoint);
+        Task<IConnection> GetStorageConnection(IPEndPoint endPoint);
 
         /// <summary>运行
         /// </summary>

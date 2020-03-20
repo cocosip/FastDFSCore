@@ -58,10 +58,15 @@ namespace FastDFSCore
                 .AddSingleton<FDFSOption>(option)
                 .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
-                .AddSingleton<IConnectionPoolFactory, ConnectionPoolFactory>()
+                .AddSingleton<IConnectionPoolFactory, DefaultConnectionPoolFactory>()
                 .AddSingleton<IDownloaderFactory, DefaultDownloaderFactory>()
                 .AddTransient<IExecuter, DefaultExecuter>()
-                .AddTransient<IFDFSClient, FDFSClient>();
+                .AddTransient<IFDFSClient, FDFSClient>()
+                .AddSingleton<IConnectionFactory, DefaultConnectionFactory>()
+                .AddScoped<PoolOption>()
+                .AddScoped<ConnectionAddress>()
+                .AddTransient<Pool>()
+                ;
             return services;
         }
     }

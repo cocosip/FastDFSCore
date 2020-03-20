@@ -24,7 +24,8 @@ namespace FastDFSCore.Sample
                     c.LogToStandardErrorThreshold = LogLevel.Trace;
                 });
             });
-            services.AddFastDFSCore("FastDFS.xml");
+            services.AddFastDFSCore("FastDFS.xml")
+                .AddDotNettyTransport();
 
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore();

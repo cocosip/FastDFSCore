@@ -37,7 +37,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>获取Tracker的连接
         /// </summary>
-        public async Task<Connection> GetTrackerConnection()
+        public async Task<IConnection> GetTrackerConnection()
         {
             var rd = new Random();
             var index = rd.Next(_trackerPools.Count);
@@ -47,14 +47,22 @@ namespace FastDFSCore.Transport
 
         /// <summary>获取Storage连接
         /// </summary>
-        public async Task<Connection> GetStorageConnection(IPEndPoint endPoint)
+        public async Task<IConnection> GetStorageConnection(IPEndPoint endPoint)
         {
             Pool storagePool;
             lock (SyncObject)
             {
                 if (!_storagePools.TryGetValue(endPoint, out storagePool))
                 {
-                    storagePool = _connectionPoolFactory.CreatePool(endPoint, _option.StorageMaxConnection, _option.ConnectionLifeTime, _option.ScanTimeoutConnectionInterval);
+                    var poolOption = new PoolOption()
+                    {
+                        EndPoint = endPoint,
+                        MaxConnection = _option.StorageMaxConnection,
+                        ConnectionLifeTime = _option.ConnectionLifeTime,
+                        ScanTimeoutConnectionInterval = _option.ScanTimeoutConnectionInterval
+                    };
+
+                    storagePool = _connectionPoolFactory.CreatePool(poolOption);
                     storagePool.Start();
                     _storagePools.TryAdd(endPoint, storagePool);
                     _logger.LogDebug("_storagePools 中不存在连接池:{0}", endPoint.ToStringAddress());
@@ -74,7 +82,15 @@ namespace FastDFSCore.Transport
             _trackerEndPoints = _option.Trackers;
             foreach (var trackerEndPoint in _option.Trackers)
             {
-                var pool = _connectionPoolFactory.CreatePool(trackerEndPoint, _option.TrackerMaxConnection, _option.ConnectionLifeTime, _option.ScanTimeoutConnectionInterval);
+                var poolOption = new PoolOption()
+                {
+                    EndPoint = trackerEndPoint,
+                    MaxConnection = _option.TrackerMaxConnection,
+                    ConnectionLifeTime = _option.ConnectionLifeTime,
+                    ScanTimeoutConnectionInterval = _option.ScanTimeoutConnectionInterval
+                };
+
+                var pool = _connectionPoolFactory.CreatePool(poolOption);
                 pool.Start();
                 _trackerPools.TryAdd(trackerEndPoint, pool);
             }

@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\FastDFSCore.Transport.DotNetty\FastDFSCore.Transport.DotNetty.csproj" />
     <ProjectReference Include="..\..\src\FastDFSCore\FastDFSCore.csproj" />
   </ItemGroup>
 

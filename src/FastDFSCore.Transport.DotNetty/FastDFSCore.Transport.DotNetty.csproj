@@ -1,27 +1,32 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\build\common.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>FastDFSCore</AssemblyName>
-    <PackageId>FastDFSCore</PackageId>
+    <AssemblyName>FastDFSCore.Transport.DotNetty</AssemblyName>
+    <PackageId>FastDFSCore.Transport.DotNetty</PackageId>
     <RootNamespace>FastDFSCore</RootNamespace>
-    <Description>分布式文件系统FastDFS c#客户端</Description>
+    <Description>分布式文件系统FastDFS c#客户端(基于DotNetty传输)</Description>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(TargetFramework)'=='Debug|AnyCPU|netstandard2.0'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <DocumentationFile>bin\Debug\netstandard2.0\FastDFSCore.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\FastDFSCore.Transport.DotNetty.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(TargetFramework)'=='Release|AnyCPU|netstandard2.0'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <DocumentationFile>bin\Release\netstandard2.0\FastDFSCore.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.0\FastDFSCore.Transport.DotNetty.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+    <PackageReference Include="DotNetty.Handlers" Version="0.6.0" />
+    <PackageReference Include="DotNetty.Transport.Libuv" Version="0.6.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FastDFSCore\FastDFSCore.csproj" />
   </ItemGroup>
 </Project>

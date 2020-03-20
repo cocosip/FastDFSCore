@@ -1,12 +1,12 @@
 ﻿using FastDFSCore.Extensions;
 using FastDFSCore.Scheduling;
-using FastDFSCore.Transport.DotNetty;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FastDFSCore.Transport
 {
@@ -14,46 +14,51 @@ namespace FastDFSCore.Transport
     /// </summary>
     public class Pool
     {
+        /// <summary>连接池名称
+        /// </summary>
+        public string Name { get; }
         private bool _isRunning = false;
-        private readonly IPEndPoint _endPoint;
-        private readonly int _maxConnection;
-        private readonly int _connectionLifeTime;
-        private readonly int _scanTimeoutConnectionInterval;
         private int _currentConnectionCount;
 
+        private readonly FDFSOption _option;
+        private readonly PoolOption _poolOption;
+
         private readonly AutoResetEvent _autoResetEvent;
+        private readonly IServiceProvider _provider;
         private readonly ILogger _logger;
         private readonly IScheduleService _scheduleService;
-        private readonly IConnectionPoolFactory _connectionPoolFactory;
-        private readonly ConcurrentStack<Connection> _connections = new ConcurrentStack<Connection>();
+        private readonly IConnectionFactory _connectionFactory;
+        private readonly ConcurrentStack<IConnection> _connections = new ConcurrentStack<IConnection>();
 
         /// <summary>Ctor
         /// </summary>
-        public Pool(ILogger<Pool> logger, IScheduleService scheduleService, IConnectionPoolFactory connectionPoolFactory, IPEndPoint endPoint, int maxConnection, int connectionLifeTime, int scanTimeoutConnectionInterval)
+        public Pool(IServiceProvider provider, ILogger<Pool> logger, IScheduleService scheduleService, IConnectionFactory connectionFactory, FDFSOption option, PoolOption poolOption)
         {
+            _provider = provider;
             _logger = logger;
             _scheduleService = scheduleService;
-            _connectionPoolFactory = connectionPoolFactory;
-            _endPoint = endPoint;
-            _maxConnection = maxConnection;
+            _connectionFactory = connectionFactory;
+
 
             _autoResetEvent = new AutoResetEvent(false);
-
             _currentConnectionCount = 0;
-            _connectionLifeTime = connectionLifeTime;
-            _scanTimeoutConnectionInterval = scanTimeoutConnectionInterval;
+
+            _option = option;
+            _poolOption = poolOption;
+
+            Name = Guid.NewGuid().ToString();
         }
 
         /// <summary>获取一个连接
         /// </summary>
-        public async Task<Connection> GetConnection()
+        public async Task<IConnection> GetConnection()
         {
             //如果连接为空,则创建新的
             if (_connections.IsEmpty)
             {
-                _logger.LogDebug("Current connections is empty! CurrentConnectionCount:{0},MaxConnection:{1}", _currentConnectionCount, _maxConnection);
+                _logger.LogDebug("Current connections is empty! CurrentConnectionCount:{0},MaxConnection:{1}", _currentConnectionCount, _poolOption.MaxConnection);
                 //取不到连接,判断是否还可以创建新的连接,有可能这些连接正在被占用
-                if (_currentConnectionCount < _maxConnection)
+                if (_currentConnectionCount < _poolOption.MaxConnection)
                 {
                     //还可以创建新的连接
                     return CreateNewConnection();
@@ -62,9 +67,9 @@ namespace FastDFSCore.Transport
                 _autoResetEvent.WaitOne(5000);
             }
             //获取连接
-            if (!_connections.TryPop(out Connection connection))
+            if (!_connections.TryPop(out IConnection connection))
             {
-                throw new Exception($"无法获取新连接,当前Pool '{_endPoint.ToStringAddress()}'.");
+                throw new Exception($"无法获取新连接,当前Pool '{_poolOption.EndPoint.ToStringAddress()}'.");
             }
 
             //判断连接是否过期
@@ -77,19 +82,19 @@ namespace FastDFSCore.Transport
         }
         /// <summary>创建新的连接
         /// </summary>
-        private Connection CreateNewConnection()
+        private IConnection CreateNewConnection()
         {
             var connectionAddress = new ConnectionAddress()
             {
-                ServerEndPoint = _endPoint
+                ServerEndPoint = _poolOption.EndPoint
             };
 
-            var connection = _connectionPoolFactory.CreateConnection(connectionAddress, ConnectionClose);
+            var connection = _connectionFactory.CreateConnection(connectionAddress, ConnectionClose);
             Interlocked.Increment(ref _currentConnectionCount);
             return connection;
         }
 
-        private async Task RemoveConnection(Connection connection)
+        private async Task RemoveConnection(IConnection connection)
         {
             //关闭连接内的数据
             await connection.ShutdownAsync();
@@ -102,7 +107,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>连接关闭,将连接放会堆栈
         /// </summary>
-        public void ConnectionClose(Connection connection)
+        public void ConnectionClose(IConnection connection)
         {
             if (connection != null)
             {
@@ -114,23 +119,23 @@ namespace FastDFSCore.Transport
 
         /// <summary>判断连接是否已经过期
         /// </summary>
-        private bool IsConnectionExpired(Connection connection)
+        private bool IsConnectionExpired(IConnection connection)
         {
-            return (connection.LastUseTime != default) && ((DateTime.Now - connection.LastUseTime).TotalSeconds > _connectionLifeTime);
+            return (connection.LastUseTime != default) && ((DateTime.Now - connection.LastUseTime).TotalSeconds > _poolOption.ConnectionLifeTime);
         }
 
         /// <summary>搜索超时的连接,将会断开
         /// </summary>
         private void StartScanTimeoutConnectionTask()
         {
-            _scheduleService.StartTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection", ScanTimeoutConnection, _scanTimeoutConnectionInterval * 1000, 1000);
+            _scheduleService.StartTask($"{_poolOption.EndPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection", ScanTimeoutConnection, _poolOption.ScanTimeoutConnectionInterval * 1000, 1000);
         }
 
         /// <summary>停止搜索超时的连接
         /// </summary>
         private void StopScanTimeoutConnectionTask()
         {
-            _scheduleService.StopTask($"{_endPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection");
+            _scheduleService.StopTask($"{_poolOption.EndPoint.ToStringAddress()}.{GetType().Name}.ScanTimeoutConnection");
         }
 
         private void ScanTimeoutConnection()
@@ -139,10 +144,8 @@ namespace FastDFSCore.Transport
             {
                 if (IsConnectionExpired(connection))
                 {
-                    AsyncHelper.RunSync(() =>
-                    {
-                        return connection.DisposeAsync();
-                    });
+                    //释放连接
+                    connection.DisposeAsync().Wait();
                 }
             }
         }

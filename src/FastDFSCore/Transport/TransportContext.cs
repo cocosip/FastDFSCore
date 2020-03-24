@@ -4,7 +4,7 @@ namespace FastDFSCore.Transport
 {
     /// <summary>连接上下文
     /// </summary>
-    public class ConnectionContext
+    public class TransportContext
     {
         /// <summary>头部
         /// </summary>

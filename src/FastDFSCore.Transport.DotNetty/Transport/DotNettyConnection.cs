@@ -24,7 +24,7 @@ namespace FastDFSCore.Transport
         private IChannel _channel;
         private Bootstrap _bootStrap;
 
-        private ConnectionContext _connectionContext;
+        private TransportContext _transportContext;
         private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
         private IDownloader _downloader = null;
 
@@ -63,14 +63,14 @@ namespace FastDFSCore.Transport
                         IChannelPipeline pipeline = channel.Pipeline;
                         pipeline.AddLast(new LoggingHandler(typeof(DotNettyConnection)));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-                        pipeline.AddLast("fdfs-decoder", new FDFSDecoder(GetContext));
-                        pipeline.AddLast("fdfs-read", new FDFSReadHandler(SetResponse));
+                        pipeline.AddLast("fdfs-decoder", Provider.CreateInstance<FDFSDecoder>(new Func<TransportContext>(GetContext)));
+                        pipeline.AddLast("fdfs-read", Provider.CreateInstance<FDFSReadHandler>(new Action<ReceiveData>(SetResponse)));
 
                         //重连
                         if (Option.TcpSetting.EnableReConnect)
                         {
                             //Reconnect to server
-                            //pipeline.AddLast("reconnect", Provider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
+                            pipeline.AddLast("reconnect", Provider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
                         }
 
                     }));
@@ -108,7 +108,7 @@ namespace FastDFSCore.Transport
         public override async Task DisposeAsync()
         {
             await ShutdownAsync();
-            _connectionContext = null;
+            _transportContext = null;
             _downloader?.Release();
         }
 
@@ -118,9 +118,9 @@ namespace FastDFSCore.Transport
         {
             _taskCompletionSource = new TaskCompletionSource<FDFSResponse>();
             //上下文,当前的信息
-            _connectionContext = CreateContext<T>(request);
+            _transportContext = CreateContext<T>(request);
             //初始化保存流
-            if (_connectionContext.StreamResponse && request.Downloader != null)
+            if (_transportContext.StreamResponse && request.Downloader != null)
             {
                 _downloader = request.Downloader;
                 _downloader?.Run();
@@ -168,9 +168,9 @@ namespace FastDFSCore.Transport
         }
 
 
-        private ConnectionContext GetContext()
+        private TransportContext GetContext()
         {
-            return _connectionContext;
+            return _transportContext;
         }
 
 
@@ -178,32 +178,32 @@ namespace FastDFSCore.Transport
         /// </summary>
         private void SendReceiveComplete()
         {
-            _connectionContext = null;
+            _transportContext = null;
             _downloader?.WriteComplete();
         }
 
 
         /// <summary>设置返回值
         /// </summary>
-        private void SetResponse(ConnectionReceiveItem receiveItem)
+        private void SetResponse(ReceiveData receiveData)
         {
             try
             {
                 //返回为Strem,需要逐步进行解析
-                if (_connectionContext.StreamResponse)
+                if (_transportContext.StreamResponse)
                 {
-                    if (receiveItem.IsChunkWriting)
+                    if (receiveData.IsChunkWriting)
                     {
                         //写入流
 
                         //_fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
                         //写入Body
-                        _downloader.WriteBuffers(receiveItem.Body);
-                        _connectionContext.WritePosition += receiveItem.Body.Length;
-                        if (_connectionContext.IsWriteCompleted)
+                        _downloader.WriteBuffers(receiveData.Body);
+                        _transportContext.WritePosition += receiveData.Body.Length;
+                        if (_transportContext.IsWriteCompleted)
                         {
-                            var response = _connectionContext.Response;
-                            response.SetHeader(_connectionContext.Header);
+                            var response = _transportContext.Response;
+                            response.SetHeader(_transportContext.Header);
                             _taskCompletionSource.SetResult(response);
                             //完成
                             SendReceiveComplete();
@@ -217,16 +217,16 @@ namespace FastDFSCore.Transport
                 }
                 else
                 {
-                    var response = _connectionContext.Response;
-                    response.SetHeader(receiveItem.Header);
-                    response.LoadContent(Option, receiveItem.Body);
+                    var response = _transportContext.Response;
+                    response.SetHeader(receiveData.Header);
+                    response.LoadContent(Option, receiveData.Body);
                     _taskCompletionSource.SetResult(response);
                     //完成
                     SendReceiveComplete();
                 }
 
                 //释放
-                ReferenceCountUtil.SafeRelease(receiveItem);
+                ReferenceCountUtil.SafeRelease(receiveData);
 
             }
             catch (Exception ex)
@@ -236,9 +236,9 @@ namespace FastDFSCore.Transport
             }
         }
 
-        private ConnectionContext CreateContext<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
+        private TransportContext CreateContext<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
         {
-            var context = new ConnectionContext()
+            var context = new TransportContext()
             {
                 Response = new T(),
                 StreamRequest = request.StreamRequest,

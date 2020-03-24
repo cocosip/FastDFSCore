@@ -6,7 +6,7 @@ namespace FastDFSCore.Transport
 {
     /// <summary>接收数据
     /// </summary>
-    public class ConnectionReceiveItem
+    public class ReceiveData
     {
 
         /// <summary>是否进入写Chunk了

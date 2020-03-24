@@ -310,7 +310,7 @@ namespace FastDFSCore
                 Downloader = downloader
             };
             var response = await _executer.Execute(request, storageNode.EndPoint);
-            return downloader.SavePath;
+            return downloader.Path;
         }
 
 

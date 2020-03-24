@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 using System.IO;
 
 namespace FastDFSCore.Transport.Download
@@ -15,14 +14,14 @@ namespace FastDFSCore.Transport.Download
         /// </summary>
         public FileDownloader(ILogger<BaseDownloader> logger, FDFSOption option, string savePath) : base(logger, option)
         {
-            SavePath = savePath;
+            Path = savePath;
         }
 
         /// <summary>开始写入文件
         /// </summary>
         public override void BeginWrite()
         {
-            _fs = new FileStream(SavePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            _fs = new FileStream(Path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
         }
 
         /// <summary>将二进制写入文件

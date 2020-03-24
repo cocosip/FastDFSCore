@@ -169,7 +169,6 @@ namespace FastDFSCore
                 sb.AppendLine("</ReConnectMaxCount>");
 
                 sb.AppendLine("</TcpSetting>");
-
                 sb.AppendLine("</FDFSClient>");
                 return sb.ToString();
             }

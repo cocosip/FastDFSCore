@@ -6,7 +6,7 @@
     {
         /// <summary>文件保存路径
         /// </summary>
-        string SavePath { get; }
+        string Path { get; }
 
         /// <summary>运行
         /// </summary>

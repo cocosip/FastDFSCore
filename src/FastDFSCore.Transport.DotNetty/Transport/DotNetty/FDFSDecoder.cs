@@ -2,6 +2,7 @@
 using DotNetty.Codecs;
 using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -13,16 +14,17 @@ namespace FastDFSCore.Transport.DotNetty
     {
 
         //长度
-        readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
+        //readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
+        private readonly ILogger _logger;
         readonly int lengthFieldEndOffset = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
-        private readonly Func<ConnectionContext> _getContextAction;
+        private readonly Func<TransportContext> _getContext;
 
         /// <summary>Ctor
         /// </summary>
-        public FDFSDecoder(Func<ConnectionContext> getContextAction)
+        public FDFSDecoder(ILogger<FDFSDecoder> logger, Func<TransportContext> getContext)
         {
-            _getContextAction = getContextAction;
-            lengthFieldEndOffset = lengthFieldLength + 2;
+            _logger = logger;
+            _getContext = getContext;
         }
 
         /// <summary>Decode
@@ -47,33 +49,32 @@ namespace FastDFSCore.Transport.DotNetty
         /// <returns>The <see cref="IByteBuffer" /> which represents the frame or <c>null</c> if no frame could be created.</returns>
         protected virtual object Decode(IChannelHandlerContext context, IByteBuffer input)
         {
-            var connectionContext = _getContextAction();
+            var transportContext = _getContext();
 
-            var receiveItem = new ConnectionReceiveItem();
+            var receiveData = new ReceiveData();
 
-            if (connectionContext.StreamResponse)
+            if (transportContext.StreamResponse)
             {
                 //已经开始Chunk写入,那么直接就读取返回数据,不停的去保存到返回值中去
-                if (connectionContext.IsChunkWriting)
+                if (transportContext.IsChunkWriting)
                 {
                     //读取Chunk下载的数据
-                    if (!connectionContext.IsReadCompleted)
+                    if (!transportContext.IsReadCompleted)
                     {
                         //未读的长度
-                        var unreadLength = connectionContext.GetUnreadLength();
+                        var unreadLength = transportContext.GetUnreadLength();
                         //需要写的长度,剩余长度与当前接收包体两者取小值
                         var chunkSize = Math.Min(unreadLength, input.ReadableBytes);
                         IByteBuffer frame = this.ExtractFrame(context, input, input.ReaderIndex, (int)chunkSize);
                         //设置读的标记,读到头为止
                         input.SetReaderIndex(input.ReaderIndex + (int)chunkSize);
-                        receiveItem.ReadChunkBody(frame, (int)chunkSize);
-                        connectionContext.ReadPosition += chunkSize;
+                        receiveData.ReadChunkBody(frame, (int)chunkSize);
+                        transportContext.ReadPosition += chunkSize;
                     }
                     else
                     {
                         return null;
                     }
-
                 }
                 else
                 {
@@ -85,10 +86,10 @@ namespace FastDFSCore.Transport.DotNetty
                     IByteBuffer frame = ExtractFrame(context, input, input.ReaderIndex, lengthFieldEndOffset);
                     //设置读的标记,读到头为止
                     input.SetReaderIndex(input.ReaderIndex + lengthFieldEndOffset);
-                    receiveItem.ReadHeader(frame);
+                    receiveData.ReadHeader(frame);
                     //头部读完
-                    connectionContext.IsChunkWriting = true;
-                    connectionContext.Header = receiveItem.Header;
+                    transportContext.IsChunkWriting = true;
+                    transportContext.Header = receiveData.Header;
                 }
             }
             else
@@ -109,10 +110,10 @@ namespace FastDFSCore.Transport.DotNetty
                 int actualFrameLength = frameLengthInt;
                 IByteBuffer frame = ExtractFrame(context, input, readerIndex, actualFrameLength);
                 input.SetReaderIndex(readerIndex + actualFrameLength);
-                receiveItem.ReadFromBuffer(frame);
+                receiveData.ReadFromBuffer(frame);
             }
             ReferenceCountUtil.Release(input);
-            return receiveItem;
+            return receiveData;
         }
 
         /// <summary>获取未调整的长度

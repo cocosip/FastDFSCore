@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Sample
@@ -28,7 +29,13 @@ namespace FastDFSCore.Sample
                 .AddFastDFSDotNettyTransport();
 
             _provider = services.BuildServiceProvider();
-            _provider.ConfigureFastDFSCore();
+            _provider.ConfigureFastDFSCore(o =>
+            {
+                //o.Trackers = new List<IPEndPoint>()
+                //{
+                //    new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
+                //};
+            });
             _fdfsClinet = _provider.GetService<IFDFSClient>();
             _downloaderFactory = _provider.GetService<IDownloaderFactory>();
 
@@ -38,7 +45,7 @@ namespace FastDFSCore.Sample
 
         public static async void RunAsync()
         {
-           
+
             await BatchUploadTest();
             await BatchDownloadTest();
 
@@ -76,7 +83,7 @@ namespace FastDFSCore.Sample
             }
         }
 
-       
+
 
         static List<string> UploadFileIds = new List<string>();
 

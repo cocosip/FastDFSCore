@@ -22,11 +22,17 @@ namespace FastDFSCore
             return (T)ActivatorUtilities.CreateInstance(provider, typeof(T), args);
         }
 
-
         /// <summary>配置FastDFSCore
         /// </summary>
-        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider)
+        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FDFSOption> configure = null)
         {
+            var option = provider.GetService<FDFSOption>();
+            configure?.Invoke(option);
+
+            //设置全部DI
+            var host = provider.GetService<IFastDFSCoreHost>();
+            host.SetupDI(provider);
+          
             //连接管理器
             var connectionManager = provider.GetService<IConnectionManager>();
             if (connectionManager == null)

@@ -37,7 +37,7 @@ namespace FastDFSCore
         /// </summary>
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, Action<FDFSOption> configure = null)
         {
-            services.AddSingleton<IFDFSOptionTransformer, FDFSOptionTransformer>();
+            services.AddSingleton<IFDFSOptionTransformer>(new FDFSOptionTransformer());
             var option = new FDFSOption();
             configure?.Invoke(option);
             return services.AddFastDFSCoreInternal(option);
@@ -47,8 +47,8 @@ namespace FastDFSCore
         /// </summary>
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, string file)
         {
-            services.AddSingleton<IFDFSOptionTransformer, FDFSOptionTransformer>();
-            
+            services.AddSingleton<IFDFSOptionTransformer>(new FDFSOptionTransformer());
+
             var transformer = services.GetSingletonInstance<IFDFSOptionTransformer>();
             var option = transformer.GetOptionFromFile(file);
             return services.AddFastDFSCoreInternal(option);
@@ -60,6 +60,7 @@ namespace FastDFSCore
         {
             services
                 .AddSingleton<FDFSOption>(option)
+                .AddSingleton<IFastDFSCoreHost, FastDFSCoreHost>()
                 .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
                 .AddSingleton<IConnectionPoolFactory, DefaultConnectionPoolFactory>()
@@ -69,8 +70,7 @@ namespace FastDFSCore
                 .AddSingleton<IConnectionFactory, DefaultConnectionFactory>()
                 .AddScoped<PoolOption>()
                 .AddScoped<ConnectionAddress>()
-                .AddTransient<Pool>()
-                ;
+                .AddTransient<Pool>();
             return services;
         }
     }

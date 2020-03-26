@@ -31,6 +31,8 @@ namespace FastDFSCore.Transport
                 var connection = scope.ServiceProvider.GetService<IConnection>();
                 //设置关闭时的操作
                 connection.OnConnectionClose = closeAction;
+
+
                 return connection;
             }
         }

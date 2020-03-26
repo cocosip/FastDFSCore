@@ -2,7 +2,6 @@
 using DotNetty.Codecs;
 using DotNetty.Common.Utilities;
 using DotNetty.Transport.Channels;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -15,15 +14,13 @@ namespace FastDFSCore.Transport.DotNetty
 
         //长度
         //readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
-        private readonly ILogger _logger;
         readonly int lengthFieldEndOffset = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
         private readonly Func<TransportContext> _getContext;
 
         /// <summary>Ctor
         /// </summary>
-        public FDFSDecoder(ILogger<FDFSDecoder> logger, Func<TransportContext> getContext)
+        public FDFSDecoder(Func<TransportContext> getContext)
         {
-            _logger = logger;
             _getContext = getContext;
         }
 

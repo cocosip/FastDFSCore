@@ -30,7 +30,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>Ctor
         /// </summary>
-        public DotNettyConnection(IServiceProvider provider, ILogger<BaseConnection> logger, FDFSOption option, ConnectionAddress connectionAddress) : base(provider, logger, option, connectionAddress)
+        public DotNettyConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, FDFSOption option, ConnectionAddress connectionAddress) : base(host, logger, option, connectionAddress)
         {
 
         }
@@ -63,14 +63,14 @@ namespace FastDFSCore.Transport
                         IChannelPipeline pipeline = channel.Pipeline;
                         pipeline.AddLast(new LoggingHandler(typeof(DotNettyConnection)));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-                        pipeline.AddLast("fdfs-decoder", Provider.CreateInstance<FDFSDecoder>(new Func<TransportContext>(GetContext)));
-                        pipeline.AddLast("fdfs-read", Provider.CreateInstance<FDFSReadHandler>(new Action<ReceiveData>(SetResponse)));
+                        pipeline.AddLast("fdfs-decoder", Host.ServiceProvider.CreateInstance<FDFSDecoder>(new Func<TransportContext>(GetContext)));
+                        pipeline.AddLast("fdfs-read", Host.ServiceProvider.CreateInstance<FDFSReadHandler>(new Action<ReceiveData>(SetResponse)));
 
                         //重连
                         if (Option.TcpSetting.EnableReConnect)
                         {
                             //Reconnect to server
-                            pipeline.AddLast("reconnect", Provider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
+                            pipeline.AddLast("reconnect", Host.ServiceProvider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
                         }
 
                     }));

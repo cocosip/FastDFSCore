@@ -20,7 +20,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>注入
         /// </summary>
-        protected IServiceProvider Provider { get; }
+        protected IFastDFSCoreHost Host { get; }
 
         /// <summary>日志
         /// </summary>
@@ -61,14 +61,14 @@ namespace FastDFSCore.Transport
 
         /// <summary>Ctor
         /// </summary>
-        public BaseConnection(IServiceProvider provider, ILogger<BaseConnection> logger, FDFSOption option, ConnectionAddress connectionAddress)
+        public BaseConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, FDFSOption option, ConnectionAddress connectionAddress)
         {
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
             _isUsing = false;
             IsRunning = false;
 
-            Provider = provider;
+            Host = host;
             Logger = logger;
             Option = option;
 

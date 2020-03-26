@@ -2,7 +2,7 @@
   <![CDATA[Trackers信息]]>
   <Trackers>
     <Tracker>
-      <IPAddress>192.168.0.6</IPAddress>
+      <IPAddress>192.168.0.7</IPAddress>
       <Port>22122</Port>
     </Tracker>
   </Trackers>

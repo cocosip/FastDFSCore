@@ -7,9 +7,10 @@
 | Azure Pipelines| Windows |[![Build Status](https://dev.azure.com/cocosip/FastDFSCore/_apis/build/status/cocosip.FastDFSCore?branchName=master&jobName=Windows)](https://dev.azure.com/cocosip/FastDFSCore/_build/latest?definitionId=5&branchName=master)|
 | Azure Pipelines| Linux |[![Build Status](https://dev.azure.com/cocosip/FastDFSCore/_apis/build/status/cocosip.FastDFSCore?branchName=master&jobName=Linux)](https://dev.azure.com/cocosip/FastDFSCore/_build/latest?definitionId=5&branchName=master)|
 
-| Package  | Version | Downloads|
-| -------- | ------- | -------- |
-| `FastDFSCore` | [![NuGet](https://img.shields.io/nuget/v/FastDFSCore.svg)](https://www.nuget.org/packages/FastDFSCore) |![NuGet](https://img.shields.io/nuget/dt/FastDFSCore.svg)|
+| Package  | Version |Preview| Downloads|
+| -------- | ------- |------ |-------- |
+| `FastDFSCore` | [![NuGet](https://img.shields.io/nuget/v/FastDFSCore.svg)](https://www.nuget.org/packages/FastDFSCore) | [![NuGet](https://img.shields.io/nuget/vpre/FastDFSCore.svg)](https://www.nuget.org/packages/FastDFSCore) |![NuGet](https://img.shields.io/nuget/dt/FastDFSCore.svg)|
+| `FastDFSCore.Transport.DotNetty` | [![NuGet](https://img.shields.io/nuget/v/FastDFSCore.Transport.DotNetty.svg)](https://www.nuget.org/packages/FastDFSCore.Transport.DotNetty)|[![NuGet](https://img.shields.io/nuget/vpre/FastDFSCore.Transport.DotNetty.svg)](https://www.nuget.org/packages/FastDFSCore.Transport.DotNetty) |![NuGet](https://img.shields.io/nuget/dt/FastDFSCore.Transport.DotNetty.svg)|
 
 ## Features
 
@@ -25,3 +26,31 @@
 ## Guide
 
 - [Install Guide](/docs/fastdfs安装.md)
+
+## Sample
+
+```c#
+var services = new ServiceCollection();
+services
+    .AddLogging(l =>
+    {
+        l.AddConsole(c =>
+        {
+            c.LogToStandardErrorThreshold = LogLevel.Trace;
+        });
+    })
+    .AddFastDFSCore("FastDFS.xml")
+    .AddFastDFSDotNettyTransport();
+var provider = services.BuildServiceProvider();
+provider.ConfigureFastDFSCore(o=>
+{
+    //custom actions
+    ...
+});
+
+var fdfsClient = _provider.GetService<IFDFSClient>();
+var storageNode = await fdfsClient.GetStorageNodeAsync("group1");
+var fileId= await fdfsClient.UploadFileAsync(storageNode, @"D:\\sample1.txt");
+```
+
+> [more sample code](https://github.com/cocosip/FastDFSCore/blob/master/samples/FastDFSCore.Sample/Program.cs)

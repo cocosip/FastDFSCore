@@ -25,7 +25,7 @@ namespace FastDFSCore.Sample
                 });
             });
             services.AddFastDFSCore("FastDFS.xml")
-                .AddFastDFSCoreDotNetty();
+                .AddFastDFSDotNettyTransport();
 
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore();

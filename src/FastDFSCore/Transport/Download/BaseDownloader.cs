@@ -34,7 +34,7 @@ namespace FastDFSCore.Transport.Download
 
         /// <summary>文件保存的路径
         /// </summary>
-        public string Path { get; protected set; } = "";
+        public string Path { get; protected set; }
 
         /// <summary>Run
         /// </summary>

@@ -77,7 +77,7 @@ namespace FastDFSCore.Transport
 
                 await DoConnect();
 
-                _isRunning = true;
+                IsRunning = true;
                 Logger.LogInformation($"Client Run! serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace FastDFSCore.Transport
             try
             {
                 await _channel.CloseAsync();
-                _isRunning = false;
+                IsRunning = false;
             }
             finally
             {

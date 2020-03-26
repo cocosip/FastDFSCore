@@ -18,10 +18,6 @@ namespace FastDFSCore.Transport
 
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
-        /// <summary>是否正在运行
-        /// </summary>
-        protected bool _isRunning = false;
-
         /// <summary>注入
         /// </summary>
         protected IServiceProvider Provider { get; }
@@ -48,7 +44,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>是否正在运行
         /// </summary>
-        public bool IsRunning { get { return _isRunning; } }
+        public bool IsRunning { get; protected set; }
 
         /// <summary>创建时间
         /// </summary>
@@ -69,8 +65,8 @@ namespace FastDFSCore.Transport
         {
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
-            _isRunning = false;
             _isUsing = false;
+            IsRunning = false;
 
             Provider = provider;
             Logger = logger;
@@ -98,7 +94,7 @@ namespace FastDFSCore.Transport
         /// </summary>
         public Task OpenAsync()
         {
-            if (!_isRunning)
+            if (!IsRunning)
             {
                 AsyncHelper.RunSync(() =>
                 {

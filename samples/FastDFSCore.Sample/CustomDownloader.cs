@@ -1,5 +1,6 @@
 ﻿using FastDFSCore.Transport.Download;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.IO;
 
 namespace FastDFSCore.Sample
@@ -8,7 +9,7 @@ namespace FastDFSCore.Sample
     {
         private string _path;
         private FileStream _fs;
-        public CustomDownloader(ILogger<CustomDownloader> logger, FDFSOption option, string path) : base(logger, option)
+        public CustomDownloader(ILogger<CustomDownloader> logger, IOptions<FDFSOption> option, string path) : base(logger, option)
         {
             _path = path;
         }

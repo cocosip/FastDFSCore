@@ -1,5 +1,6 @@
 ﻿using FastDFSCore.Codecs.Messages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>Ctor
         /// </summary>
-        public BaseConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, FDFSOption option, ConnectionAddress connectionAddress)
+        public BaseConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, IOptions<FDFSOption> option, ConnectionAddress connectionAddress)
         {
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
@@ -70,7 +71,7 @@ namespace FastDFSCore.Transport
 
             Host = host;
             Logger = logger;
-            Option = option;
+            Option = option.Value;
 
 
             ConnectionAddress = connectionAddress;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.IO;
 
 namespace FastDFSCore.Transport.Download
@@ -12,7 +13,7 @@ namespace FastDFSCore.Transport.Download
 
         /// <summary>Ctor
         /// </summary>
-        public FileDownloader(ILogger<BaseDownloader> logger, FDFSOption option, string savePath) : base(logger, option)
+        public FileDownloader(ILogger<BaseDownloader> logger, IOptions<FDFSOption> option, string savePath) : base(logger, option)
         {
             Path = savePath;
         }

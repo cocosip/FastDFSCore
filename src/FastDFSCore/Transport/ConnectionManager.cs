@@ -1,5 +1,6 @@
 ﻿using FastDFSCore.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -27,11 +28,11 @@ namespace FastDFSCore.Transport
         /// <param name="logger">日志</param>
         /// <param name="connectionPoolFactory">连接池工厂</param>
         /// <param name="option">FDFSOption</param>
-        public ConnectionManager(ILogger<ConnectionManager> logger, IConnectionPoolFactory connectionPoolFactory, FDFSOption option)
+        public ConnectionManager(ILogger<ConnectionManager> logger, IConnectionPoolFactory connectionPoolFactory, IOptions<FDFSOption> option)
         {
             _logger = logger;
             _connectionPoolFactory = connectionPoolFactory;
-            _option = option;
+            _option = option.Value;
 
         }
 

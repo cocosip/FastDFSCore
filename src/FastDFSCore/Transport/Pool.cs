@@ -20,11 +20,10 @@ namespace FastDFSCore.Transport
         private bool _isRunning = false;
         private int _currentConnectionCount;
 
-        private readonly FDFSOption _option;
         private readonly PoolOption _poolOption;
 
         private readonly AutoResetEvent _autoResetEvent;
-        private readonly IServiceProvider _provider;
+
         private readonly ILogger _logger;
         private readonly IScheduleService _scheduleService;
         private readonly IConnectionFactory _connectionFactory;
@@ -32,9 +31,8 @@ namespace FastDFSCore.Transport
 
         /// <summary>Ctor
         /// </summary>
-        public Pool(IServiceProvider provider, ILogger<Pool> logger, IScheduleService scheduleService, IConnectionFactory connectionFactory, FDFSOption option, PoolOption poolOption)
+        public Pool(ILogger<Pool> logger, IScheduleService scheduleService, IConnectionFactory connectionFactory, PoolOption poolOption)
         {
-            _provider = provider;
             _logger = logger;
             _scheduleService = scheduleService;
             _connectionFactory = connectionFactory;
@@ -43,7 +41,6 @@ namespace FastDFSCore.Transport
             _autoResetEvent = new AutoResetEvent(false);
             _currentConnectionCount = 0;
 
-            _option = option;
             _poolOption = poolOption;
 
             Name = Guid.NewGuid().ToString();

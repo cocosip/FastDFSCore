@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Transport;
+using FastDFSCore.Transport.DotNetty;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FastDFSCore
@@ -11,8 +12,13 @@ namespace FastDFSCore
         /// </summary>
         public static IServiceCollection AddFastDFSDotNettyTransport(this IServiceCollection services)
         {
-            services.AddTransient<IConnection, DotNettyConnection>();
+            services
+                .AddTransient<IConnection, DotNettyConnection>()
+                //.AddTransient<FDFSDecoder>()
+                //.AddTransient<FDFSReadHandler>()
+                //.AddTransient<FDFSDecoder>()
 
+                ;
             return services;
         }
     }

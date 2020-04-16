@@ -38,9 +38,7 @@ namespace FastDFSCore
         public static IServiceCollection AddFastDFSCore(this IServiceCollection services, Action<FDFSOption> configure = null)
         {
             services.AddSingleton<IFDFSOptionTransformer>(new FDFSOptionTransformer());
-            var option = new FDFSOption();
-            configure?.Invoke(option);
-            return services.AddFastDFSCoreInternal(option);
+            return services.AddFastDFSCoreInternal(configure);
         }
 
         /// <summary>添加FastDFS
@@ -49,17 +47,31 @@ namespace FastDFSCore
         {
             services.AddSingleton<IFDFSOptionTransformer>(new FDFSOptionTransformer());
 
-            var transformer = services.GetSingletonInstance<IFDFSOptionTransformer>();
-            var option = transformer.GetOptionFromFile(file);
-            return services.AddFastDFSCoreInternal(option);
+
+            void configure(FDFSOption o)
+            {
+                var transformer = services.GetSingletonInstance<IFDFSOptionTransformer>();
+                var readOption = transformer.GetOptionFromFile(file);
+
+                o.Charset = readOption.Charset;
+                o.ConnectionTimeout = readOption.ConnectionTimeout;
+                o.ConnectionLifeTime = readOption.ConnectionLifeTime;
+                o.ScanTimeoutConnectionInterval = readOption.ScanTimeoutConnectionInterval;
+                o.TrackerMaxConnection = readOption.TrackerMaxConnection;
+                o.StorageMaxConnection = readOption.StorageMaxConnection;
+                o.TcpSetting = readOption.TcpSetting;
+                o.Trackers = readOption.Trackers;
+            }
+
+            return services.AddFastDFSCoreInternal(configure);
         }
 
         /// <summary>添加FastDFS的具体实现
         /// </summary>
-        internal static IServiceCollection AddFastDFSCoreInternal(this IServiceCollection services, FDFSOption option)
+        internal static IServiceCollection AddFastDFSCoreInternal(this IServiceCollection services, Action<FDFSOption> configure)
         {
             services
-                .AddSingleton<FDFSOption>(option)
+                .Configure<FDFSOption>(configure)
                 .AddSingleton<IFastDFSCoreHost, FastDFSCoreHost>()
                 .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()

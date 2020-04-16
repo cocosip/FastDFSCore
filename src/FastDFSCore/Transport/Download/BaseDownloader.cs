@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -25,9 +26,9 @@ namespace FastDFSCore.Transport.Download
 
         /// <summary>Ctor
         /// </summary>
-        public BaseDownloader(ILogger<BaseDownloader> logger, FDFSOption option)
+        public BaseDownloader(ILogger<BaseDownloader> logger, IOptions<FDFSOption> option)
         {
-            Option = option;
+            Option = option.Value;
             Logger = logger;
         }
 

@@ -15,7 +15,7 @@ namespace FastDFSCore.Scheduling
 
         /// <summary>Ctor
         /// </summary>
-        public ScheduleService(ILogger<ScheduleService> logger, FDFSOption option)
+        public ScheduleService(ILogger<ScheduleService> logger)
         {
             _logger = logger;
         }

@@ -1,5 +1,6 @@
 ﻿using FastDFSCore.Transport;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace FastDFSCore
@@ -26,13 +27,14 @@ namespace FastDFSCore
         /// </summary>
         public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FDFSOption> configure = null)
         {
-            var option = provider.GetService<FDFSOption>();
+
+            var option = provider.GetService<IOptions<FDFSOption>>().Value;
             configure?.Invoke(option);
 
             //设置全部DI
             var host = provider.GetService<IFastDFSCoreHost>();
             host.SetupDI(provider);
-          
+
             //连接管理器
             var connectionManager = provider.GetService<IConnectionManager>();
             if (connectionManager == null)

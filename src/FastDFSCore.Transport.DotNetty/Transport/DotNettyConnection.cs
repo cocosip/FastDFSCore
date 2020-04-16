@@ -10,6 +10,7 @@ using FastDFSCore.Extensions;
 using FastDFSCore.Transport.DotNetty;
 using FastDFSCore.Transport.Download;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>Ctor
         /// </summary>
-        public DotNettyConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, FDFSOption option, ConnectionAddress connectionAddress) : base(host, logger, option, connectionAddress)
+        public DotNettyConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, IOptions<FDFSOption> option, ConnectionAddress connectionAddress) : base(host, logger, option, connectionAddress)
         {
 
         }

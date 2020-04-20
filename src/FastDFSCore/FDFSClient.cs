@@ -136,7 +136,7 @@ namespace FastDFSCore
         /// <returns></returns>
         public async Task<string> UploadFileAsync(StorageNode storageNode, string filename)
         {
-            string fileExt = Path.GetExtension(filename).Substring(1);
+            string fileExt = Path.GetExtension(filename).RemovePreFix(".");
             var fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             var request = new UploadFileRequest(storageNode.StorePathIndex, fileExt, fs);
             var response = await _executer.Execute(request, storageNode.EndPoint);
@@ -209,7 +209,7 @@ namespace FastDFSCore
         /// <returns>文件名</returns>
         public async Task<string> UploadAppenderFileAsync(StorageNode storageNode, string filename)
         {
-            string extension = Path.GetExtension(filename).Substring(1);
+            string extension = Path.GetExtension(filename).RemovePreFix(".");
             var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
             var request = new UploadAppendFileRequest(storageNode.StorePathIndex, extension, fs);
             var response = await _executer.Execute(request, storageNode.EndPoint);

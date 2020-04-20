@@ -25,17 +25,17 @@ namespace FastDFSCore.Sample
                     c.LogToStandardErrorThreshold = LogLevel.Trace;
                 });
             });
-            services.AddFastDFSCore("FastDFS.xml")
+            services.AddFastDFSCore()
                 .AddFastDFSDotNettyTransport();
 
 
             _provider = services.BuildServiceProvider();
             _provider.ConfigureFastDFSCore(o =>
             {
-                //o.Trackers = new List<IPEndPoint>()
-                //{
-                //    new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
-                //};
+                o.Trackers = new List<IPEndPoint>()
+                {
+                    new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
+                };
             });
             _fdfsClinet = _provider.GetService<IFDFSClient>();
             _downloaderFactory = _provider.GetService<IDownloaderFactory>();

@@ -70,6 +70,10 @@ namespace FastDFSCore
         /// </summary>
         internal static IServiceCollection AddFastDFSCoreInternal(this IServiceCollection services, Action<FDFSOption> configure)
         {
+            if (configure == null)
+            {
+                configure = o => { };
+            }
             services
                 .Configure<FDFSOption>(configure)
                 .AddSingleton<IFastDFSCoreHost, FastDFSCoreHost>()

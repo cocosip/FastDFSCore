@@ -1,4 +1,4 @@
-﻿using FastDFSCore.Codecs.Messages;
+﻿using FastDFSCore.Protocols;
 using FastDFSCore.Transport.Download;
 using System.Collections.Generic;
 using System.IO;

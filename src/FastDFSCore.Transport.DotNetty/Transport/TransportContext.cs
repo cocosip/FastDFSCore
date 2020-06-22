@@ -1,4 +1,4 @@
-﻿using FastDFSCore.Codecs.Messages;
+﻿using FastDFSCore.Protocols;
 
 namespace FastDFSCore.Transport
 {

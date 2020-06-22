@@ -1,7 +1,5 @@
-﻿using FastDFSCore.Codecs.Messages;
+﻿using FastDFSCore.Protocols;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport

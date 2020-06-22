@@ -6,30 +6,7 @@ namespace FastDFSCore.Extensions
     /// </summary>
     public static class StringExtensions
     {
-        /// <summary>获取字符串平台无关的Hashcode
-        /// </summary>
-        /// <param name="source">字符串</param>
-        /// <returns></returns>
-        public static int GetStringHashcode(this string source)
-        {
-            if (source.IsNullOrWhiteSpace())
-            {
-                return 0;
-            }
-            unchecked
-            {
-                int hash = 23;
-                foreach (char c in source)
-                {
-                    hash = (hash << 5) - hash + c;
-                }
-                if (hash < 0)
-                {
-                    hash = Math.Abs(hash);
-                }
-                return hash;
-            }
-        }
+        
 
         /// <summary>判断字符串是否为空
         /// </summary>
@@ -70,37 +47,6 @@ namespace FastDFSCore.Extensions
             return source.Substring(0, len);
         }
 
-        /// <summary>按照正常行结尾格式化字符串
-        /// </summary>
-        /// <param name="source">字符串</param>
-        /// <returns></returns>
-        public static string NormalizeLineEndings(this string source)
-        {
-            return source.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
-        }
-
-
-        /// <summary>移除字符串中指定结尾格式的字符
-        /// </summary>
-        /// <param name="source">字符串</param>
-        /// <param name="postFixes">结尾字符串数组</param>
-        /// <returns></returns>
-        public static string RemovePostFix(this string source, params string[] postFixes)
-        {
-            if (source.IsNullOrWhiteSpace() || postFixes.IsNullOrEmpty())
-            {
-                return source;
-            }
-
-            foreach (var postFix in postFixes)
-            {
-                if (source.EndsWith(postFix))
-                {
-                    return source.Left(source.Length - postFix.Length);
-                }
-            }
-            return source;
-        }
 
         /// <summary>移除字符串中指定开始格式的前缀
         /// </summary>
@@ -139,55 +85,6 @@ namespace FastDFSCore.Extensions
             }
 
             return source.Substring(source.Length - len, len);
-        }
-
-        /// <summary>
-        /// Uses string.Split method to split given string by given separator.
-        /// </summary>
-        public static string[] Split(this string source, string separator)
-        {
-            return source.Split(new[] { separator }, StringSplitOptions.None);
-        }
-
-        /// <summary>
-        /// Uses string.Split method to split given string by given separator.
-        /// </summary>
-        public static string[] Split(this string source, string separator, StringSplitOptions options)
-        {
-            return source.Split(new[] { separator }, options);
-        }
-
-        /// <summary>
-        /// Uses string.Split method to split given string by <see cref="Environment.NewLine"/>.
-        /// </summary>
-        public static string[] SplitToLines(this string source)
-        {
-            return source.Split(Environment.NewLine);
-        }
-
-        /// <summary>
-        /// Uses string.Split method to split given string by <see cref="Environment.NewLine"/>.
-        /// </summary>
-        public static string[] SplitToLines(this string source, StringSplitOptions options)
-        {
-            return source.Split(Environment.NewLine, options);
-        }
-
-        /// <summary>将首字母变成小写,驼峰写法?(非真正驼峰,驼峰写法首字母为小写,而不是收个单词)
-        /// </summary>
-        public static string ToCamelCase(this string source)
-        {
-            if (source.IsNullOrWhiteSpace())
-            {
-                return source;
-            }
-
-            if (source.Length == 1)
-            {
-                return source.ToLowerInvariant();
-            }
-
-            return char.ToLowerInvariant(source[0]) + source.Substring(1);
         }
 
 

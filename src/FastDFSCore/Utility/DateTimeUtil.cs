@@ -17,7 +17,5 @@ namespace FastDFSCore.Utility
             var dt = new DateTime(timeTricks, DateTimeKind.Utc); //转化为DateTime
             return dt;
         }
-
-
     }
 }

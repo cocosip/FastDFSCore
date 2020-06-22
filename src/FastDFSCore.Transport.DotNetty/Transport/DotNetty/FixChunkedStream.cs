@@ -9,6 +9,7 @@ namespace FastDFSCore.Transport.DotNetty
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>DotNetty 修复后的ChunkedStream
     /// </summary>
@@ -74,10 +75,12 @@ namespace FastDFSCore.Transport.DotNetty
             try
             {
                 // transfer to buffer
-                int count = AsyncHelper.RunSync(() =>
+                var task = Task.Run<int>(() =>
                 {
                     return buffer.SetBytesAsync(buffer.WriterIndex, this.input, readChunkSize, CancellationToken.None);
                 });
+
+                int count = task.Result;
                 buffer.SetWriterIndex(buffer.WriterIndex + count);
                 this.TransferredBytes += count;
 

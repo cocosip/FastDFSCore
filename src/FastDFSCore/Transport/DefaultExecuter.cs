@@ -1,4 +1,4 @@
-﻿using FastDFSCore.Codecs.Messages;
+﻿using FastDFSCore.Protocols;
 using FastDFSCore.Extensions;
 using System;
 using System.Net;
@@ -22,7 +22,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>请求执行器
         /// </summary>
-        /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Codecs.Messages.FDFSRequest"/></typeparam>
+        /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Protocols.FDFSRequest"/></typeparam>
         /// <param name="request">请求</param>
         /// <param name="endPoint">返回</param>
         /// <returns></returns>

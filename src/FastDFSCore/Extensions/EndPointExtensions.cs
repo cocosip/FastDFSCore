@@ -17,7 +17,7 @@ namespace FastDFSCore.Extensions
         /// </summary>
         public static string ToStringAddress(this IPEndPoint iPEndPoint)
         {
-            return string.Format("{0}:{1}", iPEndPoint.Address.MapToIPv4().ToString(), iPEndPoint.Port);
+            return $"{ iPEndPoint.Address.MapToIPv4().ToString()}:{iPEndPoint.Port}";
         }
 
         /// <summary>Parse endPoint to string address. exp: 127.0.0.1:10001
@@ -26,7 +26,5 @@ namespace FastDFSCore.Extensions
         {
             return ((IPEndPoint)endPoint).ToStringAddress();
         }
-
-
     }
 }

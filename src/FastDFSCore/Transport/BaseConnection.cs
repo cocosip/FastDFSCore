@@ -1,4 +1,4 @@
-﻿using FastDFSCore.Codecs.Messages;
+﻿using FastDFSCore.Protocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -97,10 +97,7 @@ namespace FastDFSCore.Transport
         {
             if (!IsRunning)
             {
-                AsyncHelper.RunSync(() =>
-                {
-                    return RunAsync();
-                });
+                return RunAsync();
             }
             _isUsing = true;
             _lastUseTime = DateTime.Now;

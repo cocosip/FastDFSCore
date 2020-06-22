@@ -1,5 +1,5 @@
 ﻿using DotNetty.Buffers;
-using FastDFSCore.Codecs.Messages;
+using FastDFSCore.Protocols;
 using System;
 
 namespace FastDFSCore.Transport

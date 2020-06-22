@@ -8,11 +8,11 @@ namespace FastDFSCore.Transport
     {
         /// <summary>头部
         /// </summary>
-        public FDFSHeader Header { get; set; }
+        public FastDFSHeader Header { get; set; }
 
         /// <summary>返回消息
         /// </summary>
-        public FDFSResponse Response { get; set; }
+        public FastDFSResp Response { get; set; }
 
         /// <summary>是否流请求
         /// </summary>

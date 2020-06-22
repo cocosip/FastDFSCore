@@ -1,4 +1,4 @@
-﻿using FastDFSCore.Extensions;
+﻿using FastDFSCore.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;

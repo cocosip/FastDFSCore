@@ -38,6 +38,6 @@ namespace FastDFSCore.Transport
 
         /// <summary>发送数据
         /// </summary>
-        Task<FDFSResponse> SendRequestAsync<T>(FDFSRequest<T> request) where T : FDFSResponse, new();
+        Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
     }
 }

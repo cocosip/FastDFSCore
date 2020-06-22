@@ -15,7 +15,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>头部
         /// </summary>
-        public FDFSHeader Header { get; set; }
+        public FastDFSHeader Header { get; set; }
 
         /// <summary>返回的数据
         /// </summary>
@@ -35,7 +35,7 @@ namespace FastDFSCore.Transport
         /// </summary>
         public void ReadHeader(IByteBuffer buffer)
         {
-            Header = new FDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());
+            Header = new FastDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());
             IsChunkWriting = false;
         }
 
@@ -43,7 +43,7 @@ namespace FastDFSCore.Transport
         /// </summary>
         public void ReadFromBuffer(IByteBuffer buffer)
         {
-            Header = new FDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());
+            Header = new FastDFSHeader(buffer.ReadLong(), buffer.ReadByte(), buffer.ReadByte());
             if (Header.Status != 0)
             {
                 throw new Exception($"返回Status不正确:{Header.Status}");

@@ -1,5 +1,5 @@
 ﻿using FastDFSCore.Protocols;
-using FastDFSCore.Extensions;
+using FastDFSCore.Utility;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,11 +22,11 @@ namespace FastDFSCore.Transport
 
         /// <summary>请求执行器
         /// </summary>
-        /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Protocols.FDFSRequest"/></typeparam>
+        /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Protocols.FastDFSReq"/></typeparam>
         /// <param name="request">请求</param>
         /// <param name="endPoint">返回</param>
         /// <returns></returns>
-        public async Task<T> Execute<T>(FDFSRequest<T> request, IPEndPoint endPoint = null) where T : FDFSResponse, new()
+        public async Task<T> Execute<T>(FastDFSReq<T> request, IPEndPoint endPoint = null) where T : FastDFSResp, new()
         {
             var connection = endPoint == null ? await _connectionManager.GetTrackerConnection() : await _connectionManager.GetStorageConnection(endPoint);
             if (connection == null)

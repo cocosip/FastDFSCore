@@ -13,7 +13,7 @@ namespace FastDFSCore.Sample
     class Program
     {
         static IServiceProvider _provider;
-        static IFDFSClient _fdfsClinet;
+        static IFastDFSClient _fdfsClinet;
         static IDownloaderFactory _downloaderFactory;
         static void Main(string[] args)
         {
@@ -25,7 +25,14 @@ namespace FastDFSCore.Sample
                     c.LogToStandardErrorThreshold = LogLevel.Trace;
                 });
             });
-            services.AddFastDFSCore()
+            services
+                .AddFastDFSCore(c =>
+                {
+                    c.Trackers = new List<Tracker>()
+                    {
+                        new Tracker("192.168.0.6",22122)
+                    };
+                })
                 .AddFastDFSDotNettyTransport();
 
 
@@ -37,7 +44,7 @@ namespace FastDFSCore.Sample
                     new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
                 };
             });
-            _fdfsClinet = _provider.GetService<IFDFSClient>();
+            _fdfsClinet = _provider.GetService<IFastDFSClient>();
             _downloaderFactory = _provider.GetService<IDownloaderFactory>();
 
             RunAsync();

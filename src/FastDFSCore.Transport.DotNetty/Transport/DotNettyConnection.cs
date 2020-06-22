@@ -5,10 +5,10 @@ using DotNetty.Handlers.Streams;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
-using FastDFSCore.Extensions;
 using FastDFSCore.Protocols;
 using FastDFSCore.Transport.DotNetty;
 using FastDFSCore.Transport.Download;
+using FastDFSCore.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -26,7 +26,7 @@ namespace FastDFSCore.Transport
         private Bootstrap _bootStrap;
 
         private TransportContext _transportContext;
-        private TaskCompletionSource<FDFSResponse> _taskCompletionSource = null;
+        private TaskCompletionSource<FastDFSResp> _taskCompletionSource = null;
         private IDownloader _downloader = null;
 
         /// <summary>Ctor
@@ -115,9 +115,9 @@ namespace FastDFSCore.Transport
 
         /// <summary>发送数据
         /// </summary>
-        public override Task<FDFSResponse> SendRequestAsync<T>(FDFSRequest<T> request)
+        public override Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
-            _taskCompletionSource = new TaskCompletionSource<FDFSResponse>();
+            _taskCompletionSource = new TaskCompletionSource<FastDFSResp>();
             //上下文,当前的信息
             _transportContext = CreateContext<T>(request);
             //初始化保存流
@@ -130,7 +130,7 @@ namespace FastDFSCore.Transport
             var bodyBuffer = request.EncodeBody(Option);
             if (request.Header.Length == 0)
             {
-                request.Header.Length = request.StreamRequest ? request.RequestStream.Length + bodyBuffer.Length : bodyBuffer.Length;
+                request.Header.Length = request.InputStream != null ? request.InputStream.Length + bodyBuffer.Length : bodyBuffer.Length;
             }
 
             var headerBuffer = request.Header.ToBytes();
@@ -139,10 +139,10 @@ namespace FastDFSCore.Transport
             newBuffer.AddRange(bodyBuffer);
 
             //流文件发送
-            if (request.StreamRequest)
+            if (request.InputStream != null)
             {
                 _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer.ToArray()));
-                var stream = new FixChunkedStream(request.RequestStream);
+                var stream = new FixChunkedStream(request.InputStream);
                 _channel.WriteAndFlushAsync(stream);
             }
             else
@@ -237,12 +237,12 @@ namespace FastDFSCore.Transport
             }
         }
 
-        private TransportContext CreateContext<T>(FDFSRequest<T> request) where T : FDFSResponse, new()
+        private TransportContext CreateContext<T>(FastDFSReq<T> request) where T : FastDFSResp, new()
         {
             var context = new TransportContext()
             {
                 Response = new T(),
-                StreamRequest = request.StreamRequest,
+                StreamRequest = request.InputStream != null,
                 StreamResponse = request.StreamResponse,
                 IsChunkWriting = false,
                 ReadPosition = 0,

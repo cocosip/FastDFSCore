@@ -122,8 +122,6 @@ namespace FastDFSCore.Transport
         /// <returns></returns>
         public abstract Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
 
-
-
         /// <summary>当前连接是否可用,可以发送数据
         /// </summary>
         protected abstract bool IsAvailable();

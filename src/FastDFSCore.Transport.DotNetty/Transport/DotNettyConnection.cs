@@ -23,9 +23,9 @@ namespace FastDFSCore.Transport
         private Bootstrap _bootStrap;
 
         private TransportContext _transportContext;
+        
         private TaskCompletionSource<FastDFSResp> _taskCompletionSource = null;
-        /// <summary>Ctor
-        /// </summary>
+        
         public DotNettyConnection(ILogger<BaseConnection> logger, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress) : base(logger, option, connectionAddress)
         {
 

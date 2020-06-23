@@ -2,7 +2,6 @@
 {
     public interface IConnectionPool
     {
-
         string Name { get; }
 
         /// <summary>Get a connection from stack

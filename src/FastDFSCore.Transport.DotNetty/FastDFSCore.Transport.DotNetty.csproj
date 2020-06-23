@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+ 
   <Import Project="..\..\build\common.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,18 +7,6 @@
     <PackageId>FastDFSCore.Transport.DotNetty</PackageId>
     <RootNamespace>FastDFSCore</RootNamespace>
     <Description>分布式文件系统FastDFS c#客户端(基于DotNetty传输)</Description>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(TargetFramework)'=='Debug|AnyCPU|netstandard2.0'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <DocumentationFile>bin\Debug\netstandard2.0\FastDFSCore.Transport.DotNetty.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)|$(TargetFramework)'=='Release|AnyCPU|netstandard2.0'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <DocumentationFile>bin\Release\netstandard2.0\FastDFSCore.Transport.DotNetty.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

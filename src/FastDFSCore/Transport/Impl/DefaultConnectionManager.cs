@@ -125,7 +125,6 @@ namespace FastDFSCore.Transport
         /// </summary>
         public void Release()
         {
-
             foreach (var item in _trackerConnectionPools)
             {
                 item.Value.Shutdown();

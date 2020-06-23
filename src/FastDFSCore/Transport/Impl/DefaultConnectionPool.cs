@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace FastDFSCore.Transport
 {
-    public class ConnectionPool : IConnectionPool
+    public class DefaultConnectionPool : IConnectionPool
     {
         public string Name { get; }
         public ConnectionAddress ConnectionAddress { get { return _option.ConnectionAddress; } }
@@ -24,7 +24,7 @@ namespace FastDFSCore.Transport
         private readonly ConcurrentStack<IConnection> _connectionStack;
         private readonly ConcurrentDictionary<string, IConnection> _connectionDict;
 
-        public ConnectionPool(ILogger<ConnectionPool> logger, IScheduleService scheduleService, ConnectionPoolOption option, IConnectionBuilder connectionFactory)
+        public DefaultConnectionPool(ILogger<DefaultConnectionPool> logger, IScheduleService scheduleService, ConnectionPoolOption option, IConnectionBuilder connectionFactory)
         {
             _logger = logger;
             _scheduleService = scheduleService;

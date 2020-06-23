@@ -1,26 +1,17 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-
-namespace FastDFSCore.Transport
+﻿namespace FastDFSCore.Transport
 {
-    /// <summary>连接管理器
-    /// </summary>
     public interface IConnectionManager
     {
-        /// <summary>获取Tracker的连接
+        /// <summary>Get tracker connection
         /// </summary>
-        Task<IConnection> GetTrackerConnection();
+        IConnection GetTrackerConnection();
 
-        /// <summary>获取Storage连接
+        /// <summary>Get storage connection
         /// </summary>
-        Task<IConnection> GetStorageConnection(IPEndPoint endPoint);
+        IConnection GetStorageConnection(ConnectionAddress connectionAddress);
 
-        /// <summary>运行
-        /// </summary>
-        void Start();
+        void Initialize();
 
-        /// <summary>关闭
-        /// </summary>
-        void Shutdown();
+        void Release();
     }
 }

@@ -24,7 +24,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FDFSOption option, byte[] data)
+        public override void LoadContent(FastDFSOption option, byte[] data)
         {
             byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
             Array.Copy(data, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);

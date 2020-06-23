@@ -1,13 +1,10 @@
 ﻿using DotNetty.Buffers;
 using DotNetty.Common.Utilities;
-using DotNetty.Handlers.Logging;
-using DotNetty.Handlers.Streams;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using FastDFSCore.Protocols;
 using FastDFSCore.Transport.DotNetty;
-using FastDFSCore.Transport.Download;
 using FastDFSCore.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,11 +24,9 @@ namespace FastDFSCore.Transport
 
         private TransportContext _transportContext;
         private TaskCompletionSource<FastDFSResp> _taskCompletionSource = null;
-        private IDownloader _downloader = null;
-
         /// <summary>Ctor
         /// </summary>
-        public DotNettyConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, IOptions<FDFSOption> option, ConnectionAddress connectionAddress) : base(host, logger, option, connectionAddress)
+        public DotNettyConnection(ILogger<BaseConnection> logger, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress) : base(logger, option, connectionAddress)
         {
 
         }
@@ -45,7 +40,7 @@ namespace FastDFSCore.Transport
                 Logger.LogInformation($"Client is running! Don't run again! ChannelId:{_channel.Id.AsLongText()}");
                 return;
             }
-            var tcpSetting = Option.TcpSetting;
+            //var tcpSetting = Option.TcpSetting;
             try
             {
 
@@ -54,25 +49,25 @@ namespace FastDFSCore.Transport
                 _bootStrap
                     .Group(_group)
                     .Channel<TcpSocketChannel>()
-                    .Option(ChannelOption.TcpNodelay, tcpSetting.TcpNodelay)
+                    //.Option(ChannelOption.TcpNodelay, tcpSetting.TcpNodelay)
                     .Option(ChannelOption.WriteBufferHighWaterMark, 16777216)
                     .Option(ChannelOption.WriteBufferLowWaterMark, 8388608)
-                    .Option(ChannelOption.SoReuseaddr, tcpSetting.SoReuseaddr)
+                    //.Option(ChannelOption.SoReuseaddr, tcpSetting.SoReuseaddr)
                     .Option(ChannelOption.AutoRead, true)
                     .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
-                        pipeline.AddLast(new LoggingHandler(typeof(DotNettyConnection)));
-                        pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-                        pipeline.AddLast("fdfs-decoder", Host.ServiceProvider.CreateInstance<FDFSDecoder>(new Func<TransportContext>(GetContext)));
-                        pipeline.AddLast("fdfs-read", Host.ServiceProvider.CreateInstance<FDFSReadHandler>(new Action<ReceiveData>(SetResponse)));
+                        //pipeline.AddLast(new LoggingHandler(typeof(DotNettyConnection)));
+                        //pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
+                        //pipeline.AddLast("fdfs-decoder", Host.ServiceProvider.CreateInstance<FDFSDecoder>(new Func<TransportContext>(GetContext)));
+                        //pipeline.AddLast("fdfs-read", Host.ServiceProvider.CreateInstance<FDFSReadHandler>(new Action<ReceiveData>(SetResponse)));
 
-                        //重连
-                        if (Option.TcpSetting.EnableReConnect)
-                        {
-                            //Reconnect to server
-                            pipeline.AddLast("reconnect", Host.ServiceProvider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
-                        }
+                        ////重连
+                        //if (Option.TcpSetting.EnableReConnect)
+                        //{
+                        //    //Reconnect to server
+                        //    pipeline.AddLast("reconnect", Host.ServiceProvider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
+                        //}
 
                     }));
 
@@ -110,7 +105,7 @@ namespace FastDFSCore.Transport
         {
             await ShutdownAsync();
             _transportContext = null;
-            _downloader?.Release();
+            //_downloader?.Release();
         }
 
         /// <summary>发送数据
@@ -121,11 +116,12 @@ namespace FastDFSCore.Transport
             //上下文,当前的信息
             _transportContext = CreateContext<T>(request);
             //初始化保存流
-            if (_transportContext.StreamResponse && request.Downloader != null)
-            {
-                _downloader = request.Downloader;
-                _downloader?.Run();
-            }
+            //if (_transportContext.StreamResponse && request.Downloader != null)
+            //{
+            //    _downloader = request.Downloader;
+            //    _downloader?.Run();
+            //}
+
 
             var bodyBuffer = request.EncodeBody(Option);
             if (request.Header.Length == 0)
@@ -163,9 +159,10 @@ namespace FastDFSCore.Transport
         /// </summary>
         protected override async Task DoConnect()
         {
-            _channel = ConnectionAddress.LocalEndPoint == null ? await _bootStrap.ConnectAsync(ConnectionAddress.ServerEndPoint) : await _bootStrap.ConnectAsync(ConnectionAddress.ServerEndPoint, ConnectionAddress.LocalEndPoint);
+            _channel = await _bootStrap.ConnectAsync(ConnectionAddress.IPAddress, ConnectionAddress.Port);
 
             Logger.LogInformation($"Client DoConnect! name:{Name},serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
+
         }
 
 
@@ -180,7 +177,7 @@ namespace FastDFSCore.Transport
         private void SendReceiveComplete()
         {
             _transportContext = null;
-            _downloader?.WriteComplete();
+            //_downloader?.WriteComplete();
         }
 
 
@@ -199,7 +196,7 @@ namespace FastDFSCore.Transport
 
                         //_fs.Write(receiveItem.Body, 0, receiveItem.Body.Length);
                         //写入Body
-                        _downloader.WriteBuffers(receiveData.Body);
+                        //_downloader.WriteBuffers(receiveData.Body);
                         _transportContext.WritePosition += receiveData.Body.Length;
                         if (_transportContext.IsWriteCompleted)
                         {
@@ -213,7 +210,7 @@ namespace FastDFSCore.Transport
                     else
                     {
                         //文件流读取,刚读取头部
-                        _downloader?.Run();
+                        //_downloader?.Run();
                     }
                 }
                 else
@@ -243,11 +240,12 @@ namespace FastDFSCore.Transport
             {
                 Response = new T(),
                 StreamRequest = request.InputStream != null,
-                StreamResponse = request.StreamResponse,
                 IsChunkWriting = false,
                 ReadPosition = 0,
                 WritePosition = 0
             };
+
+            context.StreamResponse = context.Response.IsOutputStream;
             return context;
         }
 

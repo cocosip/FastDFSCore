@@ -4,40 +4,26 @@ using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport
 {
-    /// <summary>传输连接
-    /// </summary>
     public interface IConnection
     {
-        /// <summary>该连接的唯一名称
-        /// </summary>
         string Name { get; }
 
-        /// <summary>最后使用时间
-        /// </summary>
+        ConnectionAddress ConnectionAddress { get; }
+
         DateTime LastUseTime { get; }
 
-        /// <summary>连接关闭的时候的操作
-        /// </summary>
+        bool IsExpired();
+
         Action<IConnection> OnConnectionClose { get; set; }
 
-        /// <summary>打开连接
-        /// </summary>
         Task OpenAsync();
 
-        /// <summary>关闭连接
-        /// </summary>
         Task CloseAsync();
 
-        /// <summary>关闭连接,连接被释放
-        /// </summary>
         Task ShutdownAsync();
 
-        /// <summary>释放连接
-        /// </summary>
         Task DisposeAsync();
 
-        /// <summary>发送数据
-        /// </summary>
         Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
     }
 }

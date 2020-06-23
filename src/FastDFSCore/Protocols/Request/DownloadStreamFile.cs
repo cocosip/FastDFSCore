@@ -37,10 +37,6 @@ namespace FastDFSCore.Protocols
         /// </summary>
         public string FileId { get; set; }
 
-        /// <summary>是否流返回
-        /// </summary>
-        public override bool StreamResponse => true;
-
         /// <summary>Ctor
         /// </summary>
         public DownloadStreamFile()
@@ -62,7 +58,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
             var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
             //文件偏移量

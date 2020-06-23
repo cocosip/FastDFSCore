@@ -66,7 +66,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
             string optionString = (Option == MetaDataOption.Overwrite) ? "O" : "M";
             var optionBuffer = EndecodeUtil.EncodeString(optionString, option.Charset);
@@ -91,7 +91,7 @@ namespace FastDFSCore.Protocols
             return ByteUtil.Combine(fileIdLengthBuffer, metaDataSizeBuffer, optionBuffer, groupNameBuffer, fileIdBuffer, metaDataBuffer);
         }
 
-        private byte[] CreateMetaDataBuffer(FDFSOption option, IDictionary<string, string> metaData)
+        private byte[] CreateMetaDataBuffer(FastDFSOption option, IDictionary<string, string> metaData)
         {
             List<byte> metaDataBuffer = new List<byte>();
             foreach (KeyValuePair<string, string> p in metaData)

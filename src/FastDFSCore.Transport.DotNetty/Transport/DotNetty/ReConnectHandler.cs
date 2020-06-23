@@ -12,12 +12,12 @@ namespace FastDFSCore.Transport.DotNetty
     public class ReConnectHandler : ChannelHandlerAdapter
     {
         private readonly ILogger _logger;
-        private readonly FDFSOption _option;
+        private readonly FastDFSOption _option;
         private readonly Func<Task> _reConnectAction;
 
         /// <summary>Ctor
         /// </summary>
-        public ReConnectHandler(ILogger<ReConnectHandler> logger, FDFSOption option, Func<Task> reConnectAction)
+        public ReConnectHandler(ILogger<ReConnectHandler> logger, FastDFSOption option, Func<Task> reConnectAction)
         {
             _logger = logger;
             _option = option;
@@ -29,7 +29,7 @@ namespace FastDFSCore.Transport.DotNetty
         public override void ChannelInactive(IChannelHandlerContext context)
         {
             _logger.LogInformation("Channel:{0} is inactive!", context.Channel.Id.AsLongText());
-            context.Channel.EventLoop.Schedule(() => _reConnectAction(), TimeSpan.FromSeconds(_option.TcpSetting.ReConnectDelaySeconds));
+            //context.Channel.EventLoop.Schedule(() => _reConnectAction(), TimeSpan.FromSeconds(_option.TcpSetting.ReConnectDelaySeconds));
         }
     }
 }

@@ -1,16 +1,17 @@
-﻿namespace FastDFSCore.Protocols
+﻿using System.IO;
+
+namespace FastDFSCore.Protocols
 {
     /// <summary>FastDFSCore 通讯返回
     /// </summary>
     public abstract class FastDFSResp
     {
-        /// <summary>返回是否为流
-        /// </summary>
+        public FastDFSHeader Header { get; set; }
+
         public bool IsOutputStream { get; set; } = false;
 
-        /// <summary>头部
-        /// </summary>
-        public FastDFSHeader Header { get; set; }
+        public Stream OutputStream { get; set; }
+
 
         /// <summary>设置头部信息
         /// </summary>
@@ -28,7 +29,7 @@
 
         /// <summary>LoadContent
         /// </summary>
-        public virtual void LoadContent(FDFSOption option, byte[] data)
+        public virtual void LoadContent(FastDFSOption option, byte[] data)
         {
 
         }

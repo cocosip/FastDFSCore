@@ -80,7 +80,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
             //文件名长度数组
             var masterFileIdLenBuffer = EndecodeUtil.EncodeLong((long)MasterFileId.Length);

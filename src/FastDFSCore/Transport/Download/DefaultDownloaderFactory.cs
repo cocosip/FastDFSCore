@@ -1,34 +1,27 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace FastDFSCore.Transport.Download
 {
-    /// <summary>下载器工厂
-    /// </summary>
+
     public class DefaultDownloaderFactory : IDownloaderFactory
     {
-        private readonly IServiceProvider _provider;
+        private readonly IServiceProvider _serviceProvider;
 
-        /// <summary>Ctor
-        /// </summary>
-        public DefaultDownloaderFactory(IServiceProvider provider)
+ 
+        public DefaultDownloaderFactory(IServiceProvider serviceProvider)
         {
-            _provider = provider;
+            _serviceProvider = serviceProvider;
         }
 
-        /// <summary>创建文件下载器
-        /// </summary>
-        /// <param name="savePath">保存路径</param>
-        /// <returns></returns>
-        public FileDownloader CreateFileDownloader(string savePath)
+        public IDownloader CreateDownloader(DownloaderOption option)
         {
-            return _provider.CreateInstance<FileDownloader>(savePath);
-        }
-
-        /// <summary>从DI中创建文件下载器
-        /// </summary>
-        public T CreateDownloader<T>(params object[] args) where T : IDownloader
-        {
-            return _provider.CreateInstance<T>(args);
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var injectDownloaderOption = scope.ServiceProvider.GetService<DownloaderOption>();
+                injectDownloaderOption.FilePath = option.FilePath;
+                return scope.ServiceProvider.GetService<IDownloader>();
+            }
         }
     }
 }

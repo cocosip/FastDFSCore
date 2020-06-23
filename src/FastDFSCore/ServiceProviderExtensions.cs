@@ -9,12 +9,6 @@ namespace FastDFSCore
     /// </summary>
     public static class ServiceProviderExtensions
     {
-        /// <summary>创建对象
-        /// </summary>
-        public static object CreateInstance(this IServiceProvider provider, Type type, params object[] args)
-        {
-            return ActivatorUtilities.CreateInstance(provider, type, args);
-        }
 
         /// <summary>创建对象
         /// </summary>
@@ -25,23 +19,15 @@ namespace FastDFSCore
 
         /// <summary>配置FastDFSCore
         /// </summary>
-        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FDFSOption> configure = null)
+        public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FastDFSOption> configure = null)
         {
 
-            var option = provider.GetService<IOptions<FDFSOption>>().Value;
+            var option = provider.GetService<IOptions<FastDFSOption>>().Value;
             configure?.Invoke(option);
 
-            //设置全部DI
-            var host = provider.GetService<IFastDFSCoreHost>();
-            host.SetupDI(provider);
-
-            //连接管理器
             var connectionManager = provider.GetService<IConnectionManager>();
-            if (connectionManager == null)
-            {
-                throw new NullReferenceException("IConnectionManager is null!");
-            }
-            connectionManager.Start();
+            connectionManager.Initialize();
+
             return provider;
         }
     }

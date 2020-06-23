@@ -44,7 +44,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
 
             var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);

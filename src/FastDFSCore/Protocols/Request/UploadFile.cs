@@ -55,12 +55,12 @@ namespace FastDFSCore.Protocols
         /// </summary>
         /// <param name="storePathIndex">StorePathIndex</param>
         /// <param name="fileExt">文件扩展名</param>
-        /// <param name="contentBytes">文件二进制</param>
-        public UploadFile(byte storePathIndex, string fileExt, byte[] contentBytes) : this()
+        /// <param name="content">文件二进制</param>
+        public UploadFile(byte storePathIndex, string fileExt, byte[] content) : this()
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
-            InputStream = new MemoryStream(contentBytes);
+            InputStream = new MemoryStream(content);
         }
 
 
@@ -70,7 +70,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
             //1.StorePathIndex
 

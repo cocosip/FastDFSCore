@@ -1,27 +1,16 @@
 ﻿namespace FastDFSCore.Transport.Download
 {
-    /// <summary>下载器
-    /// </summary>
     public interface IDownloader
     {
-        /// <summary>文件保存路径
-        /// </summary>
-        string Path { get; }
 
-        /// <summary>运行
-        /// </summary>
-        void Run();
+        DownloaderOption Option { get; }
 
-        /// <summary>写入数据
-        /// </summary>
-        void WriteBuffers(byte[] buffers);
+        void BeginWrite();
 
-        /// <summary>写入完成
-        /// </summary>
+        void WriteBuffer(byte[] buffer);
+
         void WriteComplete();
 
-        /// <summary>释放
-        /// </summary>
         void Release();
     }
 }

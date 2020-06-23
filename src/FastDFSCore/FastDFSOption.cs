@@ -23,9 +23,14 @@ namespace FastDFSCore
         /// </summary>
         public int ConnectionLifeTime { get; set; } = 600;
 
+        /// <summary>并发线程数
+        /// </summary>
+        public int ConnectionConcurrentThread { get; set; } = 3;
+
         /// <summary>查询超时的连接的时间间隔
         /// </summary>
         public int ScanTimeoutConnectionInterval { get; set; } = 10;
+
 
         /// <summary>Tracker最大连接数
         /// </summary>

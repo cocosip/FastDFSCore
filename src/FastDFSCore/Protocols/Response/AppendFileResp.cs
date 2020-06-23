@@ -33,7 +33,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FDFSOption option, byte[] data)
+        public override void LoadContent(FastDFSOption option, byte[] data)
         {
             var span = data.AsSpan();
             var groupNameSpan = span.Slice(0, Consts.FDFS_GROUP_NAME_MAX_LEN);

@@ -1,5 +1,4 @@
 ﻿using FastDFSCore.Protocols;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport
@@ -12,8 +11,8 @@ namespace FastDFSCore.Transport
         /// </summary>
         /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Protocols.FastDFSReq"/></typeparam>
         /// <param name="request">请求</param>
-        /// <param name="endPoint">返回</param>
+        /// <param name="connectionAddress">返回</param>
         /// <returns></returns>
-        Task<T> Execute<T>(FastDFSReq<T> request, IPEndPoint endPoint = null) where T : FastDFSResp, new();
+        Task<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new();
     }
 }

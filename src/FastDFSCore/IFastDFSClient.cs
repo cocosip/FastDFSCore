@@ -1,5 +1,4 @@
 ﻿using FastDFSCore.Protocols;
-using FastDFSCore.Transport.Download;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -54,10 +53,10 @@ namespace FastDFSCore
         /// 上传文件
         /// </summary>
         /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
-        /// <param name="contentByte">文件内容</param>
+        /// <param name="content">文件内容</param>
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <returns>文件名</returns>
-        Task<string> UploadFileAsync(StorageNode storageNode, byte[] contentByte, string fileExt);
+        Task<string> UploadFileAsync(StorageNode storageNode, byte[] content, string fileExt);
 
 
         /// <summary>
@@ -83,10 +82,10 @@ namespace FastDFSCore
         /// <param name="groupName">组名</param>
         /// <param name="masterFileId">主文件名</param>
         /// <param name="prefixName">从文件后缀</param>
-        /// <param name="contentBytes">文件内容</param>
+        /// <param name="content">文件内容</param>
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <returns>文件名</returns>
-        Task<string> UploadSlaveFileAsync(string groupName, string masterFileId, string prefixName, byte[] contentBytes, string fileExt);
+        Task<string> UploadSlaveFileAsync(string groupName, string masterFileId, string prefixName, byte[] content, string fileExt);
 
         /// <summary>
         /// 上传从文件
@@ -102,10 +101,10 @@ namespace FastDFSCore
         /// 上传可以Append的文件
         /// </summary>
         /// <param name="storageNode">GetStorageNode方法返回的存储节点</param>
-        /// <param name="contentBytes">文件内容</param>
+        /// <param name="content">文件内容</param>
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <returns>文件名</returns>
-        Task<string> UploadAppenderFileAsync(StorageNode storageNode, byte[] contentBytes, string fileExt);
+        Task<string> UploadAppenderFileAsync(StorageNode storageNode, byte[] content, string fileExt);
 
         /// <summary>
         /// 上传可以Append的文件
@@ -120,9 +119,9 @@ namespace FastDFSCore
         /// </summary>
         /// <param name="groupName">组名</param>
         /// <param name="fileId">文件名</param>
-        /// <param name="contentBytes">文件内容</param>
+        /// <param name="content">文件内容</param>
         /// <returns>文件名</returns>
-        Task<string> AppendFileAsync(string groupName, string fileId, byte[] contentBytes);
+        Task<string> AppendFileAsync(string groupName, string fileId, byte[] content);
 
         /// <summary>
         /// 删除文件
@@ -149,23 +148,23 @@ namespace FastDFSCore
         /// <returns>文件内容</returns>
         Task<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId, long offset, long length);
 
-        /// <summary>
-        /// 下载文件到指定的地点
-        /// </summary>
-        /// <param name="storageNode"></param>
-        /// <param name="fileId"></param>
-        /// <param name="filePath">文件保存路径</param>
-        /// <returns></returns>
-        Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath);
+        ///// <summary>
+        ///// 下载文件到指定的地点
+        ///// </summary>
+        ///// <param name="storageNode"></param>
+        ///// <param name="fileId"></param>
+        ///// <param name="filePath">文件保存路径</param>
+        ///// <returns></returns>
+        //Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath);
 
-        /// <summary>
-        /// 自定义下载文件
-        /// </summary>
-        /// <param name="storageNode"></param>
-        /// <param name="fileId"></param>
-        /// <param name="downloader">文件下载器</param>
-        /// <returns></returns>
-        Task<string> DownloadFileEx(StorageNode storageNode, string fileId, IDownloader downloader);
+        ///// <summary>
+        ///// 自定义下载文件
+        ///// </summary>
+        ///// <param name="storageNode"></param>
+        ///// <param name="fileId"></param>
+        ///// <param name="downloader">文件下载器</param>
+        ///// <returns></returns>
+        //Task<string> DownloadFileEx(StorageNode storageNode, string fileId, IDownloader downloader);
 
         /// <summary>
         /// 获取文件信息

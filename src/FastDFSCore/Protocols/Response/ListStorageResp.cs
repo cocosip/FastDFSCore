@@ -13,7 +13,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FDFSOption option, byte[] data)
+        public override void LoadContent(FastDFSOption option, byte[] data)
         {
             if (data.Length % Consts.FDFS_STORAGE_INFO_SIZE != 0)
             {

@@ -95,7 +95,7 @@
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
             var bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
             //Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVER_LIST_STORAGE, 0);

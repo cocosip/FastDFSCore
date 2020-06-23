@@ -1,5 +1,4 @@
-﻿using FastDFSCore.Transport.Download;
-using System.IO;
+﻿using System.IO;
 
 namespace FastDFSCore.Protocols
 {
@@ -15,17 +14,9 @@ namespace FastDFSCore.Protocols
         /// </summary>
         public Stream InputStream { get; set; }
 
-        /// <summary>是否流返回
-        /// </summary>
-        public virtual bool StreamResponse { get; set; } = false;
-
-        /// <summary>下载器,返回类型为流的时候,才会使用下载器
-        /// </summary>
-        public virtual IDownloader Downloader { get; set; }
-
         /// <summary>对当前body进行编码
         /// </summary>
-        public abstract byte[] EncodeBody(FDFSOption option);
+        public abstract byte[] EncodeBody(FastDFSOption option);
     }
 
     /// <summary>FDFSRequest, <seealso cref="FastDFSCore.Protocols.FastDFSReq"/>

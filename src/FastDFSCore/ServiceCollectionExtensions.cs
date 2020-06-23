@@ -1,6 +1,5 @@
 ﻿using FastDFSCore.Scheduling;
 using FastDFSCore.Transport;
-using FastDFSCore.Transport.Download;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -20,17 +19,16 @@ namespace FastDFSCore
             }
             services
                 .Configure<FastDFSOption>(configure)
-                .AddSingleton<IFastDFSCoreHost, FastDFSCoreHost>()
                 .AddSingleton<IScheduleService, ScheduleService>()
-                .AddSingleton<IConnectionManager, ConnectionManager>()
-                .AddSingleton<IConnectionPoolFactory, DefaultConnectionPoolFactory>()
-                .AddSingleton<IDownloaderFactory, DefaultDownloaderFactory>()
+                .AddSingleton<IConnectionPoolBuilder, DefaultConnectionPoolBuilder>()
+                .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
+                //.AddSingleton<IConnectionManager, ConnectionManager>()
                 .AddTransient<IExecuter, DefaultExecuter>()
                 .AddTransient<IFastDFSClient, FastDFSClient>()
-                .AddSingleton<IConnectionFactory, DefaultConnectionFactory>()
-                .AddScoped<PoolOption>()
+                .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
+                .AddScoped<ConnectionPoolOption>()
                 .AddScoped<ConnectionAddress>()
-                .AddTransient<Pool>();
+                ;
             return services;
         }
     }

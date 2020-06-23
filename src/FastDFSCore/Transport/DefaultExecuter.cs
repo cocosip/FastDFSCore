@@ -1,7 +1,5 @@
 ﻿using FastDFSCore.Protocols;
-using FastDFSCore.Utility;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport
@@ -24,14 +22,14 @@ namespace FastDFSCore.Transport
         /// </summary>
         /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Protocols.FastDFSReq"/></typeparam>
         /// <param name="request">请求</param>
-        /// <param name="endPoint">返回</param>
+        /// <param name="connectionAddress">返回</param>
         /// <returns></returns>
-        public async Task<T> Execute<T>(FastDFSReq<T> request, IPEndPoint endPoint = null) where T : FastDFSResp, new()
+        public async Task<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new()
         {
-            var connection = endPoint == null ? await _connectionManager.GetTrackerConnection() : await _connectionManager.GetStorageConnection(endPoint);
+            var connection = connectionAddress == null ? _connectionManager.GetTrackerConnection() : _connectionManager.GetStorageConnection(connectionAddress);
             if (connection == null)
             {
-                throw new NullReferenceException($"Can't find connection,ipaddr:[{endPoint.ToStringAddress()}] ");
+                throw new NullReferenceException($"Can't find connection,ipaddr:{connectionAddress} ");
             }
             await connection.OpenAsync();
             var response = await connection.SendRequestAsync<T>(request);

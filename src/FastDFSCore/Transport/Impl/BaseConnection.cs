@@ -19,21 +19,17 @@ namespace FastDFSCore.Transport
 
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
-        /// <summary>注入
-        /// </summary>
-        protected IFastDFSCoreHost Host { get; }
-
         /// <summary>日志
         /// </summary>
         protected ILogger Logger { get; }
 
         /// <summary>配置信息
         /// </summary>
-        protected FDFSOption Option { get; }
+        protected FastDFSOption Option { get; }
 
         /// <summary>连接选项
         /// </summary>
-        protected ConnectionAddress ConnectionAddress { get; }
+        public ConnectionAddress ConnectionAddress { get; }
 
         /// <summary>连接名,生成的唯一值
         /// </summary>
@@ -62,14 +58,14 @@ namespace FastDFSCore.Transport
 
         /// <summary>Ctor
         /// </summary>
-        public BaseConnection(IFastDFSCoreHost host, ILogger<BaseConnection> logger, IOptions<FDFSOption> option, ConnectionAddress connectionAddress)
+        public BaseConnection(ILogger<BaseConnection> logger, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress)
         {
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
             _isUsing = false;
             IsRunning = false;
 
-            Host = host;
+
             Logger = logger;
             Option = option.Value;
 
@@ -77,6 +73,11 @@ namespace FastDFSCore.Transport
             ConnectionAddress = connectionAddress;
 
             Name = Guid.NewGuid().ToString();
+        }
+
+        public bool IsExpired()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>运行
@@ -135,10 +136,10 @@ namespace FastDFSCore.Transport
         /// </summary>
         protected async Task DoReConnectIfNeed()
         {
-            if (!Option.TcpSetting.EnableReConnect || Option.TcpSetting.ReConnectMaxCount < _reConnectAttempt)
-            {
-                return;
-            }
+            //if (!Option.TcpSetting.EnableReConnect || Option.TcpSetting.ReConnectMaxCount < _reConnectAttempt)
+            //{
+            //    return;
+            //}
             if (IsAvailable())
             {
                 await _semaphoreSlim.WaitAsync();
@@ -160,13 +161,14 @@ namespace FastDFSCore.Transport
                     _semaphoreSlim.Release();
                 }
                 //Try again!
-                if (_reConnectAttempt < Option.TcpSetting.ReConnectMaxCount && !reConnectSuccess)
-                {
-                    Thread.Sleep(Option.TcpSetting.ReConnectIntervalMilliSeconds);
-                    await DoReConnectIfNeed();
-                }
+                //if (_reConnectAttempt < Option.TcpSetting.ReConnectMaxCount && !reConnectSuccess)
+                //{
+                //    Thread.Sleep(Option.TcpSetting.ReConnectIntervalMilliSeconds);
+                //    await DoReConnectIfNeed();
+                //}
             }
         }
 
+ 
     }
 }

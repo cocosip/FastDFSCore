@@ -39,7 +39,7 @@
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FDFSOption option)
+        public override byte[] EncodeBody(FastDFSOption option)
         {
             //消息体长度为group name的最大长度,16
 

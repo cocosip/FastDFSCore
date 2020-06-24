@@ -69,9 +69,6 @@ namespace FastDFSCore.Transport
         /// </summary>
         public abstract Task ShutdownAsync();
 
-        /// <summary>释放连接
-        /// </summary>
-        public abstract Task DisposeAsync();
 
         /// <summary>打开连接
         /// </summary>

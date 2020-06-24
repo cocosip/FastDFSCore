@@ -11,8 +11,6 @@ using FastDFSCore.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -105,14 +103,6 @@ namespace FastDFSCore.Transport
             }
         }
 
-        /// <summary>释放连接
-        /// </summary>
-        public override async Task DisposeAsync()
-        {
-            await ShutdownAsync();
-            _transportContext = null;
-            _fileWriter?.Dispose();
-        }
 
         /// <summary>发送数据
         /// </summary>
@@ -178,6 +168,8 @@ namespace FastDFSCore.Transport
         private void SendReceiveComplete()
         {
             _transportContext = null;
+            _fileWriter?.Dispose();
+            _fileWriter = null;
 
         }
 

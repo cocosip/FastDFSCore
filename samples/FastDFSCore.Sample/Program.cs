@@ -97,9 +97,8 @@ namespace FastDFSCore.Sample
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var dir =
-            new DirectoryInfo(@"D:\DicomTests");
+            new DirectoryInfo(@"D:\DICOM 100 Test");
             //new DirectoryInfo(@"D:\Pictures");
-            //new DirectoryInfo(@"D:\DicomTest\BigTest");
             //G:\安装文件\SystemISO
             var fileInfos = dir.GetFiles();
             long totalSize = 0;
@@ -130,13 +129,25 @@ namespace FastDFSCore.Sample
                 Directory.CreateDirectory(saveDir);
             }
             watch.Start();
+
+
+            //Parallel.ForEach(UploadFileIds, fileId =>
+            //{
+            //    var ext = GetPathExtension(fileId);
+            //    var savePath = Path.Combine(saveDir, $"{Guid.NewGuid()}{ext}");
+            //    _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath).Wait();
+            //    Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
+            //});
+
+
             foreach (var fileId in UploadFileIds)
             {
                 var ext = GetPathExtension(fileId);
-                var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
+                var savePath = Path.Combine(saveDir, $"{Guid.NewGuid()}{ext}");
                 await _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath);
                 Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
             }
+
             watch.Stop();
             //获取下载的文件总大小
             var dir = new DirectoryInfo(saveDir);
@@ -146,7 +157,7 @@ namespace FastDFSCore.Sample
             {
                 totalSize += fileInfo.Length;
             }
-            Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2},速度:{3} Mb/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed, (totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0)).ToString("F2"));
+            Console.WriteLine("共下载:{0}个文件,总共:{1}MB,花费:{2} ms,速度:{3} MB/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed.TotalMilliseconds, (totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0)).ToString("F2"));
 
         }
 

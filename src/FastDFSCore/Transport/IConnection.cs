@@ -22,8 +22,6 @@ namespace FastDFSCore.Transport
 
         Task ShutdownAsync();
 
-        Task DisposeAsync();
-
         Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
     }
 }

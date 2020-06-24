@@ -33,11 +33,11 @@ namespace FastDFSCore.Protocols
         /// <summary>Ctor
         /// </summary>
         /// <param name="fileId">文件FileId</param>
-        /// <param name="contentBytes">文件二进制数据</param>
-        public AppendFile(string fileId, byte[] contentBytes) : this()
+        /// <param name="content">文件二进制数据</param>
+        public AppendFile(string fileId, byte[] content) : this()
         {
             FileId = fileId;
-            InputStream = new MemoryStream(contentBytes);
+            InputStream = new MemoryStream(content);
         }
 
         /// <summary>
@@ -54,13 +54,13 @@ namespace FastDFSCore.Protocols
         /// </summary>
         public override byte[] EncodeBody(FastDFSOption option)
         {
-            var fileIdLenBuffer = ByteUtil.LongToBuffer(FileId.Length);
+            var fileIdLengthBuffer = ByteUtil.LongToBuffer(FileId.Length);
             var fileSizeBuffer = ByteUtil.LongToBuffer(InputStream.Length);
             var fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
 
             //long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + FileId.Length + RequestStream.Length;
 
-            return ByteUtil.Combine(fileIdLenBuffer, fileSizeBuffer, fileIdBuffer);
+            return ByteUtil.Combine(fileIdLengthBuffer, fileSizeBuffer, fileIdBuffer);
 
         }
     }

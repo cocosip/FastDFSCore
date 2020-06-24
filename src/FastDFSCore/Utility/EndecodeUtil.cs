@@ -1,8 +1,8 @@
-﻿using FastDFSCore.Utility;
+﻿using FastDFSCore.Protocols;
 using System;
 using System.Text;
 
-namespace FastDFSCore.Protocols
+namespace FastDFSCore.Utility
 {
     /// <summary>编码,解码操作
     /// </summary>
@@ -80,6 +80,9 @@ namespace FastDFSCore.Protocols
         public static GroupInfo DecodeGroupInfo(byte[] buffer, string charset = "utf-8")
         {
             var groupInfo = new GroupInfo();
+
+            //var bufferSpan = buffer.AsSpan();
+
             //GroupName
             var groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN + 1];
             Array.Copy(buffer, 0, groupNameBuffer, 0, groupNameBuffer.Length);

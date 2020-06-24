@@ -9,7 +9,7 @@ namespace FastDFSCore.Transport.DotNetty
 {
     /// <summary>FDFS长度解码器
     /// </summary>
-    public class FDFSDecoder : ByteToMessageDecoder
+    public class FastDFSDecoder : ByteToMessageDecoder
     {
 
         //长度
@@ -19,7 +19,7 @@ namespace FastDFSCore.Transport.DotNetty
 
         /// <summary>Ctor
         /// </summary>
-        public FDFSDecoder(Func<TransportContext> getContext)
+        public FastDFSDecoder(Func<TransportContext> getContext)
         {
             _getContext = getContext;
         }

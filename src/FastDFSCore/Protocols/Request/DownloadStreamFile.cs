@@ -37,6 +37,11 @@ namespace FastDFSCore.Protocols
         /// </summary>
         public string FileId { get; set; }
 
+        /// <summary>是否返回为流
+        /// </summary>
+        public override bool IsOutputStream { get; set; } = true;
+        
+
         /// <summary>Ctor
         /// </summary>
         public DownloadStreamFile()

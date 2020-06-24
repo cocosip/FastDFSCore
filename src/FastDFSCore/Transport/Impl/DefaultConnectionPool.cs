@@ -42,20 +42,28 @@ namespace FastDFSCore.Transport
 
         /// <summary>Get a connection from stack
         /// </summary>
-        public IConnection Get()
+        public IConnection GetConnection()
         {
             if (!_connectionStack.TryPop(out IConnection connection))
             {
                 if (_connectionCount < _maxConnectionCount)
                 {
                     connection = _connectionFactory.CreateConnection(_option.ConnectionAddress);
+                    //BindEvent
+                    connection.OnConnectionClose += ConnectionCloseHandler;
                     Interlocked.Increment(ref _connectionCount);
+
+                    if (!_connectionDict.TryAdd(connection.Id, connection))
+                    {
+                        _logger.LogWarning("Fail add connection to dict! ConnectionAddress:{0}", ConnectionAddress);
+                    }
+
                     return connection;
                 }
 
                 _logger.LogDebug("The connection stack is empty and created full, wait for get a return connection.Connection Pool Name '{0}',Server:'{1}'.", Name, _option.ConnectionAddress);
                 _semaphoreSlim.Wait(5000);
-                return Get();
+                return GetConnection();
             }
             return connection;
         }
@@ -129,17 +137,19 @@ namespace FastDFSCore.Transport
 
         private void DisposeAllConnections()
         {
-            foreach (var connection in _connectionStack)
-            {
-                connection.DisposeAsync().Wait();
-            }
-
             foreach (var connection in _connectionDict.Values)
             {
                 connection.DisposeAsync().Wait();
             }
         }
 
+
+        private void ConnectionCloseHandler(object sender, ConnectionCloseEventArgs e)
+        {
+            var connection = (IConnection)sender;
+            Return(connection);
+
+        }
 
 
     }

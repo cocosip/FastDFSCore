@@ -36,15 +36,9 @@ namespace FastDFSCore.Sample
 
 
             _provider = services.BuildServiceProvider();
-            _provider.ConfigureFastDFSCore(o =>
-            {
-                //o.Trackers = new List<IPEndPoint>()
-                //{
-                //    new IPEndPoint(IPAddress.Parse("192.168.0.6"),22122)
-                //};
-            });
+            _provider.ConfigureFastDFSCore();
+
             _fdfsClinet = _provider.GetService<IFastDFSClient>();
-            //_downloaderFactory = _provider.GetService<IDownloaderFactory>();
 
             RunAsync();
             Console.ReadLine();
@@ -54,12 +48,12 @@ namespace FastDFSCore.Sample
         {
 
             await BatchUploadTest();
-          //  await BatchDownloadTest();
+            await BatchDownloadTest();
 
             //获取GroupInfo
-            await GroupInfoAsync();
+            // await GroupInfoAsync();
             //获取StorageInfo
-            await StorageInfoAsync();
+            // await StorageInfoAsync();
             //await BatchCustomDownloadTest();
         }
 
@@ -123,38 +117,38 @@ namespace FastDFSCore.Sample
 
         }
 
-        ///// <summary>批量下载测试
-        ///// </summary>
-        //public static async Task BatchDownloadTest()
-        //{
-        //    Console.WriteLine("-------------批量下载测试---------");
-        //    Stopwatch watch = new Stopwatch();
-        //    var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
-        //    var saveDir = @"G:\DownloadTest";
-        //    if (!Directory.Exists(saveDir))
-        //    {
-        //        Directory.CreateDirectory(saveDir);
-        //    }
-        //    watch.Start();
-        //    foreach (var fileId in UploadFileIds)
-        //    {
-        //        var ext = GetPathExtension(fileId);
-        //        var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
-        //        await _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath);
-        //        Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
-        //    }
-        //    watch.Stop();
-        //    //获取下载的文件总大小
-        //    var dir = new DirectoryInfo(saveDir);
-        //    var fileInfos = dir.GetFiles();
-        //    long totalSize = 0;
-        //    foreach (var fileInfo in fileInfos)
-        //    {
-        //        totalSize += fileInfo.Length;
-        //    }
-        //    Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2},速度:{3} Mb/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed, (totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0)).ToString("F2"));
+        /// <summary>批量下载测试
+        /// </summary>
+        public static async Task BatchDownloadTest()
+        {
+            Console.WriteLine("-------------批量下载测试---------");
+            Stopwatch watch = new Stopwatch();
+            var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
+            var saveDir = @"G:\DownloadTest";
+            if (!Directory.Exists(saveDir))
+            {
+                Directory.CreateDirectory(saveDir);
+            }
+            watch.Start();
+            foreach (var fileId in UploadFileIds)
+            {
+                var ext = GetPathExtension(fileId);
+                var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
+                await _fdfsClinet.DownloadFileEx(storageNode, fileId, savePath);
+                Console.WriteLine("下载文件,FileId:{0},保存路径:{1}", fileId, savePath);
+            }
+            watch.Stop();
+            //获取下载的文件总大小
+            var dir = new DirectoryInfo(saveDir);
+            var fileInfos = dir.GetFiles();
+            long totalSize = 0;
+            foreach (var fileInfo in fileInfos)
+            {
+                totalSize += fileInfo.Length;
+            }
+            Console.WriteLine("共下载:{0}个文件,总共:{1}Mb,花费:{2},速度:{3} Mb/s", fileInfos.Length, (totalSize / (1024.00 * 1024.00)), watch.Elapsed, (totalSize / (watch.Elapsed.TotalSeconds * 1024.0 * 1024.0)).ToString("F2"));
 
-        //}
+        }
 
         /// <summary>批量自定义下载
         /// </summary>
@@ -219,8 +213,8 @@ namespace FastDFSCore.Sample
             Console.WriteLine("测试下载文件");
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var downloadFileId = "M00/03/C5/wKgABl0LMOGAW3fEAAIMphIw1AQ895.dcm";
-            //var result = await _fdfsClinet.DownloadFileEx(storageNode, downloadFileId, @"D:\2.dcm");
-            //Console.WriteLine("下载文件名:{0},大小:{1}", downloadFileId, result.Length);
+            var result = await _fdfsClinet.DownloadFileEx(storageNode, downloadFileId, @"D:\2.dcm");
+            Console.WriteLine("下载文件名:{0},大小:{1}", downloadFileId, result.Length);
 
         }
 

@@ -1,4 +1,6 @@
-﻿namespace FastDFSCore.Protocols
+﻿using FastDFSCore.Utility;
+
+namespace FastDFSCore.Protocols
 {
     /// <summary>
     /// 查询可存储的Storage

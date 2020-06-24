@@ -9,14 +9,6 @@ namespace FastDFSCore
     /// </summary>
     public static class ServiceProviderExtensions
     {
-
-        /// <summary>创建对象
-        /// </summary>
-        public static T CreateInstance<T>(this IServiceProvider provider, params object[] args)
-        {
-            return (T)ActivatorUtilities.CreateInstance(provider, typeof(T), args);
-        }
-
         /// <summary>配置FastDFSCore
         /// </summary>
         public static IServiceProvider ConfigureFastDFSCore(this IServiceProvider provider, Action<FastDFSOption> configure = null)
@@ -29,6 +21,13 @@ namespace FastDFSCore
             connectionManager.Initialize();
 
             return provider;
+        }
+
+        /// <summary>根据类型使用IServiceProvider创建对象
+        /// </summary>
+        public static T CreateInstance<T>(this IServiceProvider provider, params object[] args)
+        {
+            return (T)ActivatorUtilities.CreateInstance(provider, typeof(T), args);
         }
     }
 }

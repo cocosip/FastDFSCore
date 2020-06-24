@@ -275,22 +275,22 @@ namespace FastDFSCore
             return response.Content;
         }
 
-        ///// <summary>
-        ///// 下载文件到指定的地点
-        ///// </summary>
-        ///// <param name="storageNode"></param>
-        ///// <param name="fileId"></param>
-        ///// <param name="filePath">文件保存路径</param>
-        ///// <returns></returns>
-        //public async Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath)
-        //{
-        //    var request = new DownloadStreamFile(storageNode.GroupName, fileId)
-        //    {
-        //        Downloader = _downloaderFactory.CreateFileDownloader(filePath)
-        //    };
-        //    var response = await _executer.Execute(request, storageNode.ConnectionAddress);
-        //    return filePath;
-        //}
+        /// <summary>
+        /// 下载文件到指定的地点
+        /// </summary>
+        /// <param name="storageNode"></param>
+        /// <param name="fileId"></param>
+        /// <param name="filePath">文件保存路径</param>
+        /// <returns></returns>
+        public async Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath)
+        {
+            var request = new DownloadStreamFile(storageNode.GroupName, fileId)
+            {
+                OutputFilePath = filePath
+            };
+            var response = await _executer.Execute(request, storageNode.ConnectionAddress);
+            return filePath;
+        }
 
         ///// <summary>
         ///// 自定义下载文件

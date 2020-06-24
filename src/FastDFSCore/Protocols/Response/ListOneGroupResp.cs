@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FastDFSCore.Utility;
+using System;
 
 namespace FastDFSCore.Protocols
 {

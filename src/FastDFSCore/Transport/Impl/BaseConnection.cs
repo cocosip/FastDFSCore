@@ -19,46 +19,27 @@ namespace FastDFSCore.Transport
 
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
-        /// <summary>日志
-        /// </summary>
         protected ILogger Logger { get; }
 
-        /// <summary>配置信息
-        /// </summary>
         protected FastDFSOption Option { get; }
 
-        /// <summary>连接选项
-        /// </summary>
+        protected IServiceProvider ServiceProvider { get; }
+
+        public string Id { get; }
+
         public ConnectionAddress ConnectionAddress { get; }
 
-        /// <summary>连接名,生成的唯一值
-        /// </summary>
-        public string Name { get; }
+        public event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
 
-        /// <summary>是否正在被使用
-        /// </summary>
         public bool IsUsing { get { return _isUsing; } }
 
-        /// <summary>是否正在运行
-        /// </summary>
         public bool IsRunning { get; protected set; }
 
-        /// <summary>创建时间
-        /// </summary>
         public DateTime CreationTime { get { return _creationTime; } }
 
-        /// <summary>最后使用时间
-        /// </summary>
         public DateTime LastUseTime { get { return _lastUseTime; } }
 
-        /// <summary>连接关闭时的操作
-        /// </summary>
-        public Action<IConnection> OnConnectionClose { get; set; }
-
-
-        /// <summary>Ctor
-        /// </summary>
-        public BaseConnection(ILogger<BaseConnection> logger, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress)
+        public BaseConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress)
         {
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
@@ -68,16 +49,16 @@ namespace FastDFSCore.Transport
 
             Logger = logger;
             Option = option.Value;
-
+            ServiceProvider = serviceProvider;
 
             ConnectionAddress = connectionAddress;
 
-            Name = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
         }
 
-        public bool IsExpired()
+        public virtual bool IsExpired()
         {
-            throw new NotImplementedException();
+            return (DateTime.Now - _lastUseTime).TotalSeconds > Option.ConnectionLifeTime;
         }
 
         /// <summary>运行
@@ -111,8 +92,13 @@ namespace FastDFSCore.Transport
         {
             _isUsing = false;
             _lastUseTime = DateTime.Now;
-            OnConnectionClose?.Invoke(this);
-            return Task.FromResult(0);
+
+            OnConnectionClose?.Invoke(this, new ConnectionCloseEventArgs()
+            {
+                Id = Id,
+                ConnectionAddress = ConnectionAddress
+            });
+            return Task.CompletedTask;
         }
 
         /// <summary>发送数据
@@ -134,10 +120,10 @@ namespace FastDFSCore.Transport
         /// </summary>
         protected async Task DoReConnectIfNeed()
         {
-            //if (!Option.TcpSetting.EnableReConnect || Option.TcpSetting.ReConnectMaxCount < _reConnectAttempt)
-            //{
-            //    return;
-            //}
+            if (!Option.EnableReConnect || Option.ReConnectMaxCount < _reConnectAttempt)
+            {
+                return;
+            }
             if (IsAvailable())
             {
                 await _semaphoreSlim.WaitAsync();
@@ -159,14 +145,14 @@ namespace FastDFSCore.Transport
                     _semaphoreSlim.Release();
                 }
                 //Try again!
-                //if (_reConnectAttempt < Option.TcpSetting.ReConnectMaxCount && !reConnectSuccess)
-                //{
-                //    Thread.Sleep(Option.TcpSetting.ReConnectIntervalMilliSeconds);
-                //    await DoReConnectIfNeed();
-                //}
+                if (_reConnectAttempt < Option.ReConnectMaxCount && !reConnectSuccess)
+                {
+                    Thread.Sleep(Option.ReConnectIntervalMilliSeconds);
+                    await DoReConnectIfNeed();
+                }
             }
         }
 
- 
+
     }
 }

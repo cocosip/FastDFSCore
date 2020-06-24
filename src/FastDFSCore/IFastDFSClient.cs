@@ -148,14 +148,14 @@ namespace FastDFSCore
         /// <returns>文件内容</returns>
         Task<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId, long offset, long length);
 
-        ///// <summary>
-        ///// 下载文件到指定的地点
-        ///// </summary>
-        ///// <param name="storageNode"></param>
-        ///// <param name="fileId"></param>
-        ///// <param name="filePath">文件保存路径</param>
-        ///// <returns></returns>
-        //Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath);
+        /// <summary>
+        /// 下载文件到指定的地点
+        /// </summary>
+        /// <param name="storageNode"></param>
+        /// <param name="fileId"></param>
+        /// <param name="filePath">文件保存路径</param>
+        /// <returns></returns>
+        Task<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath);
 
         ///// <summary>
         ///// 自定义下载文件

@@ -27,7 +27,7 @@ namespace FastDFSCore.Transport.DotNetty
         public override void ChannelInactive(IChannelHandlerContext context)
         {
             _logger.LogInformation("Channel:{0} is inactive!", context.Channel.Id.AsLongText());
-            //context.Channel.EventLoop.Schedule(() => _reConnectAction(), TimeSpan.FromSeconds(_option.TcpSetting.ReConnectDelaySeconds));
+            context.Channel.EventLoop.Schedule(() => _reConnectAction(), TimeSpan.FromSeconds(_option.ReConnectDelaySeconds));
         }
     }
 }

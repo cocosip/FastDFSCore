@@ -5,8 +5,6 @@
     /// </summary>
     public class DownloadStreamFileResp : FastDFSResp
     {
-        /// <summary>保存文件的路径
-        /// </summary>
-        public string FilePath { get; set; }
+
     }
 }

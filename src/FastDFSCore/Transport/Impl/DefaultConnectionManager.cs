@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace FastDFSCore.Transport
 {
-    public class ConnectionManager : IConnectionManager
+    public class DefaultConnectionManager : IConnectionManager
     {
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _trackerConnectionPools;
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _storageConnectionPools;
@@ -20,7 +20,7 @@ namespace FastDFSCore.Transport
         private readonly IConnectionPoolBuilder _connectionPoolFactory;
         private readonly FastDFSOption _option;
 
-        public ConnectionManager(ILogger<ConnectionManager> logger, IConnectionPoolBuilder connectionPoolFactory, IOptions<FastDFSOption> option)
+        public DefaultConnectionManager(ILogger<DefaultConnectionManager> logger, IConnectionPoolBuilder connectionPoolFactory, IOptions<FastDFSOption> option)
         {
             _logger = logger;
             _connectionPoolFactory = connectionPoolFactory;
@@ -39,7 +39,7 @@ namespace FastDFSCore.Transport
             var index = rd.Next(_trackerConnectionAddresses.Count);
             var connectionAddress = _trackerConnectionAddresses[index];
 
-            if (_trackerConnectionPools.TryGetValue(connectionAddress, out IConnectionPool connectionPool))
+            if (!_trackerConnectionPools.TryGetValue(connectionAddress, out IConnectionPool connectionPool))
             {
                 lock (_trackerSyncObject)
                 {
@@ -64,7 +64,7 @@ namespace FastDFSCore.Transport
                 }
             }
 
-            return connectionPool.Get();
+            return connectionPool.GetConnection();
         }
 
         /// <summary>获取Storage连接
@@ -99,7 +99,7 @@ namespace FastDFSCore.Transport
             {
                 throw new ArgumentException($"Can't find any connection pools for {connectionAddress}");
             }
-            return connectionPool.Get();
+            return connectionPool.GetConnection();
         }
 
         public void Initialize()

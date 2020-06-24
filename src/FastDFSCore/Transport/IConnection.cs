@@ -6,15 +6,15 @@ namespace FastDFSCore.Transport
 {
     public interface IConnection
     {
-        string Name { get; }
+        string Id { get; }
 
         ConnectionAddress ConnectionAddress { get; }
+
+        event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
 
         DateTime LastUseTime { get; }
 
         bool IsExpired();
-
-        Action<IConnection> OnConnectionClose { get; set; }
 
         Task OpenAsync();
 

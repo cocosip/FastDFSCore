@@ -1,4 +1,6 @@
-﻿namespace FastDFSCore.Protocols
+﻿using FastDFSCore.Utility;
+
+namespace FastDFSCore.Protocols
 {
     /// <summary>列出Storage
     /// </summary>

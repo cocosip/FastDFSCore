@@ -31,7 +31,6 @@ namespace FastDFSCore
         /// </summary>
         public int ScanTimeoutConnectionInterval { get; set; } = 10;
 
-
         /// <summary>Tracker最大连接数
         /// </summary>
         public int TrackerMaxConnection { get; set; } = 10;
@@ -40,9 +39,23 @@ namespace FastDFSCore
         /// </summary>
         public int StorageMaxConnection { get; set; } = 50;
 
-
-        /// <summary>Ctor
+        /// <summary>是否开启重连
         /// </summary>
+        public bool EnableReConnect { get; set; } = false;
+
+        /// <summary>最大重连次数
+        /// </summary>
+        public int ReConnectMaxCount { get; set; } = 10;
+
+        /// <summary>重连时间间隔(ms)
+        /// </summary>
+        public int ReConnectIntervalMilliSeconds = 3000;
+
+        /// <summary>重连延迟(s)
+        /// </summary>
+        public int ReConnectDelaySeconds = 3;
+
+
         public FastDFSOption()
         {
             Trackers = new List<Tracker>();

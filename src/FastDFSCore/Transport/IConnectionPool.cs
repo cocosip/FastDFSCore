@@ -6,7 +6,7 @@
 
         /// <summary>Get a connection from stack
         /// </summary>
-        IConnection Get();
+        IConnection GetConnection();
 
         /// <summary>Return the connection
         /// </summary>

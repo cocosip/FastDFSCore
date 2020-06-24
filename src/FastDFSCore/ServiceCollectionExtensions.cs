@@ -20,12 +20,13 @@ namespace FastDFSCore
             services
                 .Configure<FastDFSOption>(configure)
                 .AddSingleton<IScheduleService, ScheduleService>()
+                .AddSingleton<IConnectionManager, DefaultConnectionManager>()
                 .AddSingleton<IConnectionPoolBuilder, DefaultConnectionPoolBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
-                //.AddSingleton<IConnectionManager, ConnectionManager>()
-                .AddTransient<IExecuter, DefaultExecuter>()
-                .AddTransient<IFastDFSClient, FastDFSClient>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
+                .AddSingleton<IFastDFSClient, FastDFSClient>()
+                .AddTransient<IExecuter, DefaultExecuter>()
+                .AddScoped<IConnectionPool, DefaultConnectionPool>()
                 .AddScoped<ConnectionPoolOption>()
                 .AddScoped<ConnectionAddress>()
                 ;

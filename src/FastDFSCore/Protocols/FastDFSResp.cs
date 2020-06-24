@@ -1,17 +1,10 @@
-﻿using System.IO;
-
-namespace FastDFSCore.Protocols
+﻿namespace FastDFSCore.Protocols
 {
     /// <summary>FastDFSCore 通讯返回
     /// </summary>
     public abstract class FastDFSResp
     {
         public FastDFSHeader Header { get; set; }
-
-        public bool IsOutputStream { get; set; } = false;
-
-        public Stream OutputStream { get; set; }
-
 
         /// <summary>设置头部信息
         /// </summary>

@@ -31,9 +31,9 @@ namespace FastDFSCore.Transport
             {
                 throw new NullReferenceException($"Can't find connection,ipaddr:{connectionAddress} ");
             }
-            await connection.OpenAsync();
+            connection.Open();
             var response = await connection.SendRequestAsync<T>(request);
-            await connection.CloseAsync();
+            connection.Close();
             return response as T;
         }
     }

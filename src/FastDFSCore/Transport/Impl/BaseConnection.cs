@@ -11,6 +11,13 @@ namespace FastDFSCore.Transport
     /// </summary>
     public abstract class BaseConnection : IConnection
     {
+        #region Events
+
+        public event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
+
+        #endregion
+
+
 
         private int _reConnectAttempt = 0;
         private bool _isUsing = false;
@@ -28,8 +35,6 @@ namespace FastDFSCore.Transport
         public string Id { get; }
 
         public ConnectionAddress ConnectionAddress { get; }
-
-        public event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
 
         public bool IsUsing { get { return _isUsing; } }
 
@@ -61,31 +66,22 @@ namespace FastDFSCore.Transport
             return (DateTime.Now - _lastUseTime).TotalSeconds > Option.ConnectionLifeTime;
         }
 
-        /// <summary>运行
-        /// </summary>
-        public abstract Task RunAsync();
-
-        /// <summary>结束运行
-        /// </summary>
-        public abstract Task ShutdownAsync();
-
-
         /// <summary>打开连接
         /// </summary>
-        public Task OpenAsync()
+        public virtual void Open()
         {
             if (!IsRunning)
             {
-                return RunAsync();
+                RunAsync().Wait();
             }
             _isUsing = true;
             _lastUseTime = DateTime.Now;
-            return Task.FromResult(0);
         }
+
 
         /// <summary>关闭连接
         /// </summary>
-        public Task CloseAsync()
+        public virtual void Close()
         {
             _isUsing = false;
             _lastUseTime = DateTime.Now;
@@ -95,8 +91,22 @@ namespace FastDFSCore.Transport
                 Id = Id,
                 ConnectionAddress = ConnectionAddress
             });
-            return Task.CompletedTask;
         }
+
+        //public abstract Task ConnectAsync();
+
+        //public abstract Task CloseAsync();
+
+
+        /// <summary>运行
+        /// </summary>
+        public abstract Task RunAsync();
+
+        /// <summary>结束运行
+        /// </summary>
+        public abstract Task ShutdownAsync();
+
+
 
         /// <summary>发送数据
         /// </summary>

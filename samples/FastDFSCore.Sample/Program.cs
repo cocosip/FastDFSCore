@@ -97,7 +97,7 @@ namespace FastDFSCore.Sample
             Stopwatch watch = new Stopwatch();
             var storageNode = await _fdfsClinet.GetStorageNodeAsync("group1");
             var dir =
-            new DirectoryInfo(@"D:\DICOM 100 Test");
+            new DirectoryInfo(@"D:\DicomTests");
             //new DirectoryInfo(@"D:\Pictures");
             //G:\安装文件\SystemISO
             var fileInfos = dir.GetFiles();

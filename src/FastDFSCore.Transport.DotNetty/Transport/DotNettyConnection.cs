@@ -170,7 +170,6 @@ namespace FastDFSCore.Transport
             _transportContext = null;
             _fileWriter?.Dispose();
             _fileWriter = null;
-
         }
 
 
@@ -239,8 +238,6 @@ namespace FastDFSCore.Transport
                 ReadPosition = 0,
                 WritePosition = 0
             };
-
-
             return context;
         }
 

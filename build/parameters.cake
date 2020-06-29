@@ -70,22 +70,11 @@ public class BuildParameters
         var suffix = doc.DocumentElement.SelectSingleNode("/Project/PropertyGroup/VersionSuffix").InnerText;
 
         //如果本地发布,就加dev,如果是nuget发布,就加preview
-        if (IsLocalBuild)
-        {
-            suffix += "dev-" + Util.CreateStamp();
-        }
-        else
-        {
-            //需要发布到Nuget
-            if (ShouldPublishToNuGet && !string.IsNullOrWhiteSpace(versionQuality))
-            {
-                suffix = string.IsNullOrWhiteSpace(suffix) ? "Pre" : suffix;
-            }
-			else
-			{
-			    suffix = "";
-			}
-        }
+        // if (IsLocalBuild)
+        // {
+        //     suffix += "dev-" + Util.CreateStamp();
+        // }
+  
         suffix = string.IsNullOrWhiteSpace(suffix) ? null : suffix;
         context.Information($"Suffix:{suffix}");
 

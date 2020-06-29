@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SuperSocket.Client;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,9 @@ namespace FastDFSCore.Transport
         private TaskCompletionSource<FastDFSResp> _taskCompletionSource = null;
         private TransportContext _context = null;
         private CancellationTokenSource _cancellationTokenSource = null;
+
+        private FileStream _fileStream = null;
+        private bool _hasWriteFile = false;
 
         public SuperSocketConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress) : base(logger, serviceProvider, option, connectionAddress)
         {
@@ -101,34 +105,50 @@ namespace FastDFSCore.Transport
                 while (!_cancellationTokenSource.IsCancellationRequested && IsRunning)
                 {
                     var package = await _client.ReceiveAsync();
-
-                    try
+                    if (package.IsOutputStream)
                     {
-                        //返回为Strem,需要逐步进行解析
-                        var response = _context.Response;
-                        response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
-
-                        if (!_context.IsOutputStream)
+                        if (!_hasWriteFile)
                         {
-                            response.LoadContent(Option, package.Body);
+                            _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                            _hasWriteFile = true;
                         }
 
-                        _taskCompletionSource.SetResult(response);
-
+                        //写入文件
+                        _fileStream.Write(package.Body, 0, package.Body.Length);
+                        //刷新到磁盘
+                        if (package.IsComplete)
+                        {
+                            _fileStream.Flush();
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
-                    catch (Exception ex)
+
+                    //返回为Strem,需要逐步进行解析
+                    var response = _context.Response;
+                    response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
+                    if (!_context.IsOutputStream)
                     {
-                        Logger.LogError("接收返回信息出错! {0}", ex);
-                        throw;
+                        response.LoadContent(Option, package.Body);
                     }
-
-                    if (package == null) // connection dropped
-                        break;
+                    Reset();
+                    _taskCompletionSource.SetResult(response);
                 }
 
             }, _cancellationTokenSource.Token);
 
         }
+
+        private void Reset()
+        {
+            _hasWriteFile = false;
+            _fileStream?.Close();
+            _fileStream?.Dispose();
+            _context = null;
+        }
+
 
     }
 }

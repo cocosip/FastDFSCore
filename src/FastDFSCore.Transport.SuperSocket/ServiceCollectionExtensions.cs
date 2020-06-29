@@ -9,10 +9,10 @@ namespace FastDFSCore
     {
         /// <summary>添加FastDFS DotNetty传输
         /// </summary>
-        public static IServiceCollection AddFastDFSDotNetty(this IServiceCollection services)
+        public static IServiceCollection AddFastDFSSuperSocket(this IServiceCollection services)
         {
             services
-                .AddScoped<IConnection, DotNettyConnection>();
+                .AddTransient<IConnection, SuperSocketConnection>();
             return services;
         }
 

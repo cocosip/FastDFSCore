@@ -32,6 +32,7 @@ namespace FastDFSCore.Transport.DotNetty
 
                 //写入文件
                 _fileStream.Write(msg.Body, 0, msg.Body.Length);
+                _hasWriteFile = true;
                 //刷新到磁盘
                 if (msg.IsComplete)
                 {
@@ -39,10 +40,6 @@ namespace FastDFSCore.Transport.DotNetty
                     _setResponse(msg);
 
                     Reset();
-                }
-                else
-                {
-                    _hasWriteFile = true;
                 }
             }
             else

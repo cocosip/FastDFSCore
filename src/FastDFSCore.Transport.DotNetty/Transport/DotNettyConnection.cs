@@ -82,7 +82,6 @@ namespace FastDFSCore.Transport
 
             try
             {
-
                 _group = new MultithreadEventLoopGroup();
                 _bootStrap = new Bootstrap();
                 _bootStrap

@@ -11,11 +11,12 @@
 | -------- | ------- |------ |-------- |
 | `FastDFSCore` | [![NuGet](https://img.shields.io/nuget/v/FastDFSCore.svg)](https://www.nuget.org/packages/FastDFSCore) | [![NuGet](https://img.shields.io/nuget/vpre/FastDFSCore.svg)](https://www.nuget.org/packages/FastDFSCore) |![NuGet](https://img.shields.io/nuget/dt/FastDFSCore.svg)|
 | `FastDFSCore.Transport.DotNetty` | [![NuGet](https://img.shields.io/nuget/v/FastDFSCore.Transport.DotNetty.svg)](https://www.nuget.org/packages/FastDFSCore.Transport.DotNetty)|[![NuGet](https://img.shields.io/nuget/vpre/FastDFSCore.Transport.DotNetty.svg)](https://www.nuget.org/packages/FastDFSCore.Transport.DotNetty) |![NuGet](https://img.shields.io/nuget/dt/FastDFSCore.Transport.DotNetty.svg)|
+| `FastDFSCore.Transport.SuperSocket` | [![NuGet](https://img.shields.io/nuget/v/FastDFSCore.Transport.SuperSocket.svg)](https://www.nuget.org/packages/FastDFSCore.Transport.SuperSocket)|[![NuGet](https://img.shields.io/nuget/vpre/FastDFSCore.Transport.SuperSocket.svg)](https://www.nuget.org/packages/FastDFSCore.Transport.SuperSocket) |![NuGet](https://img.shields.io/nuget/dt/FastDFSCore.Transport.SuperSocket.svg)|
 
 ## Features
 
 - Base on `netstandard2.0`
-- Base on `DotNetty` Communication
+- Base on `DotNetty` or `SuperSocket` Communication
 - Support connection pool
 - Support for file streams to upload, network streams download to the local
 
@@ -39,18 +40,23 @@ services
             c.LogToStandardErrorThreshold = LogLevel.Trace;
         });
     })
-    .AddFastDFSCore("FastDFS.xml")
-    .AddFastDFSDotNettyTransport();
-var provider = services.BuildServiceProvider();
-provider.ConfigureFastDFSCore(o=>
-{
-    //custom actions
-    ...
-});
+    .AddFastDFSCore(c=>{
+        c.Trackers = new List<Tracker>()
+        {
+            new Tracker("192.168.0.6",22122)
+        };
+    })
+    .AddFastDFSDotNetty();
 
-var fdfsClient = _provider.GetService<IFDFSClient>();
+var provider = services.BuildServiceProvider();
+
+var client = _provider.GetService<IFastDFSClient>();
 var storageNode = await fdfsClient.GetStorageNodeAsync("group1");
-var fileId= await fdfsClient.UploadFileAsync(storageNode, @"D:\\sample1.txt");
+var fileId= await fdfsClient.UploadFileAsync(storageNode, @"D:\sample1.txt");
+
+var savePath=Path.Combine(@"D:\sample2.txt");
+await client.DownloadFileEx(storageNode, fileId, savePath);
+
 ```
 
 > [more sample code](https://github.com/cocosip/FastDFSCore/blob/master/samples/FastDFSCore.Sample/Program.cs)

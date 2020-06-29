@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Utility;
+using System.Buffers;
 
 namespace FastDFSCore.Protocols
 {
@@ -52,5 +53,6 @@ namespace FastDFSCore.Protocols
             //var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
             return ByteUtil.Combine(groupNameBuffer, fileIdBuffer);
         }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Utility;
+using System.Buffers;
 using System.IO;
 
 namespace FastDFSCore.Protocols
@@ -61,7 +62,7 @@ namespace FastDFSCore.Protocols
             //long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + FileId.Length + RequestStream.Length;
 
             return ByteUtil.Combine(fileIdLengthBuffer, fileSizeBuffer, fileIdBuffer);
-
         }
+
     }
 }

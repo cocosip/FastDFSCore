@@ -13,11 +13,11 @@ namespace FastDFSCore.Protocols
 
         /// <summary>命令
         /// </summary>
-        public byte Command { get; }
+        public byte Command { get; set; }
 
         /// <summary>状态
         /// </summary>
-        public byte Status { get; }
+        public byte Status { get; set; }
 
         /// <summary>Ctor
         /// </summary>

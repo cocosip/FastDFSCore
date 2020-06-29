@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Utility;
+using System.Buffers;
 
 namespace FastDFSCore.Protocols
 {

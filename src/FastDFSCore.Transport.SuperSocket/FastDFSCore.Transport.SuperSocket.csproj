@@ -17,8 +17,4 @@
     <ProjectReference Include="..\FastDFSCore\FastDFSCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Transport\SuperSocket\" />
-  </ItemGroup>
-
 </Project>

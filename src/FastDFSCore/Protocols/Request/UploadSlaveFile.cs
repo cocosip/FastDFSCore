@@ -1,5 +1,5 @@
 ﻿using FastDFSCore.Utility;
-using System.Collections.Generic;
+using System.Buffers;
 using System.IO;
 
 namespace FastDFSCore.Protocols
@@ -103,5 +103,6 @@ namespace FastDFSCore.Protocols
             //Array.Copy(ContentBytes, 0, bodyBuffer, offset, ContentBytes.Length);
  
         }
+
     }
 }

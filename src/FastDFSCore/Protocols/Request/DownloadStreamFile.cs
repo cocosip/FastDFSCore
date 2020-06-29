@@ -1,5 +1,5 @@
 ﻿using FastDFSCore.Utility;
-using System.Collections.Generic;
+using System.Buffers;
 
 namespace FastDFSCore.Protocols
 {
@@ -40,7 +40,7 @@ namespace FastDFSCore.Protocols
         /// <summary>是否返回为流
         /// </summary>
         public override bool IsOutputStream { get; set; } = true;
-        
+
 
         /// <summary>Ctor
         /// </summary>
@@ -77,6 +77,5 @@ namespace FastDFSCore.Protocols
 
             return ByteUtil.Combine(offsetBuffer, byteSizeBuffer, groupNameBuffer, fileIdBuffer);
         }
-
     }
 }

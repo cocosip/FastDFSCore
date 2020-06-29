@@ -130,7 +130,7 @@ namespace FastDFSCore.Transport
             {
                 if (connection.IsExpired())
                 {
-                    connection.ShutdownAsync().Wait();
+                    connection.CloseAsync().Wait();
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace FastDFSCore.Transport
         {
             foreach (var connection in _connectionDict.Values)
             {
-                connection.ShutdownAsync().Wait();
+                connection.CloseAsync().Wait();
             }
         }
 

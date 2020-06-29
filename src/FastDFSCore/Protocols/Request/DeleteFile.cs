@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Utility;
+using System.Buffers;
 
 namespace FastDFSCore.Protocols
 {
@@ -54,5 +55,6 @@ namespace FastDFSCore.Protocols
             return ByteUtil.Combine(groupNameBuffer, fileIdBuffer);
 
         }
+
     }
 }

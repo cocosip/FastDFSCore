@@ -1,5 +1,5 @@
 ﻿using FastDFSCore.Utility;
-using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 
@@ -89,7 +89,6 @@ namespace FastDFSCore.Protocols
             bodyBuffer.AddRange(extBuffer);
             return bodyBuffer.ToArray();
         }
-
 
     }
 }

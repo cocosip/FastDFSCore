@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Buffers;
+using System.IO;
 
 namespace FastDFSCore.Protocols
 {
@@ -8,7 +9,7 @@ namespace FastDFSCore.Protocols
 
         public Stream InputStream { get; set; }
 
-        public virtual bool IsOutputStream { get; set; }
+        public virtual bool IsOutputStream { get; set; } = false;
 
         public string OutputFilePath { get; set; }
 

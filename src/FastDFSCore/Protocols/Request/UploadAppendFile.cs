@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Utility;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 
@@ -30,6 +31,7 @@ namespace FastDFSCore.Protocols
         /// <summary>文件扩展名
         /// </summary>
         public string FileExt { get; set; }
+
 
         /// <summary>Ctor
         /// </summary>

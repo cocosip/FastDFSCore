@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Utility;
+using System.Buffers;
 
 namespace FastDFSCore.Protocols
 {
@@ -45,7 +46,7 @@ namespace FastDFSCore.Protocols
         {
             //消息体长度为group name的最大长度,16
 
-           var bodyBuffer = EndecodeUtil.EncodeGroupName(GropName, option.Charset);
+            var bodyBuffer = EndecodeUtil.EncodeGroupName(GropName, option.Charset);
             //Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_STORE_WITH_GROUP_ONE, 0);
             return bodyBuffer;
         }

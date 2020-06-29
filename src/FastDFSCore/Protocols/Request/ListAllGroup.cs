@@ -1,4 +1,6 @@
-﻿namespace FastDFSCore.Protocols
+﻿using System.Buffers;
+
+namespace FastDFSCore.Protocols
 {
     /// <summary>
     /// 查询全部Group

@@ -19,13 +19,15 @@ namespace FastDFSCore.Transport
         DateTime LastUseTime { get; }
 
         bool IsExpired();
-        
+
         void Open();
 
         void Close();
 
-        Task ShutdownAsync();
-
         Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
+
+        Task ConnectAsync();
+
+        Task CloseAsync();
     }
 }

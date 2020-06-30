@@ -12,7 +12,7 @@ namespace FastDFSCore
         public static IServiceCollection AddFastDFSSuperSocket(this IServiceCollection services)
         {
             services
-                .AddTransient<IConnection, SuperSocketConnection>();
+                .AddScoped<IConnection, SuperSocketConnection>();
             return services;
         }
 

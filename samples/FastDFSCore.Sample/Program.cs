@@ -13,10 +13,8 @@ namespace FastDFSCore.Sample
             IServiceCollection services = new ServiceCollection();
             services.AddLogging(l =>
             {
-                l.AddConsole(c =>
-                {
-                    c.LogToStandardErrorThreshold = LogLevel.Trace;
-                });
+                l.SetMinimumLevel(LogLevel.Trace);
+                l.AddConsole();
             });
             services
                 .AddFastDFSCore(c =>
@@ -26,9 +24,11 @@ namespace FastDFSCore.Sample
                         new Tracker("192.168.0.6",22122)
                     };
                 })
-                .AddFastDFSDotNetty()
+                //.AddFastDFSDotNetty()
+                .AddFastDFSSuperSocket()
                 .AddSingleton<ISampleAppService, SampleAppService>();
             var provider = services.BuildServiceProvider();
+            provider.ConfigureFastDFSCore();
 
             _sampleAppService = provider.GetService<ISampleAppService>();
 

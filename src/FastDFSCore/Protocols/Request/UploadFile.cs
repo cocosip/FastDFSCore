@@ -32,6 +32,8 @@ namespace FastDFSCore.Protocols
         /// </summary>
         public string FileExt { get; set; }
 
+        public byte[] Content { get; set; }
+
         /// <summary>Ctor
         /// </summary>
         public UploadFile()
@@ -60,7 +62,7 @@ namespace FastDFSCore.Protocols
         {
             StorePathIndex = storePathIndex;
             FileExt = fileExt;
-            InputStream = new MemoryStream(content);
+            Content = content;
         }
 
 
@@ -75,7 +77,19 @@ namespace FastDFSCore.Protocols
             //1.StorePathIndex
 
             //2.文件长度
-            var fileSizeBuffer = EndecodeUtil.EncodeLong(InputStream.Length);
+
+            //var fileSizeBuffer = EndecodeUtil.EncodeLong(InputStream.Length);
+            byte[] fileSizeBuffer;
+            if (InputStream != null)
+            {
+                fileSizeBuffer = EndecodeUtil.EncodeLong(InputStream.Length);
+            }
+            else
+            {
+                fileSizeBuffer = EndecodeUtil.EncodeLong(Content.Length);
+            }
+
+
             //3.扩展名
             byte[] extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
             //4.文件数据,这里不写入
@@ -87,6 +101,11 @@ namespace FastDFSCore.Protocols
             };
             bodyBuffer.AddRange(fileSizeBuffer);
             bodyBuffer.AddRange(extBuffer);
+            if (InputStream == null && Content != null)
+            {
+                bodyBuffer.AddRange(Content);
+            }
+
             return bodyBuffer.ToArray();
         }
 

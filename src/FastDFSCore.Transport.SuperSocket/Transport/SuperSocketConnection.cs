@@ -40,6 +40,7 @@ namespace FastDFSCore.Transport
             var connectSuccess = await _client.ConnectAsync(new IPEndPoint(IPAddress.Parse(ConnectionAddress.IPAddress), ConnectionAddress.Port));
             if (connectSuccess)
             {
+                IsRunning = true;
                 DoReceive();
             }
         }
@@ -74,8 +75,7 @@ namespace FastDFSCore.Transport
             //流文件发送
             if (request.InputStream != null)
             {
-                _client.SendAsync(newBuffer);
-
+                _client.SendAsync(newBuffer).AsTask().Wait();
                 using (request.InputStream)
                 {
                     //设置缓冲区大小
@@ -105,6 +105,11 @@ namespace FastDFSCore.Transport
                 while (!_cancellationTokenSource.IsCancellationRequested && IsRunning)
                 {
                     var package = await _client.ReceiveAsync();
+                    if (package == null)
+                    {
+                        continue;
+                    }
+
                     if (package.IsOutputStream)
                     {
                         if (!_hasWriteFile)
@@ -146,6 +151,7 @@ namespace FastDFSCore.Transport
             _hasWriteFile = false;
             _fileStream?.Close();
             _fileStream?.Dispose();
+            _fileStream = null;
             _context = null;
         }
 

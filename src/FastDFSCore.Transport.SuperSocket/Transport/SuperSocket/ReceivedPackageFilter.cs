@@ -42,62 +42,61 @@ namespace FastDFSCore.Transport.SuperSocket
                     {
                         return null;
                     }
-                    //整个数据包的长度,应该是包长度+2+body
 
-                    var frameLengthBuffer = reader.Sequence.Slice(0, Consts.FDFS_PROTO_PKG_LEN_SIZE).ToArray();
+                    //长度
+                    var packLength = ByteUtil.BufferToLong(reader.Sequence.Slice(0, Consts.FDFS_PROTO_PKG_LEN_SIZE).ToArray());
 
-                    var frameLength = ByteUtil.BufferToLong(frameLengthBuffer) + lengthFieldEndOffset;
+                    var frameLength = packLength + lengthFieldEndOffset;
 
                     if (reader.Length < frameLength)
                     {
-                        //读取全部的数据
+                        //缓存中没有把整个文件数据缓存下来,就需要读一部分写一步
                         var readLength = reader.Length;
 
                         //长度
-                        reader.TryReadBigEndian(out long _length);
-                        //命令
-                        reader.TryRead(out byte _command);
+                        reader.TryReadBigEndian(out _length);
+
+                        //命令                                                                                     
+                        reader.TryRead(out _command);
                         //状态
-                        reader.TryRead(out byte _status);
+                        reader.TryRead(out _status);
 
                         package.Length = _length;
                         package.Command = _command;
                         package.Status = _status;
 
                         var bodyLength = readLength - lengthFieldEndOffset;
-                        package.Body = reader.Sequence.Slice(bodyLength).ToArray();
+                        package.Body = reader.Sequence.Slice(lengthFieldEndOffset, bodyLength).ToArray();
                         reader.Advance(bodyLength);
 
                         //设置读取的进度
                         _readPosition += bodyLength;
 
                         _foundHeader = true;
+
                     }
                     else
                     {
                         //全部读完,则直接完成
-                        // extract frame
-                        var readerLength = reader.Length;
-                        //IByteBuffer frame = ExtractFrame(context, input, readerIndex, frameLengthInt);
-                        //input.SetReaderIndex(readerIndex + frameLengthInt);
 
                         //长度
-                        reader.TryReadBigEndian(out long _length);
+                        reader.TryReadBigEndian(out _length);
                         //命令
-                        reader.TryRead(out byte _command);
+                        reader.TryRead(out _command);
                         //状态
-                        reader.TryRead(out byte _status);
+                        reader.TryRead(out _status);
 
                         package.Length = _length;
                         package.Command = _command;
                         package.Status = _status;
 
-
-                        package.Body = reader.Sequence.Slice(0, frameLength).ToArray();
+                        package.Body = reader.Sequence.Slice(lengthFieldEndOffset, packLength).ToArray();
                         reader.Advance(package.Body.Length);
 
+                        _foundHeader = true;
+
                         //重置
-                        Reset();
+                        Reset1();
 
                         package.IsComplete = true;
                     }
@@ -123,7 +122,7 @@ namespace FastDFSCore.Transport.SuperSocket
                     if (_readPosition + chunkSize >= _length)
                     {
                         //完成
-                        Reset();
+                        Reset1();
 
                         package.IsComplete = true;
 
@@ -137,38 +136,38 @@ namespace FastDFSCore.Transport.SuperSocket
             }
             else
             {
-                //读取不到头部
+                //如果是整包读取,但是还读取不到头,等待下次接收
                 if (reader.Length < lengthFieldEndOffset)
                 {
                     return null;
                 }
                 //整个数据包的长度,应该是包长度+2+body
 
-                var frameLengthBuffer = reader.Sequence.Slice(0, Consts.FDFS_PROTO_PKG_LEN_SIZE).ToArray();
-                var frameLength = ByteUtil.BufferToLong(frameLengthBuffer) + lengthFieldEndOffset;
+                //包的数据长度
+                var packLength = ByteUtil.BufferToLong(reader.Sequence.Slice(0, Consts.FDFS_PROTO_PKG_LEN_SIZE).ToArray());
+
+                var frameLength = packLength + lengthFieldEndOffset;
 
                 if (reader.Length < frameLength)
                 {
                     return null;
                 }
-
-
                 //长度
-                reader.TryReadBigEndian(out long _length);
+                reader.TryReadBigEndian(out _length);
                 //命令
-                reader.TryRead(out byte _command);
+                reader.TryRead(out _command);
                 //状态
-                reader.TryRead(out byte _status);
+                reader.TryRead(out _status);
 
                 package.Length = _length;
                 package.Command = _command;
                 package.Status = _status;
 
-                package.Body = reader.Sequence.Slice(package.Length).ToArray();
+                package.Body = reader.Sequence.Slice(lengthFieldEndOffset, packLength).ToArray();
                 reader.Advance(package.Body.Length);
 
                 //重置
-                Reset();
+                Reset1();
 
                 package.IsComplete = true;
             }
@@ -176,14 +175,14 @@ namespace FastDFSCore.Transport.SuperSocket
             return package;
         }
 
-        public override void Reset()
+        private void Reset1()
         {
             _foundHeader = false;
             _length = 0;
             _command = 0;
             _status = 0;
             _readPosition = 0;
-
         }
+
     }
 }

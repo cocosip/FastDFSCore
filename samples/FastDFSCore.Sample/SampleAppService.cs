@@ -43,12 +43,14 @@ namespace FastDFSCore.Sample
             long totalSize = 0;
             watch.Start();
 
-            var storageNode = await _client.GetStorageNodeAsync("group1");
+            var storageNode = await _client.GetStorageNodeAsync(groupName);
+
             foreach (var fileInfo in fileInfos)
             {
+                //var buffer = File.ReadAllBytes(fileInfo.FullName);
+                //var fileId = await _client.UploadFileAsync(storageNode, buffer, "dcm");
                 var fileId = await _client.UploadFileAsync(storageNode, fileInfo.FullName);
                 _logger.LogDebug("Upload File, FileId:{0} , LocalPath:{1}", fileId, fileInfo.FullName);
-                Console.WriteLine("FileId:{0}", fileId);
                 fileIds.Add(fileId);
                 totalSize += fileInfo.Length;
             }
@@ -58,7 +60,7 @@ namespace FastDFSCore.Sample
             var totalMb = totalSize * 1.0 / (1024 * 1024.0);
             var speed = totalMb / watch.Elapsed.TotalSeconds;
 
-            _logger.LogInformation("Batch Upload '{0}'Files, TotalMB:'{1}',Cost:'{2} ms',Upload Speed:'{3} MB/s'··· ", fileInfos.Length, totalMb.ToString("F2"), watch.Elapsed.TotalMilliseconds, speed.ToString("F2"));
+            _logger.LogInformation("Batch Upload '{0}'Files, TotalMB:'{1} MB',Cost:'{2} ms',Upload Speed:'{3} MB/s'··· ", fileInfos.Length, totalMb.ToString("F2"), watch.Elapsed.TotalMilliseconds, speed.ToString("F2"));
 
             _logger.LogInformation("--- End of Batch Upload ---");
 
@@ -102,7 +104,7 @@ namespace FastDFSCore.Sample
             var totalMb = totalSize * 1.0 / (1024 * 1024);
             var speed = totalMb / watch.Elapsed.TotalSeconds;
 
-            _logger.LogInformation("Batch Download '{0}' Files, TotalMB:'{1}',Cost:'{2} ms',Upload Speed:'{3} MB/s'··· ", fileIds.Count, totalMb.ToString("F2"), watch.Elapsed.TotalMilliseconds, speed.ToString("F2"));
+            _logger.LogInformation("Batch Download '{0}' Files, TotalMB:'{1}',Cost:'{2} ms',Download Speed:'{3} MB/s'··· ", fileIds.Count, totalMb.ToString("F2"), watch.Elapsed.TotalMilliseconds, speed.ToString("F2"));
 
             _logger.LogInformation("--- End of Batch Download Test ---");
             return savePaths;

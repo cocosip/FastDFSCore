@@ -241,20 +241,20 @@ install_global() {
     fi
 	
 	# 下载软件
-	wget -P ${software_path} https://github.com/happyfish100/libfastcommon/archive/V1.0.41.zip
-    wget -P ${software_path} https://github.com/happyfish100/fastdfs/archive/V6.03.tar.gz
-    wget -P ${software_path} http://nginx.org/download/nginx-1.17.1.tar.gz
-    wget -P ${software_path} https://github.com/happyfish100/fastdfs-nginx-module/archive/V1.21.tar.gz
+	wget -P ${software_path} https://github.com/happyfish100/libfastcommon/archive/V1.0.43.zip
+    wget -P ${software_path} https://github.com/happyfish100/fastdfs/archive/V6.06.tar.gz
+    wget -P ${software_path} http://nginx.org/download/nginx-1.19.0.tar.gz
+    wget -P ${software_path} https://github.com/happyfish100/fastdfs-nginx-module/archive/V1.22.tar.gz
 
 	cd ${software_path}
     # 解压软件
-    unzip V1.0.41.zip
-    tar zxvf V6.03.tar.gz
-    tar zxvf nginx-1.17.1.tar.gz
-    tar zxvf V1.21.tar.gz
+    unzip V1.0.43.zip
+    tar zxvf V6.06.tar.gz
+    tar zxvf nginx-1.19.0.tar.gz
+    tar zxvf V1.22.tar.gz
 
 	# 安装libfastcommon
-    cd libfastcommon-1.0.41
+    cd libfastcommon-1.0.43
     ./make.sh || exit 1
     ./make.sh install || exit 1
 	# 创建软链接
@@ -265,7 +265,7 @@ install_global() {
 
 	# 安装fastdfs
     cd ..
-    cd fastdfs-6.03
+    cd fastdfs-6.06
     ./make.sh || exit 1
     ./make.sh install || exit 1
 
@@ -275,12 +275,12 @@ install_global() {
     mv storage.conf.sample storage.conf
     mv tracker.conf.sample tracker.conf
     # http.conf和mime.types,mod_fastdfs.conf,到/etc/fdfs下
-    cp ${software_path}"/fastdfs-6.03/conf/http.conf" /etc/fdfs/
-    cp ${software_path}"/fastdfs-6.03/conf/mime.types" /etc/fdfs/
-    cp ${software_path}"/fastdfs-nginx-module-1.21/src/mod_fastdfs.conf" /etc/fdfs/
+    cp ${software_path}"/fastdfs-6.06/conf/http.conf" /etc/fdfs/
+    cp ${software_path}"/fastdfs-6.06/conf/mime.types" /etc/fdfs/
+    cp ${software_path}"/fastdfs-nginx-module-1.22/src/mod_fastdfs.conf" /etc/fdfs/
 
 	# fastdfs-nginx-module配置
-    cd ${software_path}"/fastdfs-nginx-module-1.21/src"
+    cd ${software_path}"/fastdfs-nginx-module-1.22/src"
     sed -i "/^.*ngx_module_incs=/c\ngx_module_incs=\"/usr/include/fastdfs /usr/include/fastcommon/\"" config
     sed -i "/^.*CORE_INCS=/c\CORE_INCS=\"\$CORE_INCS /usr/include/fastdfs /usr/include/fastcommon/\"" config
 
@@ -475,16 +475,16 @@ install_tracker() {
 	# tracker配置
 	cd /etc/fdfs
 	# 配置ip地址
-    sed -i "/^bind_addr=/c\bind_addr=$local_ip" tracker.conf
+    sed -i "/^bind_addr =/c\bind_addr = $local_ip" tracker.conf
 	# 配置tracker运行根目录
-    sed -i "/^base_path=/c\base_path=$tracker_base_path" tracker.conf
+    sed -i "/^base_path =/c\base_path = $tracker_base_path" tracker.conf
     # 配置store group
-    sed -i "/^store_group=/c\store_group=$group_name" tracker.conf
+    sed -i "/^store_group =/c\store_group = $group_name" tracker.conf
 
 	# tracker nginx安装
-	cd ${software_path}"/nginx-1.17.1"
+	cd ${software_path}"/nginx-1.19.0"
 	# configure
-    ./configure --prefix=${tracker_nginx_path} --add-module=${software_path}"/fastdfs-nginx-module-1.21/src"
+    ./configure --prefix=${tracker_nginx_path} --add-module=${software_path}"/fastdfs-nginx-module-1.22/src"
     make || exit 1
     make install || exit 1
 	# tracker nginx配置
@@ -719,32 +719,32 @@ install_storage() {
 	# 配置storage
 	cd /etc/fdfs
 	# 配置组名
-	sed -i "/^group_name=/c\group_name=$group_name" storage.conf
+	sed -i "/^group_name =/c\group_name = $group_name" storage.conf
 	# 配置ip地址
-	sed -i "/^bind_addr=/c\bind_addr=$local_ip" storage.conf
+	sed -i "/^bind_addr =/c\bind_addr = $local_ip" storage.conf
 	# 配置storage运行目录
-	sed -i "/^base_path=/c\base_path=$storage_base_path" storage.conf
+	sed -i "/^base_path =/c\base_path = $storage_base_path" storage.conf
 	# 设置磁盘的目录
-	sed -i "/^store_path0=/c\store_path0=$storage_data_path" storage.conf
+	sed -i "/^store_path0 =/c\store_path0 = $storage_data_path" storage.conf
 	# 配置tracker ip地址
-    sed -i "/^tracker_server=/c\tracker_server=$storage_tracker_ip:$storage_tracker_port" storage.conf
+    sed -i "/^tracker_server =/c\tracker_server = $storage_tracker_ip:$storage_tracker_port" storage.conf
 
 	# 配置mod_fastdfs.conf配置
     # 配置base_path
-    sed -i "/^base_path/c\base_path=$storage_data_path" mod_fastdfs.conf
+    sed -i "/^base_path/c\base_path = $storage_data_path" mod_fastdfs.conf
     # 配置tracker地址
-    sed -i "/^tracker_server/c\tracker_server=$storage_tracker_ip:$storage_tracker_port" mod_fastdfs.conf
+    sed -i "/^tracker_server/c\tracker_server = $storage_tracker_ip:$storage_tracker_port" mod_fastdfs.conf
     # 配置组名
-    sed -i "/^group_name/c\group_name=$group_name" mod_fastdfs.conf
+    sed -i "/^group_name/c\group_name = $group_name" mod_fastdfs.conf
     # 配置store_path0
-    sed -i "/^store_path0/c\store_path0=$storage_data_path" mod_fastdfs.conf
+    sed -i "/^store_path0/c\store_path0 = $storage_data_path" mod_fastdfs.conf
     # 配置url是否包含group
     sed -i "/^url_have_group_name/c\url_have_group_name=true" mod_fastdfs.conf
 
 	# storage nginx安装
-    cd ${software_path}"/nginx-1.17.1"
+    cd ${software_path}"/nginx-1.19.0"
 	# configure
-    ./configure --prefix=${storage_nginx_path} --add-module=${software_path}"/fastdfs-nginx-module-1.21/src"
+    ./configure --prefix=${storage_nginx_path} --add-module=${software_path}"/fastdfs-nginx-module-1.22/src"
 	# 编译安装
     make || exit 1
     make install || exit 1

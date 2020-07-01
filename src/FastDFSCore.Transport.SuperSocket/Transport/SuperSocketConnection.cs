@@ -104,42 +104,50 @@ namespace FastDFSCore.Transport
             {
                 while (!_cancellationTokenSource.IsCancellationRequested && IsRunning)
                 {
-                    var package = await _client.ReceiveAsync();
-                    if (package == null)
+                    try
                     {
-                        continue;
-                    }
-
-                    if (package.IsOutputStream)
-                    {
-                        if (!_hasWriteFile)
-                        {
-                            _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                            _hasWriteFile = true;
-                        }
-
-                        //写入文件
-                        _fileStream.Write(package.Body, 0, package.Body.Length);
-                        //刷新到磁盘
-                        if (package.IsComplete)
-                        {
-                            _fileStream.Flush();
-                        }
-                        else
+                        var package = await _client.ReceiveAsync();
+                        if (package == null)
                         {
                             continue;
                         }
-                    }
 
-                    //返回为Strem,需要逐步进行解析
-                    var response = _context.Response;
-                    response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
-                    if (!_context.IsOutputStream)
-                    {
-                        response.LoadContent(Option, package.Body);
+                        if (package.IsOutputStream)
+                        {
+                            if (!_hasWriteFile)
+                            {
+                                _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                                _hasWriteFile = true;
+                            }
+
+                            //写入文件
+                            _fileStream.Write(package.Body, 0, package.Body.Length);
+                            //刷新到磁盘
+                            if (package.IsComplete)
+                            {
+                                _fileStream.Flush();
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+
+                        //返回为Strem,需要逐步进行解析
+                        var response = _context.Response;
+                        response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
+                        if (!_context.IsOutputStream)
+                        {
+                            response.LoadContent(Option, package.Body);
+                        }
+                         
+                        _taskCompletionSource.SetResult(response);
+                        Reset();
                     }
-                    Reset();
-                    _taskCompletionSource.SetResult(response);
+                    catch (Exception ex)
+                    {
+                        var a = ex;
+                    }
                 }
 
             }, _cancellationTokenSource.Token);
@@ -152,7 +160,7 @@ namespace FastDFSCore.Transport
             _fileStream?.Close();
             _fileStream?.Dispose();
             _fileStream = null;
-            _context = null;
+            //_context = null;
         }
 
 

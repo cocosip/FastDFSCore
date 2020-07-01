@@ -12,16 +12,14 @@ namespace FastDFSCore.Transport
     {
         #region Events
 
-        public event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
+        public virtual event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
+        public abstract event EventHandler<DisconnectEventArgs> OnDisconnect;
 
         #endregion
-
 
         private bool _isUsing = false;
         private readonly DateTime _creationTime;
         private DateTime _lastUseTime;
-
-
 
         protected ILogger Logger { get; }
 
@@ -35,7 +33,7 @@ namespace FastDFSCore.Transport
 
         public bool IsUsing { get { return _isUsing; } }
 
-        public bool IsRunning { get; protected set; }
+        public bool IsConnected { get; protected set; }
 
         public DateTime CreationTime { get { return _creationTime; } }
 
@@ -46,7 +44,7 @@ namespace FastDFSCore.Transport
             _creationTime = DateTime.Now;
             _lastUseTime = DateTime.Now;
             _isUsing = false;
-            IsRunning = false;
+            IsConnected = false;
 
 
             Logger = logger;
@@ -63,17 +61,17 @@ namespace FastDFSCore.Transport
             return (DateTime.Now - _lastUseTime).TotalSeconds > Option.ConnectionLifeTime;
         }
 
-        public virtual void Open()
+        public virtual async ValueTask OpenAsync()
         {
-            if (!IsRunning)
+            if (!IsConnected)
             {
-                ConnectAsync().Wait();
+                await ConnectAsync();
             }
             _isUsing = true;
             _lastUseTime = DateTime.Now;
         }
 
-        public virtual void Close()
+        public virtual ValueTask CloseAsync()
         {
             _isUsing = false;
             _lastUseTime = DateTime.Now;
@@ -83,6 +81,7 @@ namespace FastDFSCore.Transport
                 Id = Id,
                 ConnectionAddress = ConnectionAddress
             });
+            return new ValueTask();
         }
 
         protected virtual TransportContext BuildContext<T>(FastDFSReq<T> request) where T : FastDFSResp, new()
@@ -91,7 +90,6 @@ namespace FastDFSCore.Transport
             {
                 ReqType = request.GetType(),
                 RespType = typeof(T),
-                Response = new T(),
                 IsInputStream = request.InputStream != null,
                 IsOutputStream = request.IsOutputStream,
                 OutputFilePath = request.OutputFilePath
@@ -108,7 +106,7 @@ namespace FastDFSCore.Transport
 
         public abstract Task ConnectAsync();
 
-        public abstract Task CloseAsync();
+        public abstract Task DisconnectAsync();
 
     }
 }

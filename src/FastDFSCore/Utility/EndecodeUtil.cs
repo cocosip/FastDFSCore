@@ -1,5 +1,6 @@
 ﻿using FastDFSCore.Protocols;
 using System;
+using System.Buffers;
 using System.Text;
 
 namespace FastDFSCore.Utility
@@ -51,9 +52,6 @@ namespace FastDFSCore.Utility
         {
             return EncodeLimit(groupName, Consts.FDFS_GROUP_NAME_MAX_LEN, charset);
         }
-
-
-
 
         /// <summary>扩展名转二进制数组
         /// </summary>

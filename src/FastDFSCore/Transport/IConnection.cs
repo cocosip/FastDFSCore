@@ -10,6 +10,8 @@ namespace FastDFSCore.Transport
 
         event EventHandler<ConnectionCloseEventArgs> OnConnectionClose;
 
+        event EventHandler<DisconnectEventArgs> OnDisconnect;
+
         #endregion
 
         string Id { get; }
@@ -20,14 +22,14 @@ namespace FastDFSCore.Transport
 
         bool IsExpired();
 
-        void Open();
+        ValueTask OpenAsync();
 
-        void Close();
+        ValueTask CloseAsync();
 
         Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
 
         Task ConnectAsync();
 
-        Task CloseAsync();
+        Task DisconnectAsync();
     }
 }

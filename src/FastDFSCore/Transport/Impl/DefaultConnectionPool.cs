@@ -51,6 +51,8 @@ namespace FastDFSCore.Transport
                     connection = _connectionFactory.CreateConnection(_option.ConnectionAddress);
                     //BindEvent
                     connection.OnConnectionClose += ConnectionCloseHandler;
+                    connection.OnDisconnect += DisconnectHandler;
+
                     Interlocked.Increment(ref _connectionCount);
 
                     if (!_connectionDict.TryAdd(connection.Id, connection))
@@ -130,7 +132,7 @@ namespace FastDFSCore.Transport
             {
                 if (connection.IsExpired())
                 {
-                    connection.CloseAsync().Wait();
+                    connection.DisconnectAsync().Wait();
                 }
             }
         }
@@ -139,7 +141,7 @@ namespace FastDFSCore.Transport
         {
             foreach (var connection in _connectionDict.Values)
             {
-                connection.CloseAsync().Wait();
+                connection.DisconnectAsync().Wait();
             }
         }
 
@@ -148,7 +150,14 @@ namespace FastDFSCore.Transport
         {
             var connection = (IConnection)sender;
             Return(connection);
+        }
 
+        private void DisconnectHandler(object sender, DisconnectEventArgs e)
+        {
+            var connection = (IConnection)sender;
+            connection.OnConnectionClose -= ConnectionCloseHandler;
+            connection.OnDisconnect -= DisconnectHandler;
+            Interlocked.Decrement(ref _connectionCount);
         }
 
 

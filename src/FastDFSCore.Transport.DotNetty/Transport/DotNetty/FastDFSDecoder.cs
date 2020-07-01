@@ -12,8 +12,7 @@ namespace FastDFSCore.Transport.DotNetty
     {
 
         //长度
-        //readonly int lengthFieldLength = Consts.FDFS_PROTO_PKG_LEN_SIZE;
-        readonly int lengthFieldEndOffset = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
+        readonly int headerLength = Consts.FDFS_PROTO_PKG_LEN_SIZE + 2;
         private readonly Func<TransportContext> _getContextAction;
 
         private bool _foundHeader = false;
@@ -66,12 +65,12 @@ namespace FastDFSCore.Transport.DotNetty
                 if (!_foundHeader)
                 {
                     //未读取到头部,并且长度不足头部
-                    if (input.ReadableBytes < lengthFieldEndOffset)
+                    if (input.ReadableBytes < headerLength)
                     {
                         return null;
                     }
                     //整个数据包的长度,应该是包长度+2+body
-                    long frameLength = input.GetLong(input.ReaderIndex) + lengthFieldEndOffset;
+                    long frameLength = input.GetLong(input.ReaderIndex) + headerLength;
 
                     int frameLengthInt = (int)frameLength;
                     if (input.ReadableBytes < frameLengthInt)
@@ -89,7 +88,7 @@ namespace FastDFSCore.Transport.DotNetty
                         package.Command = _command;
                         package.Status = _status;
 
-                        var bodyLength = readLength - lengthFieldEndOffset;
+                        var bodyLength = readLength - headerLength;
 
                         package.Body = new byte[bodyLength];
                         frame.ReadBytes(package.Body, 0, package.Body.Length);
@@ -159,12 +158,12 @@ namespace FastDFSCore.Transport.DotNetty
             else
             {
                 //读取不到头部
-                if (input.ReadableBytes < lengthFieldEndOffset)
+                if (input.ReadableBytes < headerLength)
                 {
                     return null;
                 }
                 //整个数据包的长度,应该是包长度+2+body
-                long frameLength = input.GetLong(input.ReaderIndex) + lengthFieldEndOffset;
+                long frameLength = input.GetLong(input.ReaderIndex) + headerLength;
                 int frameLengthInt = (int)frameLength;
                 if (input.ReadableBytes < frameLengthInt)
                 {

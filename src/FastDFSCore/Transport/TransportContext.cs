@@ -1,5 +1,4 @@
-﻿using FastDFSCore.Protocols;
-using System;
+﻿using System;
 
 namespace FastDFSCore.Transport
 {
@@ -14,7 +13,5 @@ namespace FastDFSCore.Transport
         public bool IsOutputStream { get; set; }
 
         public string OutputFilePath { get; set; }
-
-        public FastDFSResp Response { get; set; }
     }
 }

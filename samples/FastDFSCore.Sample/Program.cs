@@ -21,7 +21,7 @@ namespace FastDFSCore.Sample
                 {
                     c.Trackers = new List<Tracker>()
                     {
-                        new Tracker("192.168.0.202",22122)
+                        new Tracker("192.168.0.98",22122)
                     };
                 })
                 //.AddFastDFSDotNetty()

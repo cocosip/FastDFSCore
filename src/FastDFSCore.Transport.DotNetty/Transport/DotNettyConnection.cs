@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport
@@ -25,16 +24,16 @@ namespace FastDFSCore.Transport
         private IChannel _channel;
         private Bootstrap _bootStrap;
 
-        private int _reConnectAttempt = 0;
-        private readonly SemaphoreSlim _semaphoreSlim;
+        private readonly DotNettyOption _dotNettyOption;
+        public override event EventHandler<DisconnectEventArgs> OnDisconnect;
 
         private TransportContext _context = null;
+        private TaskCompletionSource<FastDFSResp> _tcs = null;
+        private FastDFSResp _resp = null;
 
-        private TaskCompletionSource<FastDFSResp> _taskCompletionSource = null;
-
-        public DotNettyConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress) : base(logger, serviceProvider, option, connectionAddress)
+        public DotNettyConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, IOptions<DotNettyOption> dotNettyOption, ConnectionAddress connectionAddress) : base(logger, serviceProvider, option, connectionAddress)
         {
-            _semaphoreSlim = new SemaphoreSlim(1);
+            _dotNettyOption = dotNettyOption.Value;
         }
 
 
@@ -42,7 +41,10 @@ namespace FastDFSCore.Transport
         /// </summary>
         public override Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
-            _taskCompletionSource = new TaskCompletionSource<FastDFSResp>();
+            _tcs = new TaskCompletionSource<FastDFSResp>();
+
+            _resp = new T();
+
             //上下文,当前的信息
             _context = BuildContext<T>(request);
 
@@ -66,7 +68,7 @@ namespace FastDFSCore.Transport
             {
                 _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer));
             }
-            return _taskCompletionSource.Task;
+            return _tcs.Task;
         }
 
 
@@ -87,36 +89,33 @@ namespace FastDFSCore.Transport
                 _bootStrap
                     .Group(_group)
                     .Channel<TcpSocketChannel>()
-                    .Option(ChannelOption.TcpNodelay, true)
-                    .Option(ChannelOption.WriteBufferHighWaterMark, 16777216)
-                    .Option(ChannelOption.WriteBufferLowWaterMark, 8388608)
-                    //.Option(ChannelOption.SoReuseaddr, tcpSetting.SoReuseaddr)
+                    .Option(ChannelOption.TcpNodelay, _dotNettyOption.TcpNodelay)
+                    .Option(ChannelOption.WriteBufferHighWaterMark, _dotNettyOption.WriteBufferHighWaterMark)
+                    .Option(ChannelOption.WriteBufferLowWaterMark, _dotNettyOption.WriteBufferLowWaterMark)
+                    .Option(ChannelOption.SoReuseaddr, _dotNettyOption.SoReuseaddr)
                     .Option(ChannelOption.AutoRead, true)
                     .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
+
+                        Func<TransportContext> getCtx = () => _context;
+
                         pipeline.AddLast(new LoggingHandler(typeof(DotNettyConnection)));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-                        pipeline.AddLast("fdfs-decoder", ServiceProvider.CreateInstance<FastDFSDecoder>(new Func<TransportContext>(GetContext)));
-                        pipeline.AddLast("fdfs-read", ServiceProvider.CreateInstance<FastDFSHandler>(new Action<ReceivedPackage>(SetResponse)));
-
-                        //重连
-                        if (Option.EnableReConnect)
-                        {
-                            //Reconnect to server
-                            pipeline.AddLast("reconnect", ServiceProvider.CreateInstance<ReConnectHandler>(Option, new Func<Task>(DoReConnectIfNeed)));
-                        }
+                        pipeline.AddLast("fdfs-decoder", ServiceProvider.CreateInstance<FastDFSDecoder>(getCtx));
+                        pipeline.AddLast("fdfs-handler", ServiceProvider.CreateInstance<FastDFSHandler>(new Action<ReceivedPackage>(HandleReceivedPack)));
 
                     }));
 
-                await DoConnect();
+                _channel = await _bootStrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ConnectionAddress.IPAddress), ConnectionAddress.Port));
 
-                IsRunning = true;
-                Logger.LogInformation($"Client Run! serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
+                IsConnected = true;
+                Logger.LogInformation($"Client connect! serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
+                IsConnected = false;
                 await _group.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
             }
         }
@@ -124,12 +123,19 @@ namespace FastDFSCore.Transport
 
         /// <summary>关闭连接
         /// </summary>
-        public override async Task CloseAsync()
+        public override async Task DisconnectAsync()
         {
             try
             {
                 await _channel.CloseAsync();
-                IsRunning = false;
+                IsConnected = false;
+
+                OnDisconnect?.Invoke(this, new DisconnectEventArgs()
+                {
+                    Id = Id,
+                    ConnectionAddress = ConnectionAddress
+                });
+
             }
             finally
             {
@@ -138,75 +144,23 @@ namespace FastDFSCore.Transport
         }
 
 
-        /// <summary>连接操作
-        /// </summary>
-        private async Task DoConnect()
-        {
-            _channel = await _bootStrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ConnectionAddress.IPAddress), ConnectionAddress.Port));
-            Logger.LogInformation($"Client DoConnect! Id:{Id},serverEndPoint:{_channel.RemoteAddress.ToStringAddress()},localAddress:{_channel.LocalAddress.ToStringAddress()}");
-
-        }
-
-        /// <summary>重连机制
-        /// </summary>
-        private async Task DoReConnectIfNeed()
-        {
-            if (!Option.EnableReConnect || Option.ReConnectMaxCount < _reConnectAttempt || !IsRunning)
-            {
-                return;
-            }
-            if (true)
-            {
-                await _semaphoreSlim.WaitAsync();
-                bool reConnectSuccess = false;
-                try
-                {
-                    Logger.LogInformation($"Try to reconnect server!");
-                    //await DoConnect();
-                    Interlocked.Exchange(ref _reConnectAttempt, 0);
-                    reConnectSuccess = true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("ReConnect fail!{0}", ex.Message);
-                }
-                finally
-                {
-                    Interlocked.Increment(ref _reConnectAttempt);
-                    _semaphoreSlim.Release();
-                }
-                //Try again!
-                if (_reConnectAttempt < Option.ReConnectMaxCount && !reConnectSuccess)
-                {
-                    Thread.Sleep(Option.ReConnectIntervalMilliSeconds);
-                    await DoReConnectIfNeed();
-                }
-            }
-        }
-
-
-        private TransportContext GetContext()
-        {
-            return _context;
-        }
-
-
         /// <summary>设置返回值
         /// </summary>
-        private void SetResponse(ReceivedPackage package)
+        private void HandleReceivedPack(ReceivedPackage package)
         {
             try
             {
                 //返回为Strem,需要逐步进行解析
-                var response = _context.Response;
-                response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
+
+                _resp.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
 
                 if (!_context.IsOutputStream)
                 {
-                    response.LoadContent(Option, package.Body);
+                    _resp.LoadContent(Option, package.Body);
                 }
 
-                _taskCompletionSource.SetResult(response);
+                _context = null;
+                _tcs.SetResult(_resp);
 
                 //释放
                 ReferenceCountUtil.SafeRelease(package);
@@ -218,8 +172,6 @@ namespace FastDFSCore.Transport
                 throw;
             }
         }
-
-
 
     }
 }

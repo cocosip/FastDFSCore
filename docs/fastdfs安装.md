@@ -163,7 +163,10 @@
 - 使用
 
 ```shell
-> wget https://github.com/cocosip/FastDFSCore/blob/master/install/install.sh
+> wget https://raw.githubusercontent.com/cocosip/FastDFSCore/master/install/install.sh
+
+# 赋权
+> chmod +x ./install.sh
 
 # 格式化脚本,在windows下编辑的脚本需要格式化一下才能在linux下正常运行
 > sed -i 's/\r$//' install.sh

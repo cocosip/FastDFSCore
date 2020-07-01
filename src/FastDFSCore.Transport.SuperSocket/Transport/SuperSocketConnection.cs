@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using SuperSocket.Client;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,13 +16,15 @@ namespace FastDFSCore.Transport
     public class SuperSocketConnection : BaseConnection
     {
         private IEasyClient<ReceivedPackage> _client = null;
-        private TaskCompletionSource<FastDFSResp> _taskCompletionSource = null;
+        private TaskCompletionSource<FastDFSResp> _tcs = null;
         private TransportContext _context = null;
-        private CancellationTokenSource _cancellationTokenSource = null;
+        private CancellationTokenSource _cts = null;
 
         private FileStream _fileStream = null;
         private bool _hasWriteFile = false;
+        private FastDFSResp _resp = null;
 
+        public override event EventHandler<DisconnectEventArgs> OnDisconnect;
         public SuperSocketConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress) : base(logger, serviceProvider, option, connectionAddress)
         {
 
@@ -31,35 +34,50 @@ namespace FastDFSCore.Transport
 
         public override async Task ConnectAsync()
         {
-            _cancellationTokenSource = new CancellationTokenSource();
+            _cts = new CancellationTokenSource();
             if (_client == null)
             {
-                _client = new EasyClient<ReceivedPackage>(new ReceivedPackageFilter(GetContext));
+                Func<TransportContext> getCtx = () => _context;
+                _client = new EasyClient<ReceivedPackage>(ServiceProvider.CreateInstance<ReceivedPackageFilter>(getCtx));
             }
+
+            _client.Closed += async (o, e) =>
+            {
+                await DisconnectAsync();
+            };
 
             var connectSuccess = await _client.ConnectAsync(new IPEndPoint(IPAddress.Parse(ConnectionAddress.IPAddress), ConnectionAddress.Port));
             if (connectSuccess)
             {
-                IsRunning = true;
+                IsConnected = true;
                 DoReceive();
             }
         }
 
-        public override async Task CloseAsync()
+        public override async Task DisconnectAsync()
         {
-            await _client.CloseAsync();
-            _cancellationTokenSource.Cancel();
+            try
+            {
+                _cts.Cancel();
+                await _client.CloseAsync();
+                OnDisconnect?.Invoke(this, new DisconnectEventArgs()
+                {
+                    Id = Id,
+                    ConnectionAddress = ConnectionAddress
+                });
+            }
+            finally
+            {
+                IsConnected = false;
+            }
         }
-
-        private TransportContext GetContext()
-        {
-            return _context;
-        }
-
 
         public override async Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
-            _taskCompletionSource = new TaskCompletionSource<FastDFSResp>();
+            _tcs = new TaskCompletionSource<FastDFSResp>();
+
+            _resp = new T();
+
             //上下文,当前的信息
             _context = BuildContext<T>(request);
 
@@ -79,15 +97,18 @@ namespace FastDFSCore.Transport
 
                 using (request.InputStream)
                 {
-                    //设置缓冲区大小
-                    byte[] buffers = new byte[1024 * 1024];
+                    var chunkSize = 8192;
 
                     while (true)
                     {
-                        int r = await request.InputStream.ReadAsync(buffers, 0, buffers.Length);
-
-                        if (r == 0)
+                        var availableBytes = request.InputStream.Length - request.InputStream.Position;
+                        if (availableBytes <= 0)
                             break;
+
+                        int readChunkSize = (int)Math.Min(chunkSize, availableBytes);
+
+                        var buffers = new byte[readChunkSize];
+                        _ = await request.InputStream.ReadAsync(buffers, 0, buffers.Length);
 
                         await _client.SendAsync(buffers);
                     }
@@ -98,53 +119,45 @@ namespace FastDFSCore.Transport
                 await _client.SendAsync(newBuffer);
             }
 
-            return await _taskCompletionSource.Task;
+            return await _tcs.Task;
         }
 
         private async void DoReceive()
         {
-            while (!_cancellationTokenSource.IsCancellationRequested && IsRunning)
+            while (!_cts.IsCancellationRequested && IsConnected)
             {
-                try
+                var package = await _client.ReceiveAsync();
+
+                if (package == null)
+                    break;
+
+                if (package.IsOutputStream)
                 {
-                    var package = await _client.ReceiveAsync();
-
-                    if (package == null) // connection dropped
-                        break;
-
-                    if (package.IsOutputStream)
+                    if (!_hasWriteFile)
                     {
-                        if (!_hasWriteFile)
-                        {
-                            _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                            _hasWriteFile = true;
-                        }
-
-                        //写入文件
-                        await _fileStream.WriteAsync(package.Body, 0, package.Body.Length);
-                        //刷新到磁盘
-                        if (!package.IsComplete)
-                            continue;
-
-                        await _fileStream.FlushAsync();
+                        _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                        _hasWriteFile = true;
                     }
 
-                    //返回为Strem,需要逐步进行解析
-                    var response = _context.Response;
-                    response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
+                    //写入文件
+                    await _fileStream.WriteAsync(package.Body, 0, package.Body.Length);
+                    //刷新到磁盘
+                    if (!package.IsComplete)
+                        continue;
 
-                    if (!_context.IsOutputStream)
-                    {
-                        response.LoadContent(Option, package.Body);
-                    }
-
-                    _taskCompletionSource.SetResult(response);
-                    Reset();
+                    await _fileStream.FlushAsync();
                 }
-                catch (Exception ex)
+
+                //返回为Strem,需要逐步进行解析
+
+                _resp.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
+
+                if (!_context.IsOutputStream)
                 {
-                    var a = ex;
+                    _resp.LoadContent(Option, package.Body);
                 }
+                Reset();
+                _tcs.SetResult(_resp);
             }
         }
 
@@ -154,7 +167,7 @@ namespace FastDFSCore.Transport
             _fileStream?.Close();
             _fileStream?.Dispose();
             _fileStream = null;
-            //_context = null;
+            _context = null;
         }
 
 

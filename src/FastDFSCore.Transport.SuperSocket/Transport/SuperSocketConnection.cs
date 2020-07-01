@@ -57,7 +57,7 @@ namespace FastDFSCore.Transport
         }
 
 
-        public override Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
+        public override async Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
             _taskCompletionSource = new TaskCompletionSource<FastDFSResp>();
             //上下文,当前的信息
@@ -75,83 +75,77 @@ namespace FastDFSCore.Transport
             //流文件发送
             if (request.InputStream != null)
             {
-                _client.SendAsync(newBuffer).AsTask().Wait();
+                await _client.SendAsync(newBuffer);
+                
                 using (request.InputStream)
                 {
                     //设置缓冲区大小
                     byte[] buffers = new byte[1024 * 1024];
-                    //读取一次
-                    int r = request.InputStream.Read(buffers, 0, buffers.Length);
-                    //判断本次是否读取到了数据
-                    while (r > 0)
+                    
+                    while (true)
                     {
-                        _client.SendAsync(buffers).AsTask().Wait();
-                        r = request.InputStream.Read(buffers, 0, buffers.Length);
+                        int r = await request.InputStream.ReadAsync(buffers, 0, buffers.Length);
+                        
+                        if (r == 0)
+                            break;
+                        
+                        await _client.SendAsync(buffers);
                     }
                 }
-
             }
             else
             {
-                _client.SendAsync(newBuffer).AsTask().Wait();
+                await _client.SendAsync(newBuffer);
             }
-            return _taskCompletionSource.Task;
+            
+            await _taskCompletionSource.Task;
         }
 
-        private void DoReceive()
+        private async void DoReceive()
         {
-            Task.Run(async () =>
+            while (!_cancellationTokenSource.IsCancellationRequested && IsRunning)
             {
-                while (!_cancellationTokenSource.IsCancellationRequested && IsRunning)
+                try
                 {
-                    try
+                    var package = await _client.ReceiveAsync();
+                    
+                    if (package == null) // connection dropped
+                         break;
+
+                    if (package.IsOutputStream)
                     {
-                        var package = await _client.ReceiveAsync();
-                        if (package == null)
+                        if (!_hasWriteFile)
                         {
+                            _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                            _hasWriteFile = true;
+                        }
+
+                        //写入文件
+                        await _fileStream.WriteAsync(package.Body, 0, package.Body.Length);
+                        //刷新到磁盘
+                        if (!package.IsComplete)
                             continue;
-                        }
-
-                        if (package.IsOutputStream)
-                        {
-                            if (!_hasWriteFile)
-                            {
-                                _fileStream = new FileStream(package.OutputFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                                _hasWriteFile = true;
-                            }
-
-                            //写入文件
-                            _fileStream.Write(package.Body, 0, package.Body.Length);
-                            //刷新到磁盘
-                            if (package.IsComplete)
-                            {
-                                _fileStream.Flush();
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-
-                        //返回为Strem,需要逐步进行解析
-                        var response = _context.Response;
-                        response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
-                        if (!_context.IsOutputStream)
-                        {
-                            response.LoadContent(Option, package.Body);
-                        }
-                         
-                        _taskCompletionSource.SetResult(response);
-                        Reset();
+                        
+                        await _fileStream.FlushAsync();
                     }
-                    catch (Exception ex)
+
+                    //返回为Strem,需要逐步进行解析
+                    var response = _context.Response;
+                    response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
+                    
+                    if (!_context.IsOutputStream)
                     {
-                        var a = ex;
+                        response.LoadContent(Option, package.Body);
                     }
+
+                    _taskCompletionSource.SetResult(response);
+                    Reset();
                 }
-
-            }, _cancellationTokenSource.Token);
-
+                catch (Exception ex)
+                {
+                    var a = ex;
+                }
+            }
         }
 
         private void Reset()

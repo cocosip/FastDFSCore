@@ -76,19 +76,19 @@ namespace FastDFSCore.Transport
             if (request.InputStream != null)
             {
                 await _client.SendAsync(newBuffer);
-                
+
                 using (request.InputStream)
                 {
                     //设置缓冲区大小
                     byte[] buffers = new byte[1024 * 1024];
-                    
+
                     while (true)
                     {
                         int r = await request.InputStream.ReadAsync(buffers, 0, buffers.Length);
-                        
+
                         if (r == 0)
                             break;
-                        
+
                         await _client.SendAsync(buffers);
                     }
                 }
@@ -97,8 +97,8 @@ namespace FastDFSCore.Transport
             {
                 await _client.SendAsync(newBuffer);
             }
-            
-            await _taskCompletionSource.Task;
+
+            return await _taskCompletionSource.Task;
         }
 
         private async void DoReceive()
@@ -108,9 +108,9 @@ namespace FastDFSCore.Transport
                 try
                 {
                     var package = await _client.ReceiveAsync();
-                    
+
                     if (package == null) // connection dropped
-                         break;
+                        break;
 
                     if (package.IsOutputStream)
                     {
@@ -125,14 +125,14 @@ namespace FastDFSCore.Transport
                         //刷新到磁盘
                         if (!package.IsComplete)
                             continue;
-                        
+
                         await _fileStream.FlushAsync();
                     }
 
                     //返回为Strem,需要逐步进行解析
                     var response = _context.Response;
                     response.Header = new FastDFSHeader(package.Length, package.Command, package.Status);
-                    
+
                     if (!_context.IsOutputStream)
                     {
                         response.LoadContent(Option, package.Body);

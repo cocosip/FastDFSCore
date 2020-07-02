@@ -39,8 +39,15 @@ namespace FastDFSCore.Transport
 
         /// <summary>发送数据
         /// </summary>
-        public override Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
+        public override async Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
+            if (!_channel.Active)
+            {
+                Logger.LogWarning("DotNetty connection, channel is inactive! {0}.", ConnectionAddress);
+                await DisconnectAsync();
+                throw new Exception("Current connection is inactive!");
+            }
+
             _tcs = new TaskCompletionSource<FastDFSResp>();
 
             _resp = new T();
@@ -60,15 +67,15 @@ namespace FastDFSCore.Transport
             //流文件发送
             if (request.InputStream != null)
             {
-                _channel.WriteAsync(Unpooled.WrappedBuffer(newBuffer));
+                await _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer));
                 var stream = new FixChunkedStream(request.InputStream);
-                _channel.WriteAndFlushAsync(stream);
+                await _channel.WriteAndFlushAsync(stream);
             }
             else
             {
-                _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer));
+                await _channel.WriteAndFlushAsync(Unpooled.WrappedBuffer(newBuffer));
             }
-            return _tcs.Task;
+            return await _tcs.Task;
         }
 
 
@@ -98,12 +105,10 @@ namespace FastDFSCore.Transport
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
 
-                        Func<TransportContext> getCtx = () => _context;
-
                         pipeline.AddLast(new LoggingHandler(typeof(DotNettyConnection)));
                         pipeline.AddLast("fdfs-write", new ChunkedWriteHandler<IByteBuffer>());
-                        pipeline.AddLast("fdfs-decoder", ServiceProvider.CreateInstance<FastDFSDecoder>(getCtx));
-                        pipeline.AddLast("fdfs-handler", ServiceProvider.CreateInstance<FastDFSHandler>(new Action<ReceivedPackage>(HandleReceivedPack)));
+                        pipeline.AddLast("fdfs-decoder", ServiceProvider.CreateInstance<FastDFSDecoder>(new Func<TransportContext>(() => _context)));
+                        pipeline.AddLast("fdfs-handler", ServiceProvider.CreateInstance<FastDFSHandler>(new Action<ReceivedPackage>(HandleReceivedPack), new Func<Exception, Task>(HandleExceptionCaught)));
 
                     }));
 
@@ -171,6 +176,12 @@ namespace FastDFSCore.Transport
                 Logger.LogError("接收返回信息出错! {0}", ex);
                 throw;
             }
+        }
+
+        private async Task HandleExceptionCaught(Exception e)
+        {
+            Logger.LogError(e, "DotNetty connection caught exception,{0}", e.Message);
+            await DisconnectAsync();
         }
 
     }

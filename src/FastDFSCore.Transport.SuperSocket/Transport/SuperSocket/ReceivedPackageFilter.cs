@@ -19,6 +19,7 @@ namespace FastDFSCore.Transport.SuperSocket
         public ReceivedPackageFilter(Func<TransportContext> getContext)
         {
             _getCtx = getContext;
+
         }
 
 
@@ -175,6 +176,7 @@ namespace FastDFSCore.Transport.SuperSocket
 
             return package;
         }
+
 
         private void ReceiveReset()
         {

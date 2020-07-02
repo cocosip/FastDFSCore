@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using SuperSocket.Client;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,8 +29,6 @@ namespace FastDFSCore.Transport
 
         }
 
-
-
         public override async Task ConnectAsync()
         {
             _cts = new CancellationTokenSource();
@@ -46,12 +43,18 @@ namespace FastDFSCore.Transport
                 await DisconnectAsync();
             };
 
-            var connectSuccess = await _client.ConnectAsync(new IPEndPoint(IPAddress.Parse(ConnectionAddress.IPAddress), ConnectionAddress.Port));
-            if (connectSuccess)
+
+            if (await _client.ConnectAsync(new IPEndPoint(IPAddress.Parse(ConnectionAddress.IPAddress), ConnectionAddress.Port)))
             {
                 IsConnected = true;
                 DoReceive();
             }
+            else
+            {
+                await DisconnectAsync();
+            }
+
+
         }
 
         public override async Task DisconnectAsync()

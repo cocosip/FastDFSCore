@@ -1,6 +1,7 @@
 ﻿using DotNetty.Transport.Channels;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport.DotNetty
 {
@@ -10,13 +11,16 @@ namespace FastDFSCore.Transport.DotNetty
     {
         private bool _hasWriteFile = false;
         private FileStream _fileStream = null;
-        private readonly Action<ReceivedPackage> _setResponse;
+        private readonly Action<ReceivedPackage> _handleReceivedPack;
+        private readonly Func<Exception, Task> _handleExceptionCaught;
+
 
         /// <summary>Ctor
         /// </summary>
-        public FastDFSHandler(Action<ReceivedPackage> setResponse)
+        public FastDFSHandler(Action<ReceivedPackage> handleReceivedPack, Func<Exception, Task> handleExceptionCaught)
         {
-            _setResponse = setResponse;
+            _handleReceivedPack = handleReceivedPack;
+            _handleExceptionCaught = handleExceptionCaught;
         }
 
         /// <summary>ChannelRead0
@@ -37,17 +41,21 @@ namespace FastDFSCore.Transport.DotNetty
                 if (msg.IsComplete)
                 {
                     _fileStream.Flush();
-                    _setResponse(msg);
+                    _handleReceivedPack(msg);
 
                     Reset();
                 }
             }
             else
             {
-                _setResponse(msg);
+                _handleReceivedPack(msg);
             }
         }
 
+        public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+        {
+            _handleExceptionCaught?.Invoke(exception);
+        }
 
         private void Reset()
         {

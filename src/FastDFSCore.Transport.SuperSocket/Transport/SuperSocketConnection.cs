@@ -53,8 +53,6 @@ namespace FastDFSCore.Transport
             {
                 await DisconnectAsync();
             }
-
-
         }
 
         public override async Task DisconnectAsync()

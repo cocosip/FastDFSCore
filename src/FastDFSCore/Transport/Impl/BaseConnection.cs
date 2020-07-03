@@ -102,11 +102,11 @@ namespace FastDFSCore.Transport
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        public abstract Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
+        public abstract ValueTask<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
 
-        public abstract Task ConnectAsync();
+        public abstract ValueTask ConnectAsync();
 
-        public abstract Task DisconnectAsync();
+        public abstract ValueTask DisconnectAsync();
 
     }
 }

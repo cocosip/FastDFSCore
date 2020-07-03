@@ -24,7 +24,7 @@ namespace FastDFSCore.Transport
         /// <param name="request">请求</param>
         /// <param name="connectionAddress">返回</param>
         /// <returns></returns>
-        public async Task<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new()
+        public async ValueTask<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new()
         {
             var connection = connectionAddress == null ? _connectionManager.GetTrackerConnection() : _connectionManager.GetStorageConnection(connectionAddress);
             if (connection == null)

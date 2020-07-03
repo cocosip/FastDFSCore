@@ -18,6 +18,8 @@ namespace FastDFSCore.Transport
 
         ConnectionAddress ConnectionAddress { get; }
 
+        bool IsUsing { get; }
+        
         DateTime LastUseTime { get; }
 
         bool IsExpired();
@@ -26,10 +28,10 @@ namespace FastDFSCore.Transport
 
         ValueTask CloseAsync();
 
-        Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
+        ValueTask<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request) where T : FastDFSResp, new();
 
-        Task ConnectAsync();
+        ValueTask ConnectAsync();
 
-        Task DisconnectAsync();
+        ValueTask DisconnectAsync();
     }
 }

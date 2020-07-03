@@ -13,6 +13,6 @@ namespace FastDFSCore.Transport
         /// <param name="request">请求</param>
         /// <param name="connectionAddress">返回</param>
         /// <returns></returns>
-        Task<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new();
+        ValueTask<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new();
     }
 }

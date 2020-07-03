@@ -29,7 +29,7 @@ namespace FastDFSCore.Transport
 
         }
 
-        public override async Task ConnectAsync()
+        public override async ValueTask ConnectAsync()
         {
             _cts = new CancellationTokenSource();
             if (_client == null)
@@ -55,7 +55,7 @@ namespace FastDFSCore.Transport
             }
         }
 
-        public override async Task DisconnectAsync()
+        public override async ValueTask DisconnectAsync()
         {
             try
             {
@@ -73,7 +73,7 @@ namespace FastDFSCore.Transport
             }
         }
 
-        public override async Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
+        public override async ValueTask<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
             _tcs = new TaskCompletionSource<FastDFSResp>();
 

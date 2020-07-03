@@ -39,7 +39,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>发送数据
         /// </summary>
-        public override async Task<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
+        public override async ValueTask<FastDFSResp> SendRequestAsync<T>(FastDFSReq<T> request)
         {
             if (!_channel.Active)
             {
@@ -81,7 +81,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>运行
         /// </summary>
-        public override async Task ConnectAsync()
+        public override async ValueTask ConnectAsync()
         {
             if (_channel != null && _channel.Registered)
             {
@@ -128,7 +128,7 @@ namespace FastDFSCore.Transport
 
         /// <summary>关闭连接
         /// </summary>
-        public override async Task DisconnectAsync()
+        public override async ValueTask DisconnectAsync()
         {
             try
             {

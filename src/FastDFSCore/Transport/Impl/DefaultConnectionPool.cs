@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FastDFSCore.Transport
 {
@@ -67,6 +68,16 @@ namespace FastDFSCore.Transport
                 _semaphoreSlim.Wait(5000);
                 return GetConnection();
             }
+
+            if (connection.IsExpired())
+            {
+                Interlocked.Decrement(ref _connectionCount);
+                if (_connectionDict.TryRemove(connection.Id, out IConnection _))
+                {
+                    _logger.LogWarning("Connection is expired,but remove from dict fail!");
+                }
+            }
+
             return connection;
         }
 
@@ -130,18 +141,26 @@ namespace FastDFSCore.Transport
         {
             foreach (var connection in _connectionStack)
             {
-                if (connection.IsExpired())
+                if (connection.IsExpired() && !connection.IsUsing)
                 {
-                    connection.DisconnectAsync().Wait();
+                    Task.Run(async () =>
+                    {
+                        await connection.DisconnectAsync();
+                    });
                 }
             }
         }
 
-        private void DisposeAllConnections()
+        private async void DisposeAllConnections()
         {
             foreach (var connection in _connectionDict.Values)
             {
-                connection.DisconnectAsync().Wait();
+                await connection.DisconnectAsync();
+            }
+
+            foreach (var connection in _connectionStack)
+            {
+                await connection.DisconnectAsync();
             }
         }
 

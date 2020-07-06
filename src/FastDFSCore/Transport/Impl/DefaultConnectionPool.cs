@@ -69,13 +69,14 @@ namespace FastDFSCore.Transport
                 return GetConnection();
             }
 
-            if (connection.IsExpired())
+            if (connection.IsExpired() && !connection.IsUsing)
             {
                 Interlocked.Decrement(ref _connectionCount);
-                if (_connectionDict.TryRemove(connection.Id, out IConnection _))
+                if (!_connectionDict.TryRemove(connection.Id, out IConnection _))
                 {
                     _logger.LogWarning("Connection is expired,but remove from dict fail!");
                 }
+                return GetConnection();
             }
 
             return connection;

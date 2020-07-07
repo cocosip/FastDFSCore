@@ -1,5 +1,4 @@
-﻿using FastDFSCore.Scheduling;
-using FastDFSCore.Transport;
+﻿using FastDFSCore.Transport;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace FastDFSCore.Tests.Transport
                 ScanTimeoutConnectionInterval = 500
             };
 
-            var mockScheduleService = new Mock<IScheduleService>();
+
             var mockConnectionBuilder = new Mock<IConnectionBuilder>();
             var mockConnection = new Mock<IConnection>();
             mockConnection.Setup(x => x.Id)
@@ -40,7 +39,7 @@ namespace FastDFSCore.Tests.Transport
                 .Returns(mockConnection.Object);
 
 
-            IConnectionPool connectionPool = new DefaultConnectionPool(_mockLogger.Object, mockScheduleService.Object, connectionPoolOption, mockConnectionBuilder.Object);
+            IConnectionPool connectionPool = new DefaultConnectionPool(_mockLogger.Object, connectionPoolOption, mockConnectionBuilder.Object);
 
             var connection = connectionPool.GetConnection();
 
@@ -66,7 +65,6 @@ namespace FastDFSCore.Tests.Transport
                 ScanTimeoutConnectionInterval = 500
             };
 
-            var mockScheduleService = new Mock<IScheduleService>();
             var mockConnectionBuilder = new Mock<IConnectionBuilder>();
             var mockConnection = new Mock<IConnection>();
             mockConnection.Setup(x => x.Id)
@@ -78,7 +76,7 @@ namespace FastDFSCore.Tests.Transport
                 .Returns(mockConnection.Object);
 
 
-            IConnectionPool connectionPool = new DefaultConnectionPool(_mockLogger.Object, mockScheduleService.Object, connectionPoolOption, mockConnectionBuilder.Object);
+            IConnectionPool connectionPool = new DefaultConnectionPool(_mockLogger.Object, connectionPoolOption, mockConnectionBuilder.Object);
 
             var connection = connectionPool.GetConnection();
 

@@ -1,5 +1,4 @@
-﻿using FastDFSCore.Scheduling;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -13,10 +12,11 @@ namespace FastDFSCore.Transport
         public ConnectionAddress ConnectionAddress { get { return _option.ConnectionAddress; } }
 
         private readonly ILogger _logger;
-        private readonly IScheduleService _scheduleService;
         private readonly ConnectionPoolOption _option;
         private readonly IConnectionBuilder _connectionFactory;
 
+
+        private CancellationTokenSource _cts;
 
         private bool _isRunning = false;
         private int _connectionCount;
@@ -25,16 +25,16 @@ namespace FastDFSCore.Transport
         private readonly ConcurrentStack<IConnection> _connectionStack;
         private readonly ConcurrentDictionary<string, IConnection> _connectionDict;
 
-        public DefaultConnectionPool(ILogger<DefaultConnectionPool> logger, IScheduleService scheduleService, ConnectionPoolOption option, IConnectionBuilder connectionFactory)
+        public DefaultConnectionPool(ILogger<DefaultConnectionPool> logger, ConnectionPoolOption option, IConnectionBuilder connectionFactory)
         {
             _logger = logger;
-            _scheduleService = scheduleService;
             _option = option;
             _connectionFactory = connectionFactory;
 
-
             Name = Guid.NewGuid().ToString();
             _connectionCount = 0;
+            _cts = new CancellationTokenSource();
+
             _maxConnectionCount = _option.MaxConnection;
             _semaphoreSlim = new SemaphoreSlim(_option.ConnectionConcurrentThread);
             _connectionStack = new ConcurrentStack<IConnection>();
@@ -103,10 +103,10 @@ namespace FastDFSCore.Transport
                 _logger.LogDebug("Connection pool '{0}' is already in running!", ConnectionAddress);
                 return;
             }
-            StartScanTimeoutConnectionTask();
+
+            StartScanTimeoutConnection();
             _isRunning = true;
         }
-
 
         public void Shutdown()
         {
@@ -116,53 +116,54 @@ namespace FastDFSCore.Transport
                 return;
             }
 
-            StopScanTimeoutConnectionTask();
+            _cts.Cancel();
 
             //Dispose connecton
             DisposeAllConnections();
             _isRunning = false;
         }
 
-
-        /// <summary>搜索超时的连接,将会断开
-        /// </summary>
-        private void StartScanTimeoutConnectionTask()
+        private void StartScanTimeoutConnection()
         {
-            _scheduleService.StartTask($"{_option.ConnectionAddress}.{GetType().Name}.ScanTimeoutConnection", ScanTimeoutConnection, _option.ScanTimeoutConnectionInterval * 1000, 1000);
-        }
-
-        /// <summary>停止搜索超时的连接
-        /// </summary>
-        private void StopScanTimeoutConnectionTask()
-        {
-            _scheduleService.StopTask($"{_option.ConnectionAddress}.{GetType().Name}.ScanTimeoutConnection");
-        }
-
-        private void ScanTimeoutConnection()
-        {
-            foreach (var connection in _connectionStack)
+            Task.Run(async () =>
             {
-                if (connection.IsExpired() && !connection.IsUsing)
+                await Task.Delay(1000);
+
+                while (!_cts.IsCancellationRequested)
                 {
-                    Task.Run(async () =>
+                    try
                     {
-                        await connection.DisconnectAsync();
-                    });
+                        foreach (var connection in _connectionStack)
+                        {
+                            if (connection.IsExpired() && !connection.IsUsing)
+                            {
+                                await connection.DisconnectAsync();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "ScanTimeoutConnection caught some exception! {0}", ex.Message);
+                    }
+                    await Task.Delay(_option.ScanTimeoutConnectionInterval * 1000);
                 }
-            }
+            }, _cts.Token);
         }
 
-        private async void DisposeAllConnections()
+        private void DisposeAllConnections()
         {
-            foreach (var connection in _connectionDict.Values)
+            Task.Run(async () =>
             {
-                await connection.DisconnectAsync();
-            }
+                foreach (var connection in _connectionDict.Values)
+                {
+                    await connection.DisconnectAsync();
+                }
 
-            foreach (var connection in _connectionStack)
-            {
-                await connection.DisconnectAsync();
-            }
+                foreach (var connection in _connectionStack)
+                {
+                    await connection.DisconnectAsync();
+                }
+            });
         }
 
 

@@ -1,5 +1,4 @@
-﻿using FastDFSCore.Scheduling;
-using FastDFSCore.Transport;
+﻿using FastDFSCore.Transport;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -19,7 +18,6 @@ namespace FastDFSCore
             }
             services
                 .Configure<FastDFSOption>(configure)
-                .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<IConnectionManager, DefaultConnectionManager>()
                 .AddSingleton<IConnectionPoolBuilder, DefaultConnectionPoolBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()

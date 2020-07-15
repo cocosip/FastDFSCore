@@ -10,7 +10,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="SuperSocket.Client" Version="2.0.0-beta2-02" />
+    <PackageReference Include="SuperSocket.Client" Version="2.0.0-beta3" />
   </ItemGroup>
 
   <ItemGroup>

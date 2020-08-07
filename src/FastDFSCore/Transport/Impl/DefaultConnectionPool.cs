@@ -125,7 +125,7 @@ namespace FastDFSCore.Transport
 
         private void StartScanTimeoutConnection()
         {
-            Task.Run(async () =>
+            Task.Factory.StartNew(async () =>
             {
                 await Task.Delay(1000);
 
@@ -147,7 +147,9 @@ namespace FastDFSCore.Transport
                     }
                     await Task.Delay(_option.ScanTimeoutConnectionInterval * 1000);
                 }
-            }, _cts.Token);
+
+            }, TaskCreationOptions.LongRunning);
+      
         }
 
         private void DisposeAllConnections()

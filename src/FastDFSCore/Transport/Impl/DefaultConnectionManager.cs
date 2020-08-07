@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace FastDFSCore.Transport
 {
@@ -10,9 +9,7 @@ namespace FastDFSCore.Transport
     {
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _trackerConnectionPools;
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _storageConnectionPools;
-        private readonly List<ConnectionAddress> _trackerConnectionAddresses;
 
-        private bool _isInitialized = false;
         private readonly object _trackerSyncObject = new object();
         private readonly object _storageSyncObject = new object();
 
@@ -26,7 +23,6 @@ namespace FastDFSCore.Transport
             _connectionPoolFactory = connectionPoolFactory;
             _option = option.Value;
 
-            _trackerConnectionAddresses = new List<ConnectionAddress>();
             _trackerConnectionPools = new ConcurrentDictionary<ConnectionAddress, IConnectionPool>();
             _storageConnectionPools = new ConcurrentDictionary<ConnectionAddress, IConnectionPool>();
         }
@@ -36,8 +32,9 @@ namespace FastDFSCore.Transport
         public IConnection GetTrackerConnection()
         {
             var rd = new Random();
-            var index = rd.Next(_trackerConnectionAddresses.Count);
-            var connectionAddress = _trackerConnectionAddresses[index];
+            var index = rd.Next(_option.Trackers.Count);
+            var tracker = _option.Trackers[index];
+            var connectionAddress = new ConnectionAddress(tracker.IPAddress, tracker.Port);
 
             if (!_trackerConnectionPools.TryGetValue(connectionAddress, out IConnectionPool connectionPool))
             {
@@ -59,6 +56,10 @@ namespace FastDFSCore.Transport
                         if (!_trackerConnectionPools.TryAdd(connectionAddress, connectionPool))
                         {
                             _logger.LogWarning("Fail to add connection pool to tracker connection pools! ConnectionAddress:{0}", connectionAddress);
+                        }
+                        else
+                        {
+                            connectionPool.Start();
                         }
                     }
                 }
@@ -100,25 +101,6 @@ namespace FastDFSCore.Transport
                 throw new ArgumentException($"Can't find any connection pools for {connectionAddress}");
             }
             return connectionPool.GetConnection();
-        }
-
-        public void Initialize()
-        {
-            if (_isInitialized)
-            {
-                _logger.LogDebug("ConnectionManager is already initialized!");
-                return;
-            }
-
-            foreach (var tracker in _option.Trackers)
-            {
-                var connectionAddress = new ConnectionAddress(tracker.IPAddress, tracker.Port);
-                _trackerConnectionAddresses.Add(connectionAddress);
-            }
-
-            _logger.LogDebug("'ConnectionManager' initialize for '{0}' ConnectionAddress,[{1}]", _trackerConnectionAddresses.Count, string.Join(",", _trackerConnectionAddresses));
-
-            _isInitialized = true;
         }
 
         /// <summary>关闭

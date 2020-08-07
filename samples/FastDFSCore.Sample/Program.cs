@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 
 namespace FastDFSCore.Sample
 {
@@ -19,16 +19,20 @@ namespace FastDFSCore.Sample
             services
                 .AddFastDFSCore(c =>
                 {
-                    c.Trackers = new List<Tracker>()
-                    {
-                        new Tracker("192.168.0.98",22122)
-                    };
+                    //c.Trackers = new List<Tracker>()
+                    //{
+                    //    new Tracker("192.168.0.98",22122)
+                    //};
                 })
                 //.AddFastDFSDotNetty()
                 .AddFastDFSSuperSocket()
                 .AddSingleton<ISampleAppService, SampleAppService>();
             var provider = services.BuildServiceProvider();
-            provider.ConfigureFastDFSCore();
+
+            var option = provider.GetRequiredService<IOptions<FastDFSOption>>().Value;
+
+            option.Trackers.Add(new Tracker("192.168.0.98", 22122));
+
 
             _sampleAppService = provider.GetService<ISampleAppService>();
 

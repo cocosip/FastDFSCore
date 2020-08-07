@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Sample
@@ -57,7 +55,7 @@ namespace FastDFSCore.Sample
 
             watch.Stop();
 
-            var totalMb = totalSize * 1.0 / (1024 * 1024.0);
+            var totalMb = totalSize.AsMB();
             var speed = totalMb / watch.Elapsed.TotalSeconds;
 
             _logger.LogInformation("Batch Upload '{0}'Files, TotalMB:'{1} MB',Cost:'{2} ms',Upload Speed:'{3} MB/s'··· ", fileInfos.Length, totalMb.ToString("F2"), watch.Elapsed.TotalMilliseconds, speed.ToString("F2"));
@@ -101,7 +99,7 @@ namespace FastDFSCore.Sample
                 }
             }
 
-            var totalMb = totalSize * 1.0 / (1024 * 1024);
+            var totalMb = totalSize.AsMB();
             var speed = totalMb / watch.Elapsed.TotalSeconds;
 
             _logger.LogInformation("Batch Download '{0}' Files, TotalMB:'{1}',Cost:'{2} ms',Download Speed:'{3} MB/s'··· ", fileIds.Count, totalMb.ToString("F2"), watch.Elapsed.TotalMilliseconds, speed.ToString("F2"));

@@ -10,8 +10,6 @@
         /// </summary>
         IConnection GetStorageConnection(ConnectionAddress connectionAddress);
 
-        void Initialize();
-
         void Release();
     }
 }

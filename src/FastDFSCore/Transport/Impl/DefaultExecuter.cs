@@ -20,11 +20,12 @@ namespace FastDFSCore.Transport
 
         /// <summary>请求执行器
         /// </summary>
-        /// <typeparam name="T">请求的类型<see cref="FastDFSCore.Protocols.FastDFSReq"/></typeparam>
+        /// <typeparam name="T">请求的类型<see cref="FastDFSReq"/></typeparam>
         /// <param name="request">请求</param>
+        /// <param name="clusterName">集群名</param>
         /// <param name="connectionAddress">返回</param>
         /// <returns></returns>
-        public async ValueTask<T> Execute<T>(FastDFSReq<T> request, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new()
+        public async ValueTask<T> Execute<T>(FastDFSReq<T> request, string clusterName, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new()
         {
             var connection = connectionAddress == null ? _connectionManager.GetTrackerConnection() : _connectionManager.GetStorageConnection(connectionAddress);
             if (connection == null)

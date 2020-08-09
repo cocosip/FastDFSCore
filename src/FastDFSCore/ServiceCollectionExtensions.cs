@@ -23,6 +23,7 @@ namespace FastDFSCore
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
                 .AddSingleton<IFastDFSClient, FastDFSClient>()
+                .AddTransient<IClusterSelector, DefaultClusterSelector>()
                 .AddTransient<IExecuter, DefaultExecuter>()
                 .AddScoped<IConnectionPool, DefaultConnectionPool>()
                 .AddScoped<ConnectionPoolOption>()

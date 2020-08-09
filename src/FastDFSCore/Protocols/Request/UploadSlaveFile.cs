@@ -80,7 +80,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
             //文件名长度数组
             var masterFileIdLenBuffer = EndecodeUtil.EncodeLong((long)MasterFileId.Length);
@@ -88,10 +88,10 @@ namespace FastDFSCore.Protocols
             var fileSizeBuffer = EndecodeUtil.EncodeLong(InputStream.Length);
 
             //从文件前缀名数据
-            var prefixBuffer = EndecodeUtil.EncodePrefix(Prefix, option.Charset);
-            var extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
+            var prefixBuffer = EndecodeUtil.EncodePrefix(Prefix, configuration.Charset);
+            var extBuffer = EndecodeUtil.EncodeFileExt(FileExt, configuration.Charset);
             //主文件Id
-            var masterFileIdBuffer = EndecodeUtil.EncodeString(MasterFileId, option.Charset);
+            var masterFileIdBuffer = EndecodeUtil.EncodeString(MasterFileId, configuration.Charset);
 
 
             //2个长度,主文件FileId数组长度,文件长度

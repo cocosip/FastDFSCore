@@ -22,7 +22,7 @@
 
         /// <summary>LoadContent
         /// </summary>
-        public virtual void LoadContent(FastDFSOption option, byte[] data)
+        public virtual void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
 
         }

@@ -72,7 +72,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
             //1.StorePathIndex
 
@@ -91,7 +91,7 @@ namespace FastDFSCore.Protocols
 
 
             //3.扩展名
-            byte[] extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
+            byte[] extBuffer = EndecodeUtil.EncodeFileExt(FileExt, configuration.Charset);
             //4.文件数据,这里不写入
             //int lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
 

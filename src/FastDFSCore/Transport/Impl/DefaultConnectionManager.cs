@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 
@@ -15,13 +14,13 @@ namespace FastDFSCore.Transport
 
         private readonly ILogger _logger;
         private readonly IConnectionPoolBuilder _connectionPoolFactory;
-        private readonly FastDFSOption _option;
+        private readonly ClusterConfiguration _configuration;
 
-        public DefaultConnectionManager(ILogger<DefaultConnectionManager> logger, IConnectionPoolBuilder connectionPoolFactory, IOptions<FastDFSOption> option)
+        public DefaultConnectionManager(ILogger<DefaultConnectionManager> logger, IConnectionPoolBuilder connectionPoolFactory, ClusterConfiguration configuration)
         {
             _logger = logger;
             _connectionPoolFactory = connectionPoolFactory;
-            _option = option.Value;
+            _configuration = configuration;
 
             _trackerConnectionPools = new ConcurrentDictionary<ConnectionAddress, IConnectionPool>();
             _storageConnectionPools = new ConcurrentDictionary<ConnectionAddress, IConnectionPool>();
@@ -32,8 +31,8 @@ namespace FastDFSCore.Transport
         public IConnection GetTrackerConnection()
         {
             var rd = new Random();
-            var index = rd.Next(_option.Trackers.Count);
-            var tracker = _option.Trackers[index];
+            var index = rd.Next(_configuration.Trackers.Count);
+            var tracker = _configuration.Trackers[index];
             var connectionAddress = new ConnectionAddress(tracker.IPAddress, tracker.Port);
 
             if (!_trackerConnectionPools.TryGetValue(connectionAddress, out IConnectionPool connectionPool))
@@ -46,10 +45,10 @@ namespace FastDFSCore.Transport
                         var connectionPoolOption = new ConnectionPoolOption()
                         {
                             ConnectionAddress = connectionAddress,
-                            ConnectionLifeTime = _option.ConnectionLifeTime,
-                            ConnectionConcurrentThread = _option.ConnectionConcurrentThread,
-                            MaxConnection = _option.TrackerMaxConnection,
-                            ScanTimeoutConnectionInterval = _option.ScanTimeoutConnectionInterval
+                            ConnectionLifeTime = _configuration.ConnectionLifeTime,
+                            ConnectionConcurrentThread = _configuration.ConnectionConcurrentThread,
+                            MaxConnection = _configuration.TrackerMaxConnection,
+                            ScanTimeoutConnectionInterval = _configuration.ScanTimeoutConnectionInterval
                         };
 
                         connectionPool = _connectionPoolFactory.CreateConnectionPool(connectionPoolOption);
@@ -81,10 +80,10 @@ namespace FastDFSCore.Transport
                         var connectionPoolOption = new ConnectionPoolOption()
                         {
                             ConnectionAddress = connectionAddress,
-                            ConnectionLifeTime = _option.ConnectionLifeTime,
-                            ConnectionConcurrentThread = _option.ConnectionConcurrentThread,
-                            MaxConnection = _option.StorageMaxConnection,
-                            ScanTimeoutConnectionInterval = _option.ScanTimeoutConnectionInterval
+                            ConnectionLifeTime = _configuration.ConnectionLifeTime,
+                            ConnectionConcurrentThread = _configuration.ConnectionConcurrentThread,
+                            MaxConnection = _configuration.StorageMaxConnection,
+                            ScanTimeoutConnectionInterval = _configuration.ScanTimeoutConnectionInterval
                         };
 
                         connectionPool = _connectionPoolFactory.CreateConnectionPool(connectionPoolOption);

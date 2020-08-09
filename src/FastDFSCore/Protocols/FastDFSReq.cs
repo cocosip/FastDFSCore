@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.IO;
+﻿using System.IO;
 
 namespace FastDFSCore.Protocols
 {
@@ -13,7 +12,7 @@ namespace FastDFSCore.Protocols
 
         public string OutputFilePath { get; set; }
 
-        public abstract byte[] EncodeBody(FastDFSOption option);
+        public abstract byte[] EncodeBody(ClusterConfiguration configuration);
     }
 
     /// <summary>FDFSRequest, <seealso cref="FastDFSCore.Protocols.FastDFSReq"/>

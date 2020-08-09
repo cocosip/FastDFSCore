@@ -21,7 +21,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             MetaData = new Dictionary<string, string>();
             int startIndex = 0;
@@ -33,15 +33,15 @@ namespace FastDFSCore.Protocols
                 if (keyValueSeparaterIndex < 0)
                     throw new ArgumentException("invalid metadata buffer format");
 
-                string key = ByteUtil.ByteToString(data, startIndex, keyValueSeparaterIndex - startIndex, option.Charset);
+                string key = ByteUtil.ByteToString(data, startIndex, keyValueSeparaterIndex - startIndex, configuration.Charset);
                 startIndex = keyValueSeparaterIndex + 1;
 
                 itemSeparaterIndex = Array.IndexOf<byte>(data, Consts.METADATA_PAIR_SEPARATER, startIndex);
                 string value;
                 if (itemSeparaterIndex < 0)
-                    value = ByteUtil.ByteToString(data, startIndex, (data.Length - 1) - startIndex, option.Charset);
+                    value = ByteUtil.ByteToString(data, startIndex, (data.Length - 1) - startIndex, configuration.Charset);
                 else
-                    value = ByteUtil.ByteToString(data, startIndex, itemSeparaterIndex - startIndex, option.Charset);
+                    value = ByteUtil.ByteToString(data, startIndex, itemSeparaterIndex - startIndex, configuration.Charset);
                 startIndex = itemSeparaterIndex + 1;
 
                 MetaData.Add(key, value);

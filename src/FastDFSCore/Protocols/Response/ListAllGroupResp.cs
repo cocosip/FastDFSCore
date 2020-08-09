@@ -14,7 +14,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             if (data.Length % Consts.FDFS_GROUP_INFO_SIZE != 0)
             {
@@ -31,7 +31,7 @@ namespace FastDFSCore.Protocols
 
                 var bufferSpan = dataSpan.Slice(i * Consts.FDFS_GROUP_INFO_SIZE, Consts.FDFS_GROUP_INFO_SIZE);
 
-                var groupInfo = EndecodeUtil.DecodeGroupInfo(bufferSpan.ToArray(), option.Charset);
+                var groupInfo = EndecodeUtil.DecodeGroupInfo(bufferSpan.ToArray(), configuration.Charset);
                 GroupInfos.Add(groupInfo);
             }
         }

@@ -31,7 +31,7 @@ namespace FastDFSCore.Sample
 
             var option = provider.GetRequiredService<IOptions<FastDFSOption>>().Value;
 
-            option.Trackers.Add(new Tracker("192.168.0.98", 22122));
+            //option.Trackers.Add(new Tracker("192.168.0.98", 22122));
 
 
             _sampleAppService = provider.GetService<ISampleAppService>();

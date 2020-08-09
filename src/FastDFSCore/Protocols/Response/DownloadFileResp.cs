@@ -17,7 +17,7 @@
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             Content = data;
         }

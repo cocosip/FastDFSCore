@@ -29,20 +29,20 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
 
             int bytesRead = 0;
 
             byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
             Array.Copy(data, bytesRead, groupNameBuffer, 0, Consts.FDFS_GROUP_NAME_MAX_LEN);
-            GroupName = EndecodeUtil.DecodeString(groupNameBuffer, option.Charset);
+            GroupName = EndecodeUtil.DecodeString(groupNameBuffer, configuration.Charset);
             //Util.ByteToString(option.Charset, groupNameBuffer).TrimEnd('\0');
             bytesRead += Consts.FDFS_GROUP_NAME_MAX_LEN;
 
             byte[] ipAddressBuffer = new byte[Consts.IP_ADDRESS_SIZE - 1];
             Array.Copy(data, bytesRead, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
-            IPAddresses.Add(EndecodeUtil.DecodeString(ipAddressBuffer, option.Charset));
+            IPAddresses.Add(EndecodeUtil.DecodeString(ipAddressBuffer, configuration.Charset));
             //IPAddresses.Add(new string(option.Charset.GetChars(ipAddressBuffer)).TrimEnd('\0'));
             bytesRead += Consts.IP_ADDRESS_SIZE - 1;
 
@@ -55,7 +55,7 @@ namespace FastDFSCore.Protocols
             {
                 ipAddressBuffer = new byte[Consts.IP_ADDRESS_SIZE - 1];
                 Array.Copy(data, bytesRead, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
-                IPAddresses.Add(EndecodeUtil.DecodeString(ipAddressBuffer, option.Charset));
+                IPAddresses.Add(EndecodeUtil.DecodeString(ipAddressBuffer, configuration.Charset));
                 // IPAddresses.Add(new string(option.Charset.GetChars(ipAddressBuffer)).TrimEnd('\0'));
                 bytesRead += Consts.IP_ADDRESS_SIZE - 1;
             }

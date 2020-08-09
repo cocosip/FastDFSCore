@@ -71,11 +71,11 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
 
             var fileSizeBuffer = ByteUtil.LongToBuffer(InputStream.Length);
-            var extBuffer = EndecodeUtil.EncodeFileExt(FileExt, option.Charset);
+            var extBuffer = EndecodeUtil.EncodeFileExt(FileExt, configuration.Charset);
 
             /*long lenth = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;*/
 

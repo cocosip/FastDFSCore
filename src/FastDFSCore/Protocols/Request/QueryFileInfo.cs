@@ -1,5 +1,4 @@
 ﻿using FastDFSCore.Utility;
-using System.Buffers;
 
 namespace FastDFSCore.Protocols
 {
@@ -48,10 +47,10 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
-            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
-            var fileIdBuffer = EndecodeUtil.EncodeString(FileId, option.Charset);
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, configuration.Charset);
+            var fileIdBuffer = EndecodeUtil.EncodeString(FileId, configuration.Charset);
             //var length = Consts.FDFS_GROUP_NAME_MAX_LEN + fileIdBuffer.Length;
             return ByteUtil.Combine(groupNameBuffer, fileIdBuffer);
         }

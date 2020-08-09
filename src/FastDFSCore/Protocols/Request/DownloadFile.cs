@@ -60,15 +60,15 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
-            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, configuration.Charset);
             //文件偏移量
             var offsetBuffer = EndecodeUtil.EncodeLong(Offset);
             //下载文件的大小,全部下载用0
             var byteSizeBuffer = EndecodeUtil.EncodeLong(ByteSize);
             //文件FileId数组
-            var fileIdBuffer = EndecodeUtil.EncodeString(FileId, option.Charset);
+            var fileIdBuffer = EndecodeUtil.EncodeString(FileId, configuration.Charset);
 
             //long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_GROUP_NAME_MAX_LEN + FileId.Length;
 

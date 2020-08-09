@@ -53,11 +53,11 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
             var fileIdLengthBuffer = ByteUtil.LongToBuffer(FileId.Length);
             var fileSizeBuffer = ByteUtil.LongToBuffer(InputStream.Length);
-            var fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
+            var fileIdBuffer = ByteUtil.StringToByte(FileId, configuration.Charset);
 
             //long length = Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE + FileId.Length + RequestStream.Length;
 

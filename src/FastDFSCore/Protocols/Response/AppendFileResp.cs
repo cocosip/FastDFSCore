@@ -34,14 +34,14 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             var span = data.AsSpan();
             var groupNameSpan = span.Slice(0, Consts.FDFS_GROUP_NAME_MAX_LEN);
-            GroupName = EndecodeUtil.DecodeString(groupNameSpan.ToArray(), option.Charset);
+            GroupName = EndecodeUtil.DecodeString(groupNameSpan.ToArray(), configuration.Charset);
 
             var fileNameSpan = span.Slice(Consts.FDFS_GROUP_NAME_MAX_LEN, data.Length - Consts.FDFS_GROUP_NAME_MAX_LEN);
-            FileId = EndecodeUtil.DecodeString(fileNameSpan.ToArray(), option.Charset);
+            FileId = EndecodeUtil.DecodeString(fileNameSpan.ToArray(), configuration.Charset);
         }
     }
 }

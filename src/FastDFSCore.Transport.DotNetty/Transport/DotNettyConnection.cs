@@ -31,7 +31,7 @@ namespace FastDFSCore.Transport
         private TaskCompletionSource<FastDFSResp> _tcs = null;
         private FastDFSResp _resp = null;
 
-        public DotNettyConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, IOptions<DotNettyOption> dotNettyOption, ConnectionAddress connectionAddress) : base(logger, serviceProvider, option, connectionAddress)
+        public DotNettyConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, ClusterConfiguration configuration, IOptions<DotNettyOption> dotNettyOption, ConnectionAddress connectionAddress) : base(logger, serviceProvider, configuration, connectionAddress)
         {
             _dotNettyOption = dotNettyOption.Value;
         }
@@ -55,7 +55,7 @@ namespace FastDFSCore.Transport
             //上下文,当前的信息
             _context = BuildContext<T>(request);
 
-            var bodyBuffer = request.EncodeBody(Option);
+            var bodyBuffer = request.EncodeBody(Configuration);
             if (request.Header.Length == 0)
             {
                 request.Header.Length = request.InputStream != null ? request.InputStream.Length + bodyBuffer.Length : bodyBuffer.Length;
@@ -161,7 +161,7 @@ namespace FastDFSCore.Transport
 
                 if (!_context.IsOutputStream)
                 {
-                    _resp.LoadContent(Option, package.Body);
+                    _resp.LoadContent(Configuration, package.Body);
                 }
 
                 _context = null;

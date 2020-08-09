@@ -16,7 +16,7 @@ namespace FastDFSCore.Tests
         public async Task GetStorageNodeAsync_Test()
         {
             var mockExecuter = new Mock<IExecuter>();
-            mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<QueryStoreWithGroupResp>>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new QueryStoreWithGroupResp()
+            mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<QueryStoreWithGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new QueryStoreWithGroupResp()
             {
                 GroupName = "group2",
                 IPAddress = "192.168.0.2",
@@ -28,7 +28,7 @@ namespace FastDFSCore.Tests
             Assert.Equal("group2", node.GroupName);
             Assert.Equal(new ConnectionAddress("192.168.0.2", 23000), node.ConnectionAddress);
 
-            mockExecuter.Verify(x => x.Execute(It.IsAny<FastDFSReq<QueryStoreWithGroupResp>>(), It.IsAny<ConnectionAddress>()), Times.Once);
+            mockExecuter.Verify(x => x.Execute(It.IsAny<FastDFSReq<QueryStoreWithGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>()), Times.Once);
 
         }
 
@@ -36,7 +36,7 @@ namespace FastDFSCore.Tests
         public async Task ListOneGroupInfoAsync_Test()
         {
             var mockExecuter = new Mock<IExecuter>();
-            mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<ListOneGroupResp>>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new ListOneGroupResp()
+            mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<ListOneGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new ListOneGroupResp()
             {
                 GroupInfo = new GroupInfo()
                 {
@@ -48,14 +48,14 @@ namespace FastDFSCore.Tests
             var groupInfo = await client.ListOneGroupInfoAsync("group1");
             Assert.Equal("group2", groupInfo.GroupName);
 
-            mockExecuter.Verify(x => x.Execute(It.IsAny<FastDFSReq<ListOneGroupResp>>(), It.IsAny<ConnectionAddress>()), Times.Once);
+            mockExecuter.Verify(x => x.Execute(It.IsAny<FastDFSReq<ListOneGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>()), Times.Once);
         }
 
         [Fact]
         public async Task ListAllGroupInfosAsync_Test()
         {
             var mockExecuter = new Mock<IExecuter>();
-            mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<ListAllGroupResp>>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new ListAllGroupResp()
+            mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<ListAllGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new ListAllGroupResp()
             {
                 GroupInfos = new List<GroupInfo>()
                 {
@@ -70,7 +70,7 @@ namespace FastDFSCore.Tests
             var groupInfos = await client.ListAllGroupInfosAsync();
             Assert.Single(groupInfos);
 
-            mockExecuter.Verify(x => x.Execute(It.IsAny<FastDFSReq<ListAllGroupResp>>(), It.IsAny<ConnectionAddress>()), Times.Once);
+            mockExecuter.Verify(x => x.Execute(It.IsAny<FastDFSReq<ListAllGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>()), Times.Once);
         }
 
 

@@ -17,13 +17,10 @@ namespace FastDFSCore.Transport
 
         #endregion
 
-        private bool _isUsing = false;
-        private readonly DateTime _creationTime;
-        private DateTime _lastUseTime;
 
         protected ILogger Logger { get; }
 
-        protected FastDFSOption Option { get; }
+        protected ClusterConfiguration Configuration { get; }
 
         protected IServiceProvider ServiceProvider { get; }
 
@@ -31,24 +28,24 @@ namespace FastDFSCore.Transport
 
         public ConnectionAddress ConnectionAddress { get; }
 
-        public bool IsUsing { get { return _isUsing; } }
+        public bool IsUsing { get; private set; } = false;
 
         public bool IsConnected { get; protected set; }
 
-        public DateTime CreationTime { get { return _creationTime; } }
+        public DateTime CreationTime { get; private set; }
 
-        public DateTime LastUseTime { get { return _lastUseTime; } }
+        public DateTime LastUseTime { get; private set; }
 
-        public BaseConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress)
+        public BaseConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, ClusterConfiguration configuration, ConnectionAddress connectionAddress)
         {
-            _creationTime = DateTime.Now;
-            _lastUseTime = DateTime.Now;
-            _isUsing = false;
+            CreationTime = DateTime.Now;
+            LastUseTime = DateTime.Now;
+            IsUsing = false;
             IsConnected = false;
 
 
             Logger = logger;
-            Option = option.Value;
+            Configuration = configuration;
             ServiceProvider = serviceProvider;
 
             ConnectionAddress = connectionAddress;
@@ -58,7 +55,7 @@ namespace FastDFSCore.Transport
 
         public virtual bool IsExpired()
         {
-            return (DateTime.Now - _lastUseTime).TotalSeconds > Option.ConnectionLifeTime;
+            return (DateTime.Now - LastUseTime).TotalSeconds > Configuration.ConnectionLifeTime;
         }
 
         public virtual async ValueTask OpenAsync()
@@ -67,14 +64,14 @@ namespace FastDFSCore.Transport
             {
                 await ConnectAsync();
             }
-            _isUsing = true;
-            _lastUseTime = DateTime.Now;
+            IsUsing = true;
+            LastUseTime = DateTime.Now;
         }
 
         public virtual ValueTask CloseAsync()
         {
-            _isUsing = false;
-            _lastUseTime = DateTime.Now;
+            IsUsing = false;
+            LastUseTime = DateTime.Now;
 
             OnConnectionClose?.Invoke(this, new ConnectionCloseEventArgs()
             {

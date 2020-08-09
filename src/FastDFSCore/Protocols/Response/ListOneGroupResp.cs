@@ -13,13 +13,13 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             if (data.Length != Consts.FDFS_GROUP_INFO_SIZE)
             {
                 throw new ArgumentException($"返回数据长度:{data.Length},不是有效的GroupInfo数据长度.");
             }
-            GroupInfo = EndecodeUtil.DecodeGroupInfo(data, option.Charset);
+            GroupInfo = EndecodeUtil.DecodeGroupInfo(data, configuration.Charset);
         }
     }
 }

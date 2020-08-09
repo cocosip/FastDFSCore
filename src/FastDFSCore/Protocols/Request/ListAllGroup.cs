@@ -36,7 +36,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
             //Header = new FDFSHeader(0, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ALL_GROUPS, 0);
             var bodyBuffer = new byte[0];

@@ -66,16 +66,16 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
             string optionString = (Option == MetaDataOption.Overwrite) ? "O" : "M";
-            var optionBuffer = EndecodeUtil.EncodeString(optionString, option.Charset);
+            var optionBuffer = EndecodeUtil.EncodeString(optionString, configuration.Charset);
 
-            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var groupNameBuffer = EndecodeUtil.EncodeGroupName(GroupName, configuration.Charset);
 
 
-            var fileIdBuffer = ByteUtil.StringToByte(FileId, option.Charset);
-            var metaDataBuffer = CreateMetaDataBuffer(option, MetaData);
+            var fileIdBuffer = ByteUtil.StringToByte(FileId, configuration.Charset);
+            var metaDataBuffer = CreateMetaDataBuffer(configuration, MetaData);
 
             var fileIdLengthBuffer = ByteUtil.LongToBuffer(fileIdBuffer.Length);
             var metaDataSizeBuffer = ByteUtil.LongToBuffer(metaDataBuffer.Length);
@@ -91,7 +91,7 @@ namespace FastDFSCore.Protocols
             return ByteUtil.Combine(fileIdLengthBuffer, metaDataSizeBuffer, optionBuffer, groupNameBuffer, fileIdBuffer, metaDataBuffer);
         }
 
-        private byte[] CreateMetaDataBuffer(FastDFSOption option, IDictionary<string, string> metaData)
+        private byte[] CreateMetaDataBuffer(ClusterConfiguration configuration, IDictionary<string, string> metaData)
         {
             List<byte> metaDataBuffer = new List<byte>();
             foreach (KeyValuePair<string, string> p in metaData)
@@ -102,9 +102,9 @@ namespace FastDFSCore.Protocols
                     metaDataBuffer.Add(Consts.METADATA_PAIR_SEPARATER);
                 }
 
-                metaDataBuffer.AddRange(EndecodeUtil.EncodeString(p.Key, option.Charset));
+                metaDataBuffer.AddRange(EndecodeUtil.EncodeString(p.Key, configuration.Charset));
                 metaDataBuffer.Add(Consts.METADATA_KEY_VALUE_SEPARATOR);
-                metaDataBuffer.AddRange(EndecodeUtil.EncodeString(p.Value, option.Charset));
+                metaDataBuffer.AddRange(EndecodeUtil.EncodeString(p.Value, configuration.Charset));
             }
             return metaDataBuffer.ToArray();
         }

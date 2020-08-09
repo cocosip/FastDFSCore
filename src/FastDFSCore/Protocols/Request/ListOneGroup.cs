@@ -50,9 +50,9 @@ namespace FastDFSCore.Protocols
 
         /// <summary>EncodeBody
         /// </summary>
-        public override byte[] EncodeBody(FastDFSOption option)
+        public override byte[] EncodeBody(ClusterConfiguration configuration)
         {
-            var bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, option.Charset);
+            var bodyBuffer = EndecodeUtil.EncodeGroupName(GroupName, configuration.Charset);
             //Header = new FDFSHeader(Consts.FDFS_GROUP_NAME_MAX_LEN, Consts.TRACKER_PROTO_CMD_SERVER_LIST_ONE_GROUP, 0);
             return bodyBuffer;
         }

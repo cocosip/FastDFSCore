@@ -24,14 +24,14 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             var dataSpan = data.AsSpan();
             var groupNameBufferSpan = dataSpan.Slice(0, Consts.FDFS_GROUP_NAME_MAX_LEN);
-            GroupName = ByteUtil.ByteToString(groupNameBufferSpan.ToArray(), option.Charset).TrimEnd('\0');
+            GroupName = ByteUtil.ByteToString(groupNameBufferSpan.ToArray(), configuration.Charset).TrimEnd('\0');
 
             var fileNameBufferSpan = dataSpan.Slice(Consts.FDFS_GROUP_NAME_MAX_LEN);
-            FileId = ByteUtil.ByteToString(fileNameBufferSpan, option.Charset).TrimEnd('\0');
+            FileId = ByteUtil.ByteToString(fileNameBufferSpan, configuration.Charset).TrimEnd('\0');
 
             //byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
             //Array.Copy(data, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);

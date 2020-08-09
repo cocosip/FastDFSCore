@@ -28,7 +28,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
 
             byte[] fileSizeBuffer = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE];
@@ -40,7 +40,7 @@ namespace FastDFSCore.Protocols
             Array.Copy(data, Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE, crcBuffer, 0, crcBuffer.Length);
 
             FileSize = ByteUtil.BufferToLong(data, 0);
-            CreateTime = new System.DateTime(1970, 1, 1).AddSeconds(ByteUtil.BufferToLong(data, Consts.FDFS_PROTO_PKG_LEN_SIZE));
+            CreateTime = new DateTime(1970, 1, 1).AddSeconds(ByteUtil.BufferToLong(data, Consts.FDFS_PROTO_PKG_LEN_SIZE));
 
             Crc32 = ByteUtil.BufferToLong(data, Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_PROTO_PKG_LEN_SIZE);
         }

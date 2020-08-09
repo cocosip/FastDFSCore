@@ -26,16 +26,16 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
 
             byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
             Array.Copy(data, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);
-            GroupName = ByteUtil.ByteToString(groupNameBuffer, option.Charset).TrimEnd('\0');
+            GroupName = ByteUtil.ByteToString(groupNameBuffer, configuration.Charset).TrimEnd('\0');
             byte[] ipAddressBuffer = new byte[Consts.IP_ADDRESS_SIZE - 1];
             Array.Copy(data, Consts.FDFS_GROUP_NAME_MAX_LEN, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
 
-            IPAddress = new string(Encoding.GetEncoding(option.Charset).GetChars(ipAddressBuffer)).TrimEnd('\0');
+            IPAddress = new string(Encoding.GetEncoding(configuration.Charset).GetChars(ipAddressBuffer)).TrimEnd('\0');
             byte[] portBuffer = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE];
 
             Array.Copy(data, Consts.FDFS_GROUP_NAME_MAX_LEN + Consts.IP_ADDRESS_SIZE - 1,

@@ -14,7 +14,7 @@ namespace FastDFSCore.Protocols
 
         /// <summary>LoadContent
         /// </summary>
-        public override void LoadContent(FastDFSOption option, byte[] data)
+        public override void LoadContent(ClusterConfiguration configuration, byte[] data)
         {
             if (data.Length % Consts.FDFS_STORAGE_INFO_SIZE != 0)
             {
@@ -30,7 +30,7 @@ namespace FastDFSCore.Protocols
                 //Array.Copy(data, i * Consts.FDFS_STORAGE_INFO_SIZE, buffer, 0, buffer.Length);
                 var bufferSpan = dataSpan.Slice(i * Consts.FDFS_STORAGE_INFO_SIZE, Consts.FDFS_STORAGE_INFO_SIZE);
 
-                var storageInfo = EndecodeUtil.DecodeStorageInfo(bufferSpan.ToArray(), option.Charset);
+                var storageInfo = EndecodeUtil.DecodeStorageInfo(bufferSpan.ToArray(), configuration.Charset);
                 StorageInfos.Add(storageInfo);
             }
         }

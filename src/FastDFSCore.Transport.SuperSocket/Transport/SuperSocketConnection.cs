@@ -24,7 +24,7 @@ namespace FastDFSCore.Transport
         private FastDFSResp _resp = null;
 
         public override event EventHandler<DisconnectEventArgs> OnDisconnect;
-        public SuperSocketConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> option, ConnectionAddress connectionAddress) : base(logger, serviceProvider, option, connectionAddress)
+        public SuperSocketConnection(ILogger<BaseConnection> logger, IServiceProvider serviceProvider, ClusterConfiguration configuration, ConnectionAddress connectionAddress) : base(logger, serviceProvider, configuration, connectionAddress)
         {
 
         }
@@ -82,7 +82,7 @@ namespace FastDFSCore.Transport
             //上下文,当前的信息
             _context = BuildContext<T>(request);
 
-            var bodyBuffer = request.EncodeBody(Option);
+            var bodyBuffer = request.EncodeBody(Configuration);
             if (request.Header.Length == 0)
             {
                 request.Header.Length = request.InputStream != null ? request.InputStream.Length + bodyBuffer.Length : bodyBuffer.Length;
@@ -155,7 +155,7 @@ namespace FastDFSCore.Transport
 
                 if (!_context.IsOutputStream)
                 {
-                    _resp.LoadContent(Option, package.Body);
+                    _resp.LoadContent(Configuration, package.Body);
                 }
                 Reset();
                 _tcs.SetResult(_resp);

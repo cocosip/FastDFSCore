@@ -8,14 +8,13 @@ namespace FastDFSCore.Transport
     /// </summary>
     public class DefaultExecuter : IExecuter
     {
-        private readonly IConnectionManager _connectionManager;
+        private readonly IClusterFactory _clusterFactory;
 
         /// <summary>Ctor
         /// </summary>
-        /// <param name="connectionManager">连接管理器</param>
-        public DefaultExecuter(IConnectionManager connectionManager)
+        public DefaultExecuter(IClusterFactory clusterFactory)
         {
-            _connectionManager = connectionManager;
+            _clusterFactory = clusterFactory;
         }
 
         /// <summary>请求执行器
@@ -27,7 +26,10 @@ namespace FastDFSCore.Transport
         /// <returns></returns>
         public async ValueTask<T> Execute<T>(FastDFSReq<T> request, string clusterName, ConnectionAddress connectionAddress = null) where T : FastDFSResp, new()
         {
-            var connection = connectionAddress == null ? _connectionManager.GetTrackerConnection() : _connectionManager.GetStorageConnection(connectionAddress);
+            var cluster = _clusterFactory.Get(clusterName);
+
+
+            var connection = connectionAddress == null ? cluster.GetTrackerConnection() : cluster.GetStorageConnection(connectionAddress);
             if (connection == null)
             {
                 throw new NullReferenceException($"Can't find connection,ipaddr:{connectionAddress} ");

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 
 namespace FastDFSCore.Sample
 {
@@ -30,9 +31,14 @@ namespace FastDFSCore.Sample
             var provider = services.BuildServiceProvider();
 
             var option = provider.GetRequiredService<IOptions<FastDFSOption>>().Value;
-
-            //option.Trackers.Add(new Tracker("192.168.0.98", 22122));
-
+            option.ClusterConfigurations.Add(new ClusterConfiguration()
+            {
+                Name = "Cluster1",
+                Trackers = new List<Tracker>()
+                {
+                    new Tracker("192.168.0.98", 22122)
+                }
+            });
 
             _sampleAppService = provider.GetService<ISampleAppService>();
 

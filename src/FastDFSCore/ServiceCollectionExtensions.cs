@@ -18,12 +18,14 @@ namespace FastDFSCore
             }
             services
                 .Configure<FastDFSOption>(configure)
-                .AddSingleton<IConnectionManager, DefaultConnectionManager>()
                 .AddSingleton<IConnectionPoolBuilder, DefaultConnectionPoolBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
                 .AddSingleton<IFastDFSClient, FastDFSClient>()
+                .AddSingleton<IClusterFactory, DefaultClusterFactory>()
                 .AddTransient<IClusterSelector, DefaultClusterSelector>()
+                .AddScoped<ICluster, DefaultCluster>()
+                .AddScoped<ClusterConfiguration>()
                 .AddTransient<IExecuter, DefaultExecuter>()
                 .AddScoped<IConnectionPool, DefaultConnectionPool>()
                 .AddScoped<ConnectionPoolOption>()

@@ -1,6 +1,4 @@
-﻿using FastDFSCore.Transport;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace FastDFSCore

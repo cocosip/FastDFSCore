@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FastDFSCore.Transport;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 
-namespace FastDFSCore.Transport
+namespace FastDFSCore
 {
-    public class DefaultConnectionManager : IConnectionManager
+    public class DefaultCluster : ICluster
     {
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _trackerConnectionPools;
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _storageConnectionPools;
@@ -16,7 +17,7 @@ namespace FastDFSCore.Transport
         private readonly IConnectionPoolBuilder _connectionPoolFactory;
         private readonly ClusterConfiguration _configuration;
 
-        public DefaultConnectionManager(ILogger<DefaultConnectionManager> logger, IConnectionPoolBuilder connectionPoolFactory, ClusterConfiguration configuration)
+        public DefaultCluster(ILogger<DefaultCluster> logger, IConnectionPoolBuilder connectionPoolFactory, ClusterConfiguration configuration)
         {
             _logger = logger;
             _connectionPoolFactory = connectionPoolFactory;
@@ -117,5 +118,6 @@ namespace FastDFSCore.Transport
             }
 
         }
+
     }
 }

@@ -13,7 +13,7 @@ jobs:
     pool:
       vmImage: 'windows-latest'
     steps:
-    - task: DotNetCoreInstaller@0
+    - task: UseDotNet@2
       inputs:
         version: '3.1.302'
     - powershell: .\build.ps1
@@ -22,7 +22,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: DotNetCoreInstaller@0
+    - task: UseDotNet@2
       inputs:
         version: '3.1.302'
     - script: |

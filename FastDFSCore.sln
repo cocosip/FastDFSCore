@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastDFSCore.Sample", "sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastDFSCore.Transport.DotNetty", "src\FastDFSCore.Transport.DotNetty\FastDFSCore.Transport.DotNetty.csproj", "{10E45F5A-C9F5-4421-A248-31E3CA7C333E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastDFSCore.Transport.SuperSocket", "src\FastDFSCore.Transport.SuperSocket\FastDFSCore.Transport.SuperSocket.csproj", "{AB518933-5284-4F91-9F47-A469A66E0C40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastDFSCore.Transport.SuperSocket", "src\FastDFSCore.Transport.SuperSocket\FastDFSCore.Transport.SuperSocket.csproj", "{AB518933-5284-4F91-9F47-A469A66E0C40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

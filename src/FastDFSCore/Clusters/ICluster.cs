@@ -4,15 +4,23 @@ namespace FastDFSCore
 {
     public interface ICluster
     {
-        /// <summary>Get tracker connection
+        /// <summary>
+        /// Cluster name
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Get tracker connection
         /// </summary>
         IConnection GetTrackerConnection();
 
-        /// <summary>获取Storage连接
+        /// <summary>
+        /// Get storage connection
         /// </summary>
         IConnection GetStorageConnection(ConnectionAddress connectionAddress);
 
-        /// <summary>关闭
+        /// <summary>
+        /// Release 
         /// </summary>
         void Release();
 

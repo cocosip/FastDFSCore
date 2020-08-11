@@ -17,6 +17,11 @@ namespace FastDFSCore
         private readonly IConnectionPoolBuilder _connectionPoolFactory;
         private readonly ClusterConfiguration _configuration;
 
+        /// <summary>
+        /// Cluster name
+        /// </summary>
+        public string Name { get { return _configuration?.Name; } }
+
         public DefaultCluster(ILogger<DefaultCluster> logger, IConnectionPoolBuilder connectionPoolFactory, ClusterConfiguration configuration)
         {
             _logger = logger;
@@ -27,7 +32,8 @@ namespace FastDFSCore
             _storageConnectionPools = new ConcurrentDictionary<ConnectionAddress, IConnectionPool>();
         }
 
-        /// <summary>Get tracker connection
+        /// <summary>
+        /// Get tracker connection
         /// </summary>
         public IConnection GetTrackerConnection()
         {
@@ -68,7 +74,8 @@ namespace FastDFSCore
             return connectionPool.GetConnection();
         }
 
-        /// <summary>获取Storage连接
+        /// <summary>
+        /// Get storage connection
         /// </summary>
         public IConnection GetStorageConnection(ConnectionAddress connectionAddress)
         {
@@ -103,7 +110,8 @@ namespace FastDFSCore
             return connectionPool.GetConnection();
         }
 
-        /// <summary>关闭
+        /// <summary>
+        /// Release
         /// </summary>
         public void Release()
         {

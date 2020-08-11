@@ -30,7 +30,7 @@ namespace FastDFSCore
         /// </summary>
         public ICluster Get(string name)
         {
-            //获取默认?
+            //ensure there are only one configuration in option
             if (string.IsNullOrWhiteSpace(name))
             {
                 if (_option.ClusterConfigurations.Count == 1)

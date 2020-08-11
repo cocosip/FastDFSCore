@@ -28,7 +28,6 @@ namespace FastDFSCore.Transport
         {
             var cluster = _clusterFactory.Get(clusterName);
 
-
             var connection = connectionAddress == null ? cluster.GetTrackerConnection() : cluster.GetStorageConnection(connectionAddress);
             if (connection == null)
             {

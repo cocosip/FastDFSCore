@@ -6,7 +6,7 @@ namespace FastDFSCore
     /// </summary>
     public class FastDFSOption
     {
-        public List<ClusterConfiguration> ClusterConfigurations { get; }
+        public List<ClusterConfiguration> ClusterConfigurations { get; set; }
 
         public FastDFSOption()
         {

@@ -22,8 +22,13 @@ namespace FastDFSCore
                 //Get default
                 if (_option.ClusterConfigurations.Count == 1)
                 {
-                    return _option.ClusterConfigurations.FirstOrDefault();
+                    configuration = _option.ClusterConfigurations.FirstOrDefault();
                 }
+            }
+
+            if (configuration == null)
+            {
+                throw new ArgumentNullException($"Could not find any cluster configuration by name '{name}'");
             }
             return configuration;
         }

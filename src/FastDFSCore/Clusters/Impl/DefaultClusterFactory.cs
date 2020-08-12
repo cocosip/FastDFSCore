@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FastDFSCore
@@ -52,6 +53,26 @@ namespace FastDFSCore
                 _logger.LogWarning("Could not add cluster by name '{0}'.", name);
             }
             return cluster;
+        }
+
+        /// <summary>
+        /// Get all clusters
+        /// </summary>
+        /// <returns></returns>
+        public List<ICluster> GetClusters()
+        {
+            return _clusterDict.Values.ToList();
+        }
+
+        /// <summary>
+        /// Release all clusters and cluster connection pool
+        /// </summary>
+        public void Release()
+        {
+            foreach (var kv in _clusterDict)
+            {
+                kv.Value.Release();
+            }
         }
 
 

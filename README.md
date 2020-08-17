@@ -41,10 +41,14 @@ services
         });
     })
     .AddFastDFSCore(c=>{
-        c.Trackers = new List<Tracker>()
+        c.ClusterConfigurations.Add(new ClusterConfiguration()
         {
-            new Tracker("192.168.0.6",22122)
-        };
+            Name = "Cluster1",
+            Trackers = new List<Tracker>()
+            {
+                    new Tracker("192.168.0.98", 22122)
+            }
+        })
     })
     .AddFastDFSDotNetty();
 

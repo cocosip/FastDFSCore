@@ -1,6 +1,5 @@
 ﻿using FastDFSCore.Protocols;
 using System;
-using System.Buffers;
 using System.Text;
 
 namespace FastDFSCore.Utility

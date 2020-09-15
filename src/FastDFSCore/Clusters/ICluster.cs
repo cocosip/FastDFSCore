@@ -10,6 +10,12 @@ namespace FastDFSCore
         string Name { get; }
 
         /// <summary>
+        /// 获取集群的配置信息
+        /// </summary>
+        /// <returns></returns>
+        ClusterConfiguration GetConfiguration();
+
+        /// <summary>
         /// Get tracker connection
         /// </summary>
         IConnection GetTrackerConnection();

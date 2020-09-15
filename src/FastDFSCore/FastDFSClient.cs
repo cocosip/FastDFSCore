@@ -1,5 +1,7 @@
 ﻿using FastDFSCore.Protocols;
 using FastDFSCore.Transport;
+using FastDFSCore.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,13 +13,15 @@ namespace FastDFSCore
     /// </summary>
     public class FastDFSClient : IFastDFSClient
     {
+        private readonly IClusterFactory _clusterFactory;
         private readonly IExecuter _executer;
 
         /// <summary>Ctor
         /// </summary>
-        public FastDFSClient(IExecuter executer)
+        public FastDFSClient(IExecuter executer, IClusterFactory clusterFactory)
         {
             _executer = executer;
+            _clusterFactory = clusterFactory;
         }
 
 
@@ -358,6 +362,19 @@ namespace FastDFSCore
         {
             var request = new SetMetaData(fileId, storageNode.GroupName, metaData, option);
             _ = await _executer.Execute(request, clusterName);
+        }
+
+        /// <summary>
+        /// 生成文件访问Token
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="clusterName"></param>
+        /// <returns></returns>
+        public string GetToken(string fileId, string clusterName = "")
+        {
+            var cluster = _clusterFactory.Get(clusterName);
+            var configuration = cluster.GetConfiguration();
+            return Util.GetToken(fileId, DateTime.Now, configuration.SecretKey, configuration.Charset);
         }
     }
 }

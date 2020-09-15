@@ -22,6 +22,11 @@ namespace FastDFSCore
         /// </summary>
         public string Charset { get; set; } = "utf-8";
 
+        /// <summary>
+        /// Token生成的密钥
+        /// </summary>
+        public string SecretKey { get; set; }
+
         /// <summary>连接的有效时间,3600s
         /// </summary>
         public int ConnectionLifeTime { get; set; } = 600;

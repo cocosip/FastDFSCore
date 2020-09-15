@@ -16,6 +16,8 @@ namespace FastDFSCore.Tests
         public async Task GetStorageNodeAsync_Test()
         {
             var mockExecuter = new Mock<IExecuter>();
+            var mockClusterFactory = new Mock<IClusterFactory>();
+
             mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<QueryStoreWithGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new QueryStoreWithGroupResp()
             {
                 GroupName = "group2",
@@ -23,7 +25,7 @@ namespace FastDFSCore.Tests
                 Port = 23000,
                 StorePathIndex = 0
             });
-            IFastDFSClient client = new FastDFSClient(mockExecuter.Object);
+            IFastDFSClient client = new FastDFSClient(mockExecuter.Object, mockClusterFactory.Object);
             var node = await client.GetStorageNodeAsync("group1");
             Assert.Equal("group2", node.GroupName);
             Assert.Equal(new ConnectionAddress("192.168.0.2", 23000), node.ConnectionAddress);
@@ -36,6 +38,8 @@ namespace FastDFSCore.Tests
         public async Task ListOneGroupInfoAsync_Test()
         {
             var mockExecuter = new Mock<IExecuter>();
+            var mockClusterFactory = new Mock<IClusterFactory>();
+
             mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<ListOneGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new ListOneGroupResp()
             {
                 GroupInfo = new GroupInfo()
@@ -44,7 +48,7 @@ namespace FastDFSCore.Tests
                 }
             });
 
-            IFastDFSClient client = new FastDFSClient(mockExecuter.Object);
+            IFastDFSClient client = new FastDFSClient(mockExecuter.Object, mockClusterFactory.Object);
             var groupInfo = await client.ListOneGroupInfoAsync("group1");
             Assert.Equal("group2", groupInfo.GroupName);
 
@@ -55,6 +59,8 @@ namespace FastDFSCore.Tests
         public async Task ListAllGroupInfosAsync_Test()
         {
             var mockExecuter = new Mock<IExecuter>();
+            var mockClusterFactory = new Mock<IClusterFactory>();
+
             mockExecuter.Setup(x => x.Execute(It.IsAny<FastDFSReq<ListAllGroupResp>>(), It.IsAny<string>(), It.IsAny<ConnectionAddress>())).ReturnsAsync(new ListAllGroupResp()
             {
                 GroupInfos = new List<GroupInfo>()
@@ -66,7 +72,7 @@ namespace FastDFSCore.Tests
                 }
             });
 
-            IFastDFSClient client = new FastDFSClient(mockExecuter.Object);
+            IFastDFSClient client = new FastDFSClient(mockExecuter.Object, mockClusterFactory.Object);
             var groupInfos = await client.ListAllGroupInfosAsync();
             Assert.Single(groupInfos);
 

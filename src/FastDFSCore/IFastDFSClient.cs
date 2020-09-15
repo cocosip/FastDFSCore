@@ -208,5 +208,13 @@ namespace FastDFSCore
         /// <returns></returns>
         ValueTask SetMetaData(StorageNode storageNode, string fileId, IDictionary<string, string> metaData, MetaDataOption option = MetaDataOption.Overwrite, string clusterName = "");
 
+        /// <summary>
+        /// 生成文件访问Token
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="clusterName"></param>
+        /// <returns></returns>
+        string GetToken(string fileId, string clusterName = "");
+
     }
 }

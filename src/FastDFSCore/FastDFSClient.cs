@@ -367,14 +367,34 @@ namespace FastDFSCore
         /// <summary>
         /// 生成文件访问Token
         /// </summary>
-        /// <param name="fileId"></param>
-        /// <param name="clusterName"></param>
+        /// <param name="fileId">文件名</param>
+        /// <param name="timeStamp">时间戳</param>
+        /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public string GetToken(string fileId, string clusterName = "")
+        public string GetToken(string fileId, int? timeStamp = null, string clusterName = "")
         {
             var cluster = _clusterFactory.Get(clusterName);
             var configuration = cluster.GetConfiguration();
-            return Util.GetToken(fileId, DateTime.Now, configuration.SecretKey, configuration.Charset);
+
+            if (timeStamp.HasValue)
+            {
+                timeStamp = DateTimeUtil.ToInt32(DateTime.Now);
+            }
+
+            return Util.GetToken(fileId, timeStamp.Value, configuration.SecretKey, configuration.Charset);
+        }
+
+        /// <summary>
+        /// 生成文件访问Token
+        /// </summary>
+        /// <param name="fileId">文件名</param>
+        /// <param name="dateTime">时间</param>
+        /// <param name="clusterName">集群名称</param>
+        /// <returns></returns>
+        public string GetToken(string fileId, DateTime? dateTime = null, string clusterName = "")
+        {
+            var timeStamp = dateTime.HasValue ? DateTimeUtil.ToInt32(dateTime.Value) : DateTimeUtil.ToInt32(DateTime.Now);
+            return GetToken(fileId, timeStamp, clusterName);
         }
     }
 }

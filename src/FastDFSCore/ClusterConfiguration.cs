@@ -22,8 +22,11 @@ namespace FastDFSCore
         /// </summary>
         public string Charset { get; set; } = "utf-8";
 
-        /// <summary>
-        /// Token生成的密钥
+        /// <summary> 是否生成Token
+        /// </summary>
+        public bool AntiStealToken { get; set; } = true;
+
+        /// <summary>Token生成的密钥
         /// </summary>
         public string SecretKey { get; set; }
 

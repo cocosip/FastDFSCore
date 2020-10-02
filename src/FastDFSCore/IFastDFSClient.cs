@@ -1,4 +1,5 @@
 ﻿using FastDFSCore.Protocols;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -211,10 +212,20 @@ namespace FastDFSCore
         /// <summary>
         /// 生成文件访问Token
         /// </summary>
-        /// <param name="fileId"></param>
-        /// <param name="clusterName"></param>
+        /// <param name="fileId">文件名</param>
+        /// <param name="timeStamp">时间戳</param>
+        /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        string GetToken(string fileId, string clusterName = "");
+        string GetToken(string fileId, int? timeStamp = null, string clusterName = "");
+
+        /// <summary>
+        /// 生成文件访问Token
+        /// </summary>
+        /// <param name="fileId">文件名</param>
+        /// <param name="dateTime">时间</param>
+        /// <param name="clusterName">集群名称</param>
+        /// <returns></returns>
+        string GetToken(string fileId, DateTime? dateTime = null, string clusterName = "");
 
     }
 }

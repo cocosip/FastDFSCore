@@ -15,7 +15,7 @@ jobs:
     steps:
     - task: UseDotNet@2
       inputs:
-        version: '3.1.403'
+        version: '5.0.100'
     - powershell: .\build.ps1
       displayName: 'Run build.ps1'
   - job: Linux
@@ -24,7 +24,7 @@ jobs:
     steps:
     - task: UseDotNet@2
       inputs:
-        version: '3.1.403'
+        version: '5.0.100'
     - script: |
         chmod +x ./build.sh
       displayName: 'Chmod build.sh'

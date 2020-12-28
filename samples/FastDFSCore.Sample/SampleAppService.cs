@@ -81,7 +81,11 @@ namespace FastDFSCore.Sample
             {
                 var ext = GetPathExtension(fileId);
                 var savePath = Path.Combine(saveDirectory, $"{Guid.NewGuid()}{ext}");
-                await _client.DownloadFileEx(storageNode, fileId, savePath);
+
+                var buffer = await _client.DownloadFileAsync(storageNode, fileId);
+
+                File.WriteAllBytes(savePath, buffer);
+                //await _client.DownloadFileEx(storageNode, fileId, savePath);
                 _logger.LogDebug("Download File '{0}' To Path '{1}' ", fileId, savePath);
                 savePaths.Add(savePath);
             }

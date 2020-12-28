@@ -180,6 +180,7 @@ namespace FastDFSCore.Transport.SuperSocket
 
         private void ReceiveReset()
         {
+            base.Reset();
             _foundHeader = false;
             _length = 0;
             _command = 0;

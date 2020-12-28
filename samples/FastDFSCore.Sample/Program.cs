@@ -51,7 +51,7 @@ namespace FastDFSCore.Sample
         {
             var groupName = "group1";
             var uploadFileIds = await _sampleAppService.BatchUploadAsync(groupName, @"D:\DicomTests");
-            var downloadFiles = await _sampleAppService.BatchDownloadAsync(groupName, uploadFileIds, @"G:\DicomTests");
+            var downloadFiles = await _sampleAppService.BatchDownloadAsync(groupName, uploadFileIds, @"G:\Download");
 
         }
 

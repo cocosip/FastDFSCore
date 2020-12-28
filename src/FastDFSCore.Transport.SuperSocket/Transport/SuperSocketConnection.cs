@@ -2,7 +2,7 @@
 using FastDFSCore.Transport.SuperSocket;
 using FastDFSCore.Utility;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using SuperSocket.Channel;
 using SuperSocket.Client;
 using System;
 using System.IO;
@@ -35,7 +35,10 @@ namespace FastDFSCore.Transport
             if (_client == null)
             {
                 Func<TransportContext> getCtx = () => _context;
-                _client = new EasyClient<ReceivedPackage>(ServiceProvider.CreateInstance<ReceivedPackageFilter>(getCtx));
+                _client = new EasyClient<ReceivedPackage>(ServiceProvider.CreateInstance<ReceivedPackageFilter>(getCtx), new ChannelOptions()
+                {
+                    MaxPackageLength = 1024 * 1024 * 1024
+                });
             }
 
             _client.Closed += async (o, e) =>

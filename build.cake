@@ -60,15 +60,14 @@ Task("Restore-NuGet-Packages")
       var settings = new DotNetCoreRestoreSettings
       {
          ArgumentCustomization = args =>
-            {
-               args.Append($"/p:VersionSuffix={parameters.Version.Suffix}");
-               return args;
-            },
-            Sources = new [] { "https://api.nuget.org/v3/index.json" }
+         {
+            args.Append($"/p:VersionSuffix={parameters.Version.Suffix}");
+            return args;
+         },
+         Sources = new [] { "https://api.nuget.org/v3/index.json" }
       };
       foreach (var project in parameters.ProjectFiles)
       {
-         //Information(project.FullPath);
          DotNetCoreRestore(project.FullPath, settings);
       }
    });
@@ -126,11 +125,6 @@ Task("Pack")
          DotNetCorePack(project.FullPath, settings);
          Information($"pack:{project.FullPath}");
       }
-      // foreach (var package in parameters.Packages.Nuget)
-      // {
-      //    //DotNetCorePack(project.PackagePath, settings);
-      //    Information($"publishpath:{package.PackagePath}");
-      // }
    });
 
 //发布Nuget
@@ -161,15 +155,32 @@ Task("Publish")
             throw new InvalidOperationException("Could not resolve NuGet API url.");
          }
 
+         var symbolsApiUrl = EnvironmentVariable("SYMBOLS_API_URL");
+         if (string.IsNullOrEmpty(symbolsApiUrl))
+         {
+            throw new InvalidOperationException("Could not resolve Symbols API url.");
+         }
+
          foreach (var package in parameters.Packages.Nuget)
          {
             // Push the package.
             NuGetPush(package.PackagePath, new NuGetPushSettings
             {
                ApiKey = apiKey,
-                  Source = apiUrl
+               Source = apiUrl
             });
             Information($"publish nuget:{package.PackagePath}");
+         }
+
+         foreach (var package in parameters.SymbolsPackages.Nuget)
+         {
+            // Push the package.
+            NuGetPush(package.PackagePath, new NuGetPushSettings
+            {
+               ApiKey = apiKey,
+               Source = symbolsApiUrl
+            });
+            Information($"symbol nuget:{package.PackagePath}");
          }
 
       }

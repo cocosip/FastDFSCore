@@ -23,6 +23,25 @@ public class BuildPackages
         };
     }
 
+    public static BuildPackages GetSymbolsPackages(
+        DirectoryPath nugetRooPath,
+        string semVersion,
+        string[] packageIds,
+        string[] chocolateyPackageIds)
+    {
+        var toNugetPackage = BuildSymbolsPackage(nugetRooPath, semVersion);
+        var toChocolateyPackage = BuildSymbolsPackage(nugetRooPath, semVersion, isChocolateyPackage : true);
+        var nugetPackages = packageIds.Select(toNugetPackage).ToArray();
+        var chocolateyPackages = chocolateyPackageIds.Select(toChocolateyPackage).ToArray();
+
+        return new BuildPackages
+        {
+            All = nugetPackages.Union(chocolateyPackages).ToArray(),
+                Nuget = nugetPackages,
+                Chocolatey = chocolateyPackages
+        };
+    }
+
     private static Func<string, BuildPackage> BuildPackage(
         DirectoryPath nugetRooPath,
         string semVersion,
@@ -32,6 +51,18 @@ public class BuildPackages
             id: package,
             nuspecPath: string.Concat("./nuspec/", package, ".nuspec"),
             packagePath : nugetRooPath.CombineWithFilePath(string.Concat(package, ".", semVersion, ".nupkg")),
+            isChocolateyPackage : isChocolateyPackage);
+    }
+
+    private static Func<string, BuildPackage> BuildSymbolsPackage(
+        DirectoryPath nugetRooPath,
+        string semVersion,
+        bool isChocolateyPackage = false)
+    {
+        return package => new BuildPackage(
+            id: package,
+            nuspecPath: string.Concat("./nuspec/", package, ".nuspec"),
+            packagePath : nugetRooPath.CombineWithFilePath(string.Concat(package, ".", semVersion, ".snupkg")),
             isChocolateyPackage : isChocolateyPackage);
     }
 }

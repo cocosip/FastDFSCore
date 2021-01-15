@@ -10,14 +10,14 @@ namespace FastDFSCore
     {
         /// <summary>添加FastDFSCore
         /// </summary>
-        public static IServiceCollection AddFastDFSCore(this IServiceCollection services, Action<FastDFSOption> configure = null)
+        public static IServiceCollection AddFastDFSCore(this IServiceCollection services, Action<FastDFSOptions> configure = null)
         {
             if (configure == null)
             {
                 configure = o => { };
             }
             services
-                .Configure<FastDFSOption>(configure)
+                .Configure<FastDFSOptions>(configure)
                 .AddSingleton<IConnectionPoolBuilder, DefaultConnectionPoolBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()
                 .AddSingleton<IConnectionBuilder, DefaultConnectionBuilder>()

@@ -15,14 +15,18 @@ namespace FastDFSCore
 
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly FastDFSOption _option;
+        private readonly FastDFSOptions _options;
         private readonly IClusterSelector _clusterSelector;
 
-        public DefaultClusterFactory(ILogger<DefaultClusterFactory> logger, IServiceProvider serviceProvider, IOptions<FastDFSOption> options, IClusterSelector clusterSelector)
+        public DefaultClusterFactory(
+            ILogger<DefaultClusterFactory> logger,
+            IServiceProvider serviceProvider,
+            IOptions<FastDFSOptions> options,
+            IClusterSelector clusterSelector)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _option = options.Value;
+            _options = options.Value;
             _clusterSelector = clusterSelector;
             _clusterDict = new ConcurrentDictionary<string, ICluster>();
         }
@@ -34,9 +38,9 @@ namespace FastDFSCore
             //ensure there are only one configuration in option
             if (string.IsNullOrWhiteSpace(name))
             {
-                if (_option.ClusterConfigurations.Count == 1)
+                if (_options.ClusterConfigurations.Count == 1)
                 {
-                    name = _option.ClusterConfigurations.FirstOrDefault().Name;
+                    name = _options.ClusterConfigurations.FirstOrDefault().Name;
                 }
             }
 

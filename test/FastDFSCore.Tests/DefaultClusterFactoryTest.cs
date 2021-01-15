@@ -22,7 +22,7 @@ namespace FastDFSCore.Tests
         [Fact]
         public void Get_Default_CreateNew_Test()
         {
-            var option = new FastDFSOption()
+            var optionsValue = new FastDFSOptions()
             {
                 ClusterConfigurations = new List<ClusterConfiguration>()
                 {
@@ -37,7 +37,7 @@ namespace FastDFSCore.Tests
                 }
             };
 
-            var options = Options.Create<FastDFSOption>(option);
+            var options = Options.Create<FastDFSOptions>((FastDFSOptions)optionsValue);
 
             var mockCluster = new Mock<ICluster>();
             mockCluster.Setup(x => x.Name).Returns("cluster1");
@@ -47,7 +47,7 @@ namespace FastDFSCore.Tests
                 .Returns(mockCluster.Object);
 
             mockScopeServiceProvider.Setup(x => x.GetService(typeof(ClusterConfiguration)))
-             .Returns(option.ClusterConfigurations.FirstOrDefault());
+             .Returns(optionsValue.ClusterConfigurations.FirstOrDefault());
 
             var mockServiceScope = new Mock<IServiceScope>();
             mockServiceScope.Setup(x => x.ServiceProvider)
@@ -62,7 +62,7 @@ namespace FastDFSCore.Tests
                 .Returns(mockScopeFactory.Object);
 
             var mockClusterSelector = new Mock<IClusterSelector>();
-            mockClusterSelector.Setup(x => x.Get("cluster1")).Returns(option.ClusterConfigurations.FirstOrDefault());
+            mockClusterSelector.Setup(x => x.Get("cluster1")).Returns(optionsValue.ClusterConfigurations.FirstOrDefault());
 
 
             IClusterFactory clusterFactory = new DefaultClusterFactory(_mockLogger.Object, mockServiceProvider.Object, options, mockClusterSelector.Object);

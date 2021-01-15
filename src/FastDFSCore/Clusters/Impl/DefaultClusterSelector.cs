@@ -6,23 +6,23 @@ namespace FastDFSCore
 {
     public class DefaultClusterSelector : IClusterSelector
     {
-        private readonly FastDFSOption _option;
+        private readonly FastDFSOptions _options;
 
-        public DefaultClusterSelector(IOptions<FastDFSOption> options)
+        public DefaultClusterSelector(IOptions<FastDFSOptions> options)
         {
-            _option = options.Value;
+            _options = options.Value;
         }
 
         public virtual ClusterConfiguration Get(string name)
         {
-            var configuration = _option.ClusterConfigurations.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var configuration = _options.ClusterConfigurations.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             if (configuration == null)
             {
                 //Get default
-                if (_option.ClusterConfigurations.Count == 1)
+                if (_options.ClusterConfigurations.Count == 1)
                 {
-                    configuration = _option.ClusterConfigurations.FirstOrDefault();
+                    configuration = _options.ClusterConfigurations.FirstOrDefault();
                 }
             }
 

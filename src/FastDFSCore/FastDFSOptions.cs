@@ -4,11 +4,11 @@ namespace FastDFSCore
 {
     /// <summary>配置信息
     /// </summary>
-    public class FastDFSOption
+    public class FastDFSOptions
     {
         public List<ClusterConfiguration> ClusterConfigurations { get; set; }
 
-        public FastDFSOption()
+        public FastDFSOptions()
         {
             ClusterConfigurations = new List<ClusterConfiguration>();
         }

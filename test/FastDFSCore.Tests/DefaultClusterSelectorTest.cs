@@ -10,9 +10,9 @@ namespace FastDFSCore.Tests
         [Fact]
         public void ClusterConfigurations_Empty_Test()
         {
-            var option = new FastDFSOption();
+            var optionsValue = new FastDFSOptions();
 
-            var options = Options.Create<FastDFSOption>(option);
+            var options = Options.Create<FastDFSOptions>((FastDFSOptions)optionsValue);
             IClusterSelector clusterSelector = new DefaultClusterSelector(options);
 
             Assert.Throws<ArgumentNullException>(() =>
@@ -24,7 +24,7 @@ namespace FastDFSCore.Tests
         [Fact]
         public void ClusterConfigurations_Get_Default_Test()
         {
-            var option = new FastDFSOption()
+            var optionValue = new FastDFSOptions()
             {
                 ClusterConfigurations = new List<ClusterConfiguration>()
                 {
@@ -36,7 +36,7 @@ namespace FastDFSCore.Tests
                 }
             };
 
-            var options = Options.Create<FastDFSOption>(option);
+            var options = Options.Create<FastDFSOptions>((FastDFSOptions)optionValue);
             IClusterSelector clusterSelector = new DefaultClusterSelector(options);
 
             var configuration = clusterSelector.Get("cluster1");
@@ -48,7 +48,7 @@ namespace FastDFSCore.Tests
         [Fact]
         public void ClusterConfigurations_Get_Test()
         {
-            var option = new FastDFSOption()
+            var optionsValue = new FastDFSOptions()
             {
                 ClusterConfigurations = new List<ClusterConfiguration>()
                 {
@@ -66,7 +66,7 @@ namespace FastDFSCore.Tests
                 }
             };
 
-            var options = Options.Create<FastDFSOption>(option);
+            var options = Options.Create<FastDFSOptions>((FastDFSOptions)optionsValue);
             IClusterSelector clusterSelector = new DefaultClusterSelector(options);
 
             var configuration = clusterSelector.Get("cluster1");

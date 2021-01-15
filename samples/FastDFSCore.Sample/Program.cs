@@ -30,7 +30,7 @@ namespace FastDFSCore.Sample
                 .AddSingleton<ISampleAppService, SampleAppService>();
             var provider = services.BuildServiceProvider();
 
-            var option = provider.GetRequiredService<IOptions<FastDFSOption>>().Value;
+            var option = provider.GetRequiredService<IOptions<FastDFSOptions>>().Value;
             option.ClusterConfigurations.Add(new ClusterConfiguration()
             {
                 Name = "Cluster1",

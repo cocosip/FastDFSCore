@@ -10,8 +10,8 @@ namespace FastDFSCore
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _trackerConnectionPools;
         private readonly ConcurrentDictionary<ConnectionAddress, IConnectionPool> _storageConnectionPools;
 
-        private readonly object _trackerSyncObject = new object();
-        private readonly object _storageSyncObject = new object();
+        private readonly object _trackerSyncObject = new();
+        private readonly object _storageSyncObject = new();
 
         private readonly ILogger _logger;
         private readonly IConnectionPoolBuilder _connectionPoolFactory;
@@ -22,7 +22,10 @@ namespace FastDFSCore
         /// </summary>
         public string Name { get { return _configuration?.Name; } }
 
-        public DefaultCluster(ILogger<DefaultCluster> logger, IConnectionPoolBuilder connectionPoolFactory, ClusterConfiguration configuration)
+        public DefaultCluster(
+            ILogger<DefaultCluster> logger, 
+            IConnectionPoolBuilder connectionPoolFactory,
+            ClusterConfiguration configuration)
         {
             _logger = logger;
             _connectionPoolFactory = connectionPoolFactory;

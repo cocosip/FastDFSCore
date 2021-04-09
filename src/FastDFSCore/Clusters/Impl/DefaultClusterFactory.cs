@@ -93,6 +93,10 @@ namespace FastDFSCore
                 injectConfiguration.ConnectionLifeTime = configuration.ConnectionLifeTime;
                 injectConfiguration.ConnectionConcurrentThread = configuration.ConnectionConcurrentThread;
                 injectConfiguration.ScanTimeoutConnectionInterval = configuration.ScanTimeoutConnectionInterval;
+
+                injectConfiguration.AntiStealToken = configuration.AntiStealToken;
+                injectConfiguration.SecretKey = configuration.SecretKey;
+
                 injectConfiguration.TrackerMaxConnection = configuration.TrackerMaxConnection;
                 injectConfiguration.StorageMaxConnection = configuration.StorageMaxConnection;
 

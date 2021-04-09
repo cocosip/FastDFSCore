@@ -17,6 +17,15 @@ namespace FastDFSCore.Sample
             _client = client;
         }
 
+        public string GetToken(string fileId)
+        {
+            _logger.LogInformation("---Get Token ---");
+            var token = _client.GetToken(fileId, DateTime.Now.AddDays(1), "");
+            _logger.LogInformation("Token:{0}", token);
+            _logger.LogInformation("---End of Get Token ---");
+            return token;
+        }
+
         /// <summary>查询Storage信息
         /// </summary>
         public async Task ListStorageInfosAsync(string groupName)

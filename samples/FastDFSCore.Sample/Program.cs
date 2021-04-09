@@ -18,13 +18,7 @@ namespace FastDFSCore.Sample
                 l.AddConsole();
             });
             services
-                .AddFastDFSCore(c =>
-                {
-                    //c.Trackers = new List<Tracker>()
-                    //{
-                    //    new Tracker("192.168.0.98",22122)
-                    //};
-                })
+                .AddFastDFSCore()
                 //.AddFastDFSDotNetty()
                 .AddFastDFSSuperSocket()
                 .AddSingleton<ISampleAppService, SampleAppService>();
@@ -37,7 +31,9 @@ namespace FastDFSCore.Sample
                 Trackers = new List<Tracker>()
                 {
                     new Tracker("192.168.0.98", 22122)
-                }
+                },
+                AntiStealToken = true,
+                SecretKey = "123456"
             });
 
             _sampleAppService = provider.GetService<ISampleAppService>();
@@ -50,6 +46,9 @@ namespace FastDFSCore.Sample
         public static async void RunAsync()
         {
             var groupName = "group1";
+
+            //_sampleAppService.GetToken("/00/01/123456.txt");
+            
             var uploadFileIds = await _sampleAppService.BatchUploadAsync(groupName, @"D:\DicomTests");
             var downloadFiles = await _sampleAppService.BatchDownloadAsync(groupName, uploadFileIds, @"G:\Download");
 

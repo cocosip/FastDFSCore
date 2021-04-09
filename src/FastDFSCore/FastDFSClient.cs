@@ -31,7 +31,9 @@ namespace FastDFSCore
         /// <param name="groupName">组名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>存储节点实体类</returns>
-        public async ValueTask<StorageNode> GetStorageNodeAsync(string groupName, string clusterName = "")
+        public async ValueTask<StorageNode> GetStorageNodeAsync(
+            string groupName, 
+            string clusterName = "")
         {
             var request = new QueryStoreWithGroupOne(groupName);
             var response = await _executer.Execute(request, clusterName);
@@ -44,7 +46,9 @@ namespace FastDFSCore
         /// <param name="groupName">组名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask<GroupInfo> ListOneGroupInfoAsync(string groupName, string clusterName = "")
+        public async ValueTask<GroupInfo> ListOneGroupInfoAsync(
+            string groupName, 
+            string clusterName = "")
         {
             var request = new ListOneGroup(groupName);
             var response = await _executer.Execute(request, clusterName);
@@ -69,7 +73,9 @@ namespace FastDFSCore
         /// <param name="groupName">组名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask<List<StorageInfo>> ListStorageInfosAsync(string groupName, string clusterName = "")
+        public async ValueTask<List<StorageInfo>> ListStorageInfosAsync(
+            string groupName, 
+            string clusterName = "")
         {
             var request = new ListStorage(groupName);
             var response = await _executer.Execute(request, clusterName);
@@ -84,7 +90,10 @@ namespace FastDFSCore
         /// <param name="fileId">文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>存储节点实体类</returns>
-        public async ValueTask<StorageNode> QueryStorageNodeForFileAsync(string groupName, string fileId, string clusterName = "")
+        public async ValueTask<StorageNode> QueryStorageNodeForFileAsync(
+            string groupName, 
+            string fileId, 
+            string clusterName = "")
         {
             var request = new QueryFetchOne(groupName, fileId);
             var response = await _executer.Execute(request, clusterName);
@@ -99,7 +108,10 @@ namespace FastDFSCore
         /// <param name="fileId">文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>多个存储节点实体类</returns>
-        public async ValueTask<List<StorageNode>> QueryStorageNodesForFileAsync(string groupName, string fileId, string clusterName = "")
+        public async ValueTask<List<StorageNode>> QueryStorageNodesForFileAsync(
+            string groupName, 
+            string fileId, 
+            string clusterName = "")
         {
             var request = new QueryFetchAll(groupName, fileId);
             var response = await _executer.Execute(request, clusterName);
@@ -115,7 +127,11 @@ namespace FastDFSCore
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> UploadFileAsync(StorageNode storageNode, byte[] content, string fileExt, string clusterName = "")
+        public async ValueTask<string> UploadFileAsync(
+            StorageNode storageNode,
+            byte[] content, 
+            string fileExt, 
+            string clusterName = "")
         {
             fileExt = fileExt.TrimStart('.');
             var request = new UploadFile(storageNode.StorePathIndex, fileExt, content);
@@ -131,7 +147,11 @@ namespace FastDFSCore
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> UploadFileAsync(StorageNode storageNode, Stream stream, string fileExt, string clusterName = "")
+        public async ValueTask<string> UploadFileAsync(
+            StorageNode storageNode, 
+            Stream stream,
+            string fileExt,
+            string clusterName = "")
         {
             fileExt = fileExt.TrimStart('.');
             var request = new UploadFile(storageNode.StorePathIndex, fileExt, stream);
@@ -146,7 +166,10 @@ namespace FastDFSCore
         /// <param name="filename">上传文件文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask<string> UploadFileAsync(StorageNode storageNode, string filename, string clusterName = "")
+        public async ValueTask<string> UploadFileAsync(
+            StorageNode storageNode,
+            string filename, 
+            string clusterName = "")
         {
             string fileExt = Path.GetExtension(filename).TrimStart('.');
             var fs = new FileStream(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
@@ -165,7 +188,13 @@ namespace FastDFSCore
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> UploadSlaveFileAsync(string groupName, string masterFileId, string prefixName, byte[] content, string fileExt, string clusterName = "")
+        public async ValueTask<string> UploadSlaveFileAsync(
+            string groupName, 
+            string masterFileId,
+            string prefixName, 
+            byte[] content, 
+            string fileExt, 
+            string clusterName = "")
         {
             fileExt = fileExt.TrimStart('.');
             var queryUpdateRequest = new QueryUpdate(groupName, masterFileId);
@@ -186,7 +215,12 @@ namespace FastDFSCore
         /// <param name="filename">本地文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> UploadSlaveFileAsync(string groupName, string masterFileId, string prefixName, string filename, string clusterName = "")
+        public async ValueTask<string> UploadSlaveFileAsync(
+            string groupName, 
+            string masterFileId,
+            string prefixName, 
+            string filename, 
+            string clusterName = "")
         {
             var queryUpdateRequest = new QueryUpdate(groupName, masterFileId);
             var queryUpdateResponse = await _executer.Execute(queryUpdateRequest, clusterName);
@@ -207,7 +241,11 @@ namespace FastDFSCore
         /// <param name="fileExt">文件扩展名(注意:不包含".")</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> UploadAppenderFileAsync(StorageNode storageNode, byte[] content, string fileExt, string clusterName = "")
+        public async ValueTask<string> UploadAppenderFileAsync(
+            StorageNode storageNode, 
+            byte[] content,
+            string fileExt, 
+            string clusterName = "")
         {
             fileExt = fileExt.TrimStart('.');
             var request = new UploadAppendFile(storageNode.StorePathIndex, fileExt, content);
@@ -223,7 +261,10 @@ namespace FastDFSCore
         /// <param name="filename">本地文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> UploadAppenderFileAsync(StorageNode storageNode, string filename, string clusterName = "")
+        public async ValueTask<string> UploadAppenderFileAsync(
+            StorageNode storageNode, 
+            string filename,
+            string clusterName = "")
         {
             string extension = Path.GetExtension(filename).TrimStart('.');
             var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -240,7 +281,11 @@ namespace FastDFSCore
         /// <param name="content">文件内容</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件名</returns>
-        public async ValueTask<string> AppendFileAsync(string groupName, string fileId, byte[] content, string clusterName = "")
+        public async ValueTask<string> AppendFileAsync(
+            string groupName, 
+            string fileId, 
+            byte[] content,
+            string clusterName = "")
         {
             var queryUpdateRequest = new QueryUpdate(groupName, fileId);
             var queryUpdateResponse = await _executer.Execute(queryUpdateRequest, clusterName);
@@ -259,7 +304,10 @@ namespace FastDFSCore
         /// <param name="clusterName">集群名称</param>
         /// <returns>是否删除成功</returns>
 
-        public async ValueTask<bool> RemoveFileAsync(string groupName, string fileId, string clusterName = "")
+        public async ValueTask<bool> RemoveFileAsync(
+            string groupName, 
+            string fileId, 
+            string clusterName = "")
         {
             var queryUpdateRequest = new QueryUpdate(groupName, fileId);
             var queryUpdateResponse = await _executer.Execute(queryUpdateRequest, clusterName);
@@ -277,7 +325,10 @@ namespace FastDFSCore
         /// <param name="fileId">文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件内容</returns>
-        public async ValueTask<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId, string clusterName = "")
+        public async ValueTask<byte[]> DownloadFileAsync(
+            StorageNode storageNode, 
+            string fileId, 
+            string clusterName = "")
         {
             var request = new DownloadFile(0L, 0L, storageNode.GroupName, fileId);
             var response = await _executer.Execute(request, clusterName, storageNode.ConnectionAddress);
@@ -294,7 +345,12 @@ namespace FastDFSCore
         /// <param name="length">要读取的字节数</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns>文件内容</returns>
-        public async ValueTask<byte[]> DownloadFileAsync(StorageNode storageNode, string fileId, long offset, long length, string clusterName = "")
+        public async ValueTask<byte[]> DownloadFileAsync(
+            StorageNode storageNode, 
+            string fileId, 
+            long offset,
+            long length, 
+            string clusterName = "")
         {
             var request = new DownloadFile(offset, length, storageNode.GroupName, fileId);
             var response = await _executer.Execute(request, clusterName, storageNode.ConnectionAddress);
@@ -309,7 +365,11 @@ namespace FastDFSCore
         /// <param name="filePath">文件保存路径</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask<string> DownloadFileEx(StorageNode storageNode, string fileId, string filePath, string clusterName = "")
+        public async ValueTask<string> DownloadFileEx(
+            StorageNode storageNode,
+            string fileId,
+            string filePath,
+            string clusterName = "")
         {
             var request = new DownloadStreamFile(storageNode.GroupName, fileId)
             {
@@ -327,7 +387,10 @@ namespace FastDFSCore
         /// <param name="fileId">文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask<FastDFSFileInfo> GetFileInfo(StorageNode storageNode, string fileId, string clusterName = "")
+        public async ValueTask<FastDFSFileInfo> GetFileInfo(
+            StorageNode storageNode, 
+            string fileId,
+            string clusterName = "")
         {
             var request = new QueryFileInfo(storageNode.GroupName, fileId);
             var response = await _executer.Execute(request, clusterName, storageNode.ConnectionAddress);
@@ -342,7 +405,10 @@ namespace FastDFSCore
         /// <param name="fileId">文件名</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask<IDictionary<string, string>> GetMetaData(StorageNode storageNode, string fileId, string clusterName = "")
+        public async ValueTask<IDictionary<string, string>> GetMetaData(
+            StorageNode storageNode, 
+            string fileId,
+            string clusterName = "")
         {
             var request = new GetMetaData(storageNode.GroupName, fileId);
             var response = await _executer.Execute(request, clusterName, storageNode.ConnectionAddress);
@@ -358,7 +424,12 @@ namespace FastDFSCore
         /// <param name="option"></param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public async ValueTask SetMetaData(StorageNode storageNode, string fileId, IDictionary<string, string> metaData, MetaDataOption option = MetaDataOption.Overwrite, string clusterName = "")
+        public async ValueTask SetMetaData(
+            StorageNode storageNode, 
+            string fileId, 
+            IDictionary<string, string> metaData,
+            MetaDataOption option = MetaDataOption.Overwrite,
+            string clusterName = "")
         {
             var request = new SetMetaData(fileId, storageNode.GroupName, metaData, option);
             _ = await _executer.Execute(request, clusterName);
@@ -371,7 +442,10 @@ namespace FastDFSCore
         /// <param name="timeStamp">时间戳</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public string GetToken(string fileId, int? timeStamp = null, string clusterName = "")
+        public string GetToken(
+            string fileId,
+            int? timeStamp = null,
+            string clusterName = "")
         {
             var cluster = _clusterFactory.Get(clusterName);
             var configuration = cluster.GetConfiguration();
@@ -391,7 +465,10 @@ namespace FastDFSCore
         /// <param name="dateTime">时间</param>
         /// <param name="clusterName">集群名称</param>
         /// <returns></returns>
-        public string GetToken(string fileId, DateTime? dateTime = null, string clusterName = "")
+        public string GetToken(
+            string fileId,
+            DateTime? dateTime = null,
+            string clusterName = "")
         {
             var timeStamp = dateTime.HasValue ? DateTimeUtil.ToInt32(dateTime.Value) : DateTimeUtil.ToInt32(DateTime.Now);
             return GetToken(fileId, timeStamp, clusterName);

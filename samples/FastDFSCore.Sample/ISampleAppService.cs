@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FastDFSCore.Sample
 {
     public interface ISampleAppService
     {
+        string GetToken(string fileId);
+
         /// <summary>查询Storage信息
         /// </summary>
         Task ListStorageInfosAsync(string groupName);

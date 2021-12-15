@@ -1,7 +1,7 @@
 <Project>
-  <Import Project="version.props" />
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
+	<Version>1.6.0</Version>
     <Authors>virtual</Authors>
     <Product>FastDFSCore</Product>
     <PackageProjectUrl>https://github.com/cocosip/FastDFSCore</PackageProjectUrl>
@@ -16,9 +16,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 

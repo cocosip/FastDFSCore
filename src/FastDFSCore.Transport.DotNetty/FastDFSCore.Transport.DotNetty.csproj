@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
  
-  <Import Project="..\..\build\common.props" />
+  <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>FastDFSCore.Transport.DotNetty</AssemblyName>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetty.Handlers" Version="0.6.0" />
+    <PackageReference Include="DotNetty.Handlers" Version="0.7.0" />
   </ItemGroup>
 
   <ItemGroup>
